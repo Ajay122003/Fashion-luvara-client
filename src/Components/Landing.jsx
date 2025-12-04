@@ -18,9 +18,9 @@ function Landing() {
     <div className="landing-bg d-flex align-items-center justify-content-center">
       <div className="text-center content-box" data-aos="fade-up">
         <h1 className="brand-title" data-aos="zoom-in">LUVARA</h1>
-        <p className="sub-tagline" data-aos="fade-up" data-aos-delay="200">
+        {/* <p className="sub-tagline" data-aos="fade-up" data-aos-delay="200">
           Women's Fashion
-        </p>
+        </p> */}
 
         <h3 className="coming-title mt-4" data-aos="fade-up" data-aos-delay="300">
           COMING SOON
