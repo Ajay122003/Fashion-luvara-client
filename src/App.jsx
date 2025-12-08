@@ -1,17 +1,11 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Landing from './Components/Landing'
+// src/App.jsx
+import React from "react";
+import AppRoutes from "./routes/AppRoutes";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  return <AppRoutes />;
+};
 
-  return (
-    <>
-     <Landing/>
-    </>
-  )
-}
+export default App;
 
-export default App
+
