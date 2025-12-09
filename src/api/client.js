@@ -1,19 +1,20 @@
-// src/api/client.js
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:8000"; // later .env la set pannalam
+import { getAdminToken } from "../utils/storage";
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: "http://localhost:8000", // change to your backend URL
+  withCredentials: false,
 });
 
-// Attach admin token (if available)
-apiClient.interceptors.request.use((config) => {
-  const adminToken = localStorage.getItem("admin_access_token");
-  if (adminToken) {
-    config.headers.Authorization = `Bearer ${adminToken}`;
-  }
-  return config;
-});
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getAdminToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export default apiClient;

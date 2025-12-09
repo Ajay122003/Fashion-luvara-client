@@ -1,139 +1,130 @@
-// src/layouts/AdminLayout.jsx
 import React, { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/Navbar/AdminNavbar";
+import { useDispatch } from "react-redux";
+import { adminLogout } from "../features/admin/adminSlice";
 
 const AdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("admin_access_token");
-    localStorage.removeItem("admin_refresh_token");
+    dispatch(adminLogout());
     navigate("/admin/login");
   };
 
   return (
-    <div className="admin-wrapper d-flex">
-      {/* Sidebar */}
-      <nav
-        className={`admin-sidebar bg-dark text-white ${
-          sidebarOpen ? "open" : ""
-        }`}
-      >
-        <div className="sidebar-header p-3 d-flex justify-content-between align-items-center">
-          <span className="fw-bold">Luvara Admin</span>
-          <button
-            className="btn btn-sm btn-outline-light d-md-none"
-            onClick={() => setSidebarOpen(false)}
-          >
-            ✕
-          </button>
-        </div>
-        <ul className="nav flex-column px-2">
-          <li className="nav-item">
-            <NavLink
-              to="/admin"
-              end
-              className={({ isActive }) =>
-                "nav-link text-white" + (isActive ? " active" : "")
-              }
-            >
+    <div className="admin-layout d-flex flex-column" style={{ minHeight: "100vh" }}>
+      {/* TOP NAVBAR */}
+      <AdminNavbar onMenuClick={() => setShowSidebar(true)} />
+
+      <div className="d-flex flex-grow-1">
+
+        {/* ======================= DESKTOP SIDEBAR ======================= */}
+        <aside
+          className="bg-light border-end d-none d-md-block"
+          style={{ width: "240px" }}
+        >
+          <div className="list-group list-group-flush">
+            <NavLink to="/admin/dashboard" className="list-group-item list-group-item-action">
               Dashboard
             </NavLink>
-          </li>
-
-          <li className="nav-item mt-2">
-            <div className="text-uppercase text-muted small px-2">
-              Catalog
-            </div>
-          </li>
-         <li className="nav-item">
-            <NavLink
-               to="/admin/products"
-               className={({ isActive }) =>
-               "nav-link text-white" + (isActive ? " active" : "")
-                }
-               >
-               Products
-             </NavLink>
-         </li>
-
-          <li className="nav-item">
-            <NavLink
-              to="/admin/categories"
-              className={({ isActive }) =>
-                "nav-link text-white" + (isActive ? " active" : "")
-              }
-            >
+            <NavLink to="/admin/products" className="list-group-item list-group-item-action">
+              Products
+            </NavLink>
+            <NavLink to="/admin/categories" className="list-group-item list-group-item-action">
               Categories
             </NavLink>
-          </li>
-
-          <li className="nav-item mt-2">
-            <div className="text-uppercase text-muted small px-2">
+            <NavLink to="/admin/orders" className="list-group-item list-group-item-action">
               Orders
-            </div>
-          </li>
-          <li className="nav-item">
-            <NavLink
-              to="/admin/orders"
-              className={({ isActive }) =>
-                "nav-link text-white" + (isActive ? " active" : "")
-              }
-            >
-              All Orders
             </NavLink>
-          </li>
-
-          <li className="nav-item mt-2">
-            <div className="text-uppercase text-muted small px-2">
-              Marketing
-            </div>
-          </li>
-          <li className="nav-item">
-            <NavLink
-              to="/admin/coupons"
-              className={({ isActive }) =>
-                "nav-link text-white" + (isActive ? " active" : "")
-              }
-            >
-              Coupons
+            <NavLink to="/admin/users" className="list-group-item list-group-item-action">
+              Users
             </NavLink>
-          </li>
-
-          <li className="nav-item mt-2">
-            <div className="text-uppercase text-muted small px-2">
+            <NavLink to="/admin/settings" className="list-group-item list-group-item-action">
               Settings
-            </div>
-          </li>
-          <li className="nav-item">
-            <NavLink
-              to="/admin/settings"
-              className={({ isActive }) =>
-                "nav-link text-white" + (isActive ? " active" : "")
-              }
-            >
-              Site Settings
             </NavLink>
-          </li>
-        </ul>
 
-        <div className="mt-auto p-3 border-top border-secondary">
-          <button
-            className="btn btn-outline-light w-100 btn-sm"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
+            {/* LOGOUT HERE */}
+            <button
+              className="list-group-item list-group-item-action text-danger fw-bold"
+              onClick={handleLogout}
+            >
+              Logout ⟶
+            </button>
+          </div>
+        </aside>
+
+        {/* ======================= MOBILE SIDEBAR (OFFCANVAS) ======================= */}
+        <div
+          className={`offcanvas offcanvas-start ${showSidebar ? "show" : ""}`}
+          style={{ visibility: showSidebar ? "visible" : "hidden" }}
+        >
+          <div className="offcanvas-header">
+            <h5 className="offcanvas-title">Admin Menu</h5>
+            <button className="btn-close" onClick={() => setShowSidebar(false)}></button>
+          </div>
+
+          <div className="offcanvas-body">
+            <div className="list-group">
+
+              <NavLink
+                to="/admin/dashboard"
+                className="list-group-item list-group-item-action"
+                onClick={() => setShowSidebar(false)}
+              >
+                Dashboard
+              </NavLink>
+
+              <NavLink
+                to="/admin/products"
+                className="list-group-item list-group-item-action"
+                onClick={() => setShowSidebar(false)}
+              >
+                Products
+              </NavLink>
+
+              <NavLink
+                to="/admin/categories"
+                className="list-group-item list-group-item-action"
+                onClick={() => setShowSidebar(false)}
+              >
+                Categories
+              </NavLink>
+
+              <NavLink
+                to="/admin/orders"
+                className="list-group-item list-group-item-action"
+                onClick={() => setShowSidebar(false)}
+              >
+                Orders
+              </NavLink>
+
+              <NavLink
+                to="/admin/settings"
+                className="list-group-item list-group-item-action"
+                onClick={() => setShowSidebar(false)}
+              >
+                Settings
+              </NavLink>
+
+              {/* LOGOUT */}
+              <button
+                className="list-group-item list-group-item-action text-danger fw-bold"
+                onClick={() => {
+                  handleLogout();
+                  setShowSidebar(false);
+                }}
+              >
+                Logout ⟶
+              </button>
+            </div>
+          </div>
         </div>
-      </nav>
 
-      {/* Main content */}
-      <div className="admin-main flex-grow-1 d-flex flex-column">
-        <AdminNavbar onMenuClick={() => setSidebarOpen((prev) => !prev)} />
-
-        <main className="admin-content flex-grow-1 p-3 p-md-4">
+        {/* ======================= MAIN CONTENT ======================= */}
+        <main className="flex-grow-1 p-3 bg-white">
           <Outlet />
         </main>
       </div>

@@ -1,89 +1,114 @@
-// src/pages/Admin/AdminLogin.jsx
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { adminLogin, adminVerifyOTP } from "../../features/admin/adminSlice";
 import { useNavigate } from "react-router-dom";
-import { adminLogin } from "../../api/admin";
 
 const AdminLogin = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { loading, error, step, pendingEmail } = useSelector(
+    (state) => state.admin
+  );
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    dispatch(adminLogin({ email, password }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleOtpSubmit = (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const data = await adminLogin(form.email, form.password);
-      // tokens: { access, refresh }
-      localStorage.setItem("admin_access_token", data.tokens.access);
-      localStorage.setItem("admin_refresh_token", data.tokens.refresh);
-      navigate("/admin");
-    } catch (err) {
-      console.error(err);
-      setError(
-        err.response?.data?.detail ||
-          err.response?.data?.non_field_errors?.[0] ||
-          "Invalid credentials"
-      );
-    } finally {
-      setLoading(false);
-    }
+    const finalEmail = pendingEmail || email;
+    dispatch(adminVerifyOTP({ email: finalEmail, otp }))
+      .unwrap()
+      .then(() => {
+        navigate("/admin/dashboard");
+      })
+      .catch(() => {});
   };
 
   return (
-    <div className="admin-login-wrapper d-flex align-items-center justify-content-center">
-      <div className="admin-login-card shadow p-4 rounded bg-white">
-        <h3 className="text-center mb-3">Admin Login</h3>
-        <p className="text-muted small text-center mb-4">
-          Only staff users (is_staff=True) can login.
-        </p>
+    <div className="d-flex align-items-center justify-content-center bg-light" style={{ minHeight: "100vh" }}>
+      <div className="card shadow-sm" style={{ maxWidth: "420px", width: "100%" }}>
+        <div className="card-body">
+          <h3 className="card-title text-center mb-3">Admin Panel Login</h3>
+          <p className="text-muted text-center small mb-4">
+            Secure access for Luvara Store admins
+          </p>
 
-        {error && (
-          <div className="alert alert-danger py-2 small" role="alert">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="alert alert-danger py-2">{JSON.stringify(error)}</div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              name="email"
-              className="form-control"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="admin@example.com"
-              required
-            />
-          </div>
+          {step === 1 && (
+            <form onSubmit={handleLoginSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Admin Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="admin@luvara.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </div>
 
-          <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="form-control"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              required
-            />
-          </div>
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter admin password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
 
-          <button
-            type="submit"
-            className="btn btn-dark w-100 mt-2"
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+              <button
+                type="submit"
+                className="btn btn-dark w-100"
+                disabled={loading}
+              >
+                {loading ? "Sending OTP..." : "Login & Send OTP"}
+              </button>
+            </form>
+          )}
+
+          {step === 2 && (
+            <form onSubmit={handleOtpSubmit}>
+              <div className="alert alert-info small">
+                OTP sent to: <b>{pendingEmail || email}</b>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Enter OTP</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  maxLength={6}
+                  placeholder="6 digit OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-success w-100"
+                disabled={loading}
+              >
+                {loading ? "Verifying..." : "Verify & Login"}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

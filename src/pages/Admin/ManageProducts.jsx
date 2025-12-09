@@ -1,153 +1,100 @@
 import React, { useEffect, useState } from "react";
-import { getAdminProducts, deleteProduct } from "../../api/products";
+import { fetchAdminProducts, deleteAdminProduct } from "../../api/admin";
 import { Link } from "react-router-dom";
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const loadProducts = async () => {
+  const load = async () => {
     try {
-      const data = await getAdminProducts();
+      setLoading(true);
+      const data = await fetchAdminProducts();
       setProducts(data);
     } catch (err) {
-      console.error("Error loading products:", err);
+      console.error(err);
+      alert("Failed to load products");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadProducts();
+    load();
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-
+    if (!window.confirm("Are you sure to delete this product?")) return;
     try {
-      await deleteProduct(id);
-      setProducts(products.filter((p) => p.id !== id));
+      await deleteAdminProduct(id);
+      load();
     } catch (err) {
-      console.error("Delete failed:", err);
+      alert("Failed to delete");
     }
   };
 
-  const filtered = products.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Manage Products</h3>
-
-        <Link to="/admin/products/add" className="btn btn-dark">
+        <Link to="/admin/products/add" className="btn btn-primary btn-sm">
           + Add Product
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="mb-3">
-        <input
-          type="text"
-          placeholder="Search products..."
-          className="form-control"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      {/* Products Table */}
-      <div className="table-responsive shadow-sm rounded">
-        <table className="table table-bordered table-hover align-middle">
-          <thead className="table-dark">
-            <tr>
-              <th>#</th>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th width="150">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filtered.length === 0 ? (
+      {loading ? (
+        <p>Loading...</p>
+      ) : products.length === 0 ? (
+        <p>No products found.</p>
+      ) : (
+        <div className="table-responsive">
+          <table className="table table-hover align-middle">
+            <thead className="table-light">
               <tr>
-                <td colSpan="8" className="text-center py-4">
-                  No products found.
-                </td>
+                <th>#</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Sale Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th width="150">Actions</th>
               </tr>
-            ) : (
-              filtered.map((product, index) => (
-                <tr key={product.id}>
-                  <td>{index + 1}</td>
-
+            </thead>
+            <tbody>
+              {products.map((p, idx) => (
+                <tr key={p.id}>
+                  <td>{idx + 1}</td>
+                  <td>{p.name}</td>
+                  <td>₹{p.price}</td>
+                  <td>{p.sale_price ? `₹${p.sale_price}` : "-"}</td>
+                  <td>{p.stock}</td>
                   <td>
-                    {product.images?.length > 0 ? (
-                      <img
-                        src={product.images[0].image_url}
-                        alt=""
-                        width="50"
-                        height="50"
-                        style={{ objectFit: "cover", borderRadius: "6px" }}
-                      />
-                    ) : (
-                      <span className="text-muted">No image</span>
-                    )}
-                  </td>
-
-                  <td>{product.name}</td>
-                  <td>{product.category_name}</td>
-
-                  <td>
-                    {product.sale_price ? (
-                      <>
-                        <span className="text-decoration-line-through text-muted me-1">
-                          ₹{product.price}
-                        </span>
-                        <span className="fw-bold text-success">
-                          ₹{product.sale_price}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="fw-bold">₹{product.price}</span>
-                    )}
-                  </td>
-
-                  <td>{product.stock}</td>
-
-                  <td>
-                    {product.is_active ? (
+                    {p.is_active ? (
                       <span className="badge bg-success">Active</span>
                     ) : (
                       <span className="badge bg-secondary">Disabled</span>
                     )}
                   </td>
-
                   <td>
-                    <div className="d-flex gap-2">
-                      <Link
-                        to={`/admin/products/${product.id}/edit`}
-                        className="btn btn-sm btn-primary"
-                      >
-                        Edit
-                      </Link>
-
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleDelete(product.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    <Link
+                      to={`/admin/products/${p.id}/edit`}
+                      className="btn btn-sm btn-outline-primary me-2"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="btn btn-sm btn-outline-danger"
+                    >
+                      Del
+                    </button>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

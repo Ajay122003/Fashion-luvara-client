@@ -1,12 +1,15 @@
-// src/components/Protected/AdminRoute.jsx
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Navigate, useLocation } from "react-router-dom";
 
 const AdminRoute = ({ children }) => {
-  const token = localStorage.getItem("admin_access_token");
-  if (!token) {
-    return <Navigate to="/admin/login" replace />;
+  const isAuthenticated = useSelector((state) => state.admin.isAuthenticated);
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
+
   return children;
 };
 
