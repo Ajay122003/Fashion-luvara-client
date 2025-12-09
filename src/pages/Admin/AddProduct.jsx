@@ -15,6 +15,7 @@ const AddProduct = () => {
     sizes: "",
     colors: "",
     category: "",
+    is_active: true,
   });
 
   const [categories, setCategories] = useState([]);
@@ -25,8 +26,12 @@ const AddProduct = () => {
   }, []);
 
   const loadCategories = async () => {
-    const data = await fetchAdminCategories();
-    setCategories(data);
+    try {
+      const data = await fetchAdminCategories();
+      setCategories(data);
+    } catch (err) {
+      alert("Failed to load categories");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -34,43 +39,49 @@ const AddProduct = () => {
 
     const form = new FormData();
 
+    // Basic fields
     form.append("name", product.name);
     form.append("description", product.description);
     form.append("price", product.price);
+    form.append("stock", product.stock);
+    form.append("category", product.category);
+    form.append("is_active", product.is_active);
 
-    // sale_price optional
+    // Optional sale_price
     if (product.sale_price) {
       form.append("sale_price", product.sale_price);
     }
 
-    form.append("stock", product.stock);
-    form.append("category", product.category);
+    // Convert comma text → array
+    const sizesArray = product.sizes
+      ? product.sizes.split(",").map((s) => s.trim())
+      : [];
 
-    // FIX: Convert string → JSON array
-    const sizesArray = product.sizes.split(",").map((s) => s.trim());
-    const colorsArray = product.colors.split(",").map((c) => c.trim());
+    const colorsArray = product.colors
+      ? product.colors.split(",").map((c) => c.trim())
+      : [];
 
     form.append("sizes", JSON.stringify(sizesArray));
     form.append("colors", JSON.stringify(colorsArray));
 
-    // Images
-    for (let img of images) {
+    // Add images
+    images.forEach((img) => {
       form.append("images", img);
-    }
+    });
 
     try {
       await createAdminProduct(form);
       alert("Product added successfully!");
       navigate("/admin/products");
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data);
       alert("Failed to add product");
     }
   };
 
   return (
-    <div>
-      <h3 className="mb-3">Add Product</h3>
+    <div className="container py-4">
+      <h3 className="fw-bold mb-3">Add Product</h3>
 
       <ProductForm
         handleSubmit={handleSubmit}
@@ -86,3 +97,4 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
+

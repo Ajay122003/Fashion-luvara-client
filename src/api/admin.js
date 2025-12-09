@@ -16,6 +16,7 @@ export const adminLoginVerifyOTP = async (email, otp) => {
   return res.data; 
 };
 
+
 /* -----------------------------------------------
    DASHBOARD STATS
 ------------------------------------------------ */
@@ -24,6 +25,10 @@ export const fetchAdminDashboardStats = async () => {
   return res.data;
 };
 
+export const fetchLowStockProducts = async () => {
+  const res = await apiClient.get("/api/admin-panel/low-stock-products/");
+  return res.data;
+};
 /* -----------------------------------------------
    PRODUCTS CRUD
 ------------------------------------------------ */
@@ -50,6 +55,13 @@ export const deleteAdminProduct = async (id) => {
   const res = await apiClient.delete(`/api/admin-panel/products/${id}/`);
   return res.data;
 };
+export const deleteProductImage = async (imageId) => {
+  const res = await apiClient.delete(
+    `/api/admin-panel/products/images/${imageId}/delete/`
+  );
+  return res.data;
+};
+
 
 /* -----------------------------------------------
    CATEGORIES CRUD
@@ -96,34 +108,73 @@ export const fetchSiteSettings = async () => {
   return res.data;
 };
 
+// Update admin email
+export const adminUpdateEmail = async (data) => {
+  const res = await apiClient.put("/api/admin-panel/update-email/", data);
+  return res.data;
+};
+
+// Update admin password
+export const adminChangePassword = async (data) => {
+  const res = await apiClient.put("/api/admin-panel/change-password/", data);
+  return res.data;
+};
 
 /* -----------------------------------------------
    ORDER MANAGEMENT
 ------------------------------------------------ */
 
-// Get all orders
 export const fetchAdminOrders = async (status = "") => {
-  const res = await apiClient.get(`/api/admin-panel/orders/?status=${status}`);
+  const url = status
+    ? `/api/admin-panel/orders/?status=${status}`
+    : `/api/admin-panel/orders/`;
+
+  const res = await apiClient.get(url);
   return res.data;
 };
 
-// Get order details
-export const fetchAdminOrderDetails = async (id) => {
+export const fetchAdminOrderDetail = async (id) => {
   const res = await apiClient.get(`/api/admin-panel/orders/${id}/`);
   return res.data;
 };
 
-// Update order status
-export const updateAdminOrder = async (id, data) => {
+export const adminUpdateOrder = async (id, data) => {
   const res = await apiClient.put(`/api/admin-panel/orders/${id}/`, data);
   return res.data;
 };
-
 /* -----------------------------------------------
    user list
 ------------------------------------------------ */
 
 export const fetchAdminUsers = async () => {
   const res = await apiClient.get("/api/admin-panel/users/");
+  return res.data;
+};
+
+
+// ------------------ COUPONS ------------------
+
+export const fetchAdminCoupons = async () => {
+  const res = await apiClient.get("/api/admin-panel/coupons/");
+  return res.data;
+};
+
+export const createAdminCoupon = async (data) => {
+  const res = await apiClient.post("/api/admin-panel/coupons/", data);
+  return res.data;
+};
+
+export const updateAdminCoupon = async (id, data) => {
+  const res = await apiClient.put(`/api/admin-panel/coupons/${id}/`, data);
+  return res.data;
+};
+
+export const deleteAdminCoupon = async (id) => {
+  const res = await apiClient.delete(`/api/admin-panel/coupons/${id}/`);
+  return res.data;
+};
+
+export const fetchSingleCoupon = async (id) => {
+  const res = await apiClient.get(`/api/admin-panel/coupons/${id}/`);
   return res.data;
 };

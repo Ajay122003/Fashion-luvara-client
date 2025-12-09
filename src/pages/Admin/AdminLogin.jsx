@@ -50,7 +50,7 @@ const AdminLogin = () => {
                 <input
                   type="email"
                   className="form-control"
-                  placeholder="admin@luvara.com"
+                  placeholder="Enter admin email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -92,7 +92,7 @@ const AdminLogin = () => {
                   type="text"
                   className="form-control"
                   maxLength={6}
-                  placeholder="6 digit OTP"
+                  placeholder="XXXXXX"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   required

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   fetchAdminCategories,
   updateAdminProduct,
+  deleteProductImage,
 } from "../../api/admin";
 import apiClient from "../../api/client";
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,28 +21,47 @@ const EditProduct = () => {
     sizes: "",
     colors: "",
     category: "",
+    is_active: true,
   });
 
   const [categories, setCategories] = useState([]);
-  const [images, setImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]); // old images
+  const [images, setImages] = useState([]); // new images
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    const prod = await apiClient.get(`/api/admin-panel/products/${id}/`);
-    const cats = await fetchAdminCategories();
+    try {
+      const prod = await apiClient.get(`/api/admin-panel/products/${id}/`);
+      const cats = await fetchAdminCategories();
 
-    setCategories(cats);
+      setCategories(cats);
 
-    setProduct({
-      ...prod.data,
-      // Convert array → comma string for form input
-      sizes: prod.data.sizes?.join(", ") || "",
-      colors: prod.data.colors?.join(", ") || "",
-      category: prod.data.category,
-    });
+      setProduct({
+        ...prod.data,
+        sizes: prod.data.sizes?.join(", ") || "",
+        colors: prod.data.colors?.join(", ") || "",
+        category: prod.data.category,
+        is_active: prod.data.is_active,
+      });
+
+      setExistingImages(prod.data.images || []);
+    } catch (err) {
+      alert("Failed to load product");
+    }
+  };
+
+  const removeExistingImage = async (imageId) => {
+    if (!window.confirm("Delete this image?")) return;
+
+    try {
+      await deleteProductImage(imageId);
+      setExistingImages(existingImages.filter((img) => img.id !== imageId));
+    } catch (err) {
+      alert("Failed to delete image");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -52,25 +72,27 @@ const EditProduct = () => {
     form.append("name", product.name);
     form.append("description", product.description);
     form.append("price", product.price);
+    form.append("stock", product.stock);
+    form.append("category", product.category);
+    form.append("is_active", product.is_active);
 
     if (product.sale_price) {
       form.append("sale_price", product.sale_price);
     }
 
-    form.append("stock", product.stock);
-    form.append("category", product.category);
+    const sizesArray = product.sizes
+      ? product.sizes.split(",").map((s) => s.trim())
+      : [];
 
-    // FIX: convert comma text → JSON array
-    const sizesArray = product.sizes.split(",").map((s) => s.trim());
-    const colorsArray = product.colors.split(",").map((c) => c.trim());
+    const colorsArray = product.colors
+      ? product.colors.split(",").map((c) => c.trim())
+      : [];
 
     form.append("sizes", JSON.stringify(sizesArray));
     form.append("colors", JSON.stringify(colorsArray));
 
-    // Add new images only
-    for (let img of images) {
-      form.append("images", img);
-    }
+    // Add new images
+    images.forEach((img) => form.append("images", img));
 
     try {
       await updateAdminProduct(id, form);
@@ -83,8 +105,40 @@ const EditProduct = () => {
   };
 
   return (
-    <div>
-      <h3 className="mb-3">Edit Product</h3>
+    <div className="container py-4">
+      <h3 className="fw-bold mb-3">Edit Product</h3>
+
+      {/* Existing Images */}
+      {existingImages.length > 0 && (
+        <div className="mb-4">
+          <label className="fw-bold mb-2">Existing Images</label>
+
+          <div className="d-flex flex-wrap gap-3">
+            {existingImages.map((img) => (
+              <div key={img.id} className="position-relative">
+                <img
+                  src={img.image_url}
+                  alt="product"
+                  width="90"
+                  height="90"
+                  className="rounded border"
+                  style={{ objectFit: "cover" }}
+                />
+
+                <button
+                  type="button"
+                  className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                  style={{ padding: "2px 6px" }}
+                  onClick={() => removeExistingImage(img.id)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <ProductForm
         handleSubmit={handleSubmit}
         product={product}

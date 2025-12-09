@@ -27,26 +27,32 @@ const AdminLayout = () => {
           style={{ width: "240px" }}
         >
           <div className="list-group list-group-flush">
+
             <NavLink to="/admin/dashboard" className="list-group-item list-group-item-action">
               Dashboard
             </NavLink>
+
             <NavLink to="/admin/products" className="list-group-item list-group-item-action">
               Products
             </NavLink>
+
             <NavLink to="/admin/categories" className="list-group-item list-group-item-action">
               Categories
             </NavLink>
+
+            <NavLink to="/admin/coupons" className="list-group-item list-group-item-action">
+              Coupons
+            </NavLink>
+
             <NavLink to="/admin/orders" className="list-group-item list-group-item-action">
               Orders
             </NavLink>
-            <NavLink to="/admin/users" className="list-group-item list-group-item-action">
-              Users
-            </NavLink>
+
             <NavLink to="/admin/settings" className="list-group-item list-group-item-action">
               Settings
             </NavLink>
 
-            {/* LOGOUT HERE */}
+            {/* LOGOUT */}
             <button
               className="list-group-item list-group-item-action text-danger fw-bold"
               onClick={handleLogout}
@@ -91,6 +97,14 @@ const AdminLayout = () => {
                 onClick={() => setShowSidebar(false)}
               >
                 Categories
+              </NavLink>
+
+              <NavLink
+                to="/admin/coupons"
+                className="list-group-item list-group-item-action"
+                onClick={() => setShowSidebar(false)}
+              >
+                Coupons
               </NavLink>
 
               <NavLink

@@ -1,110 +1,136 @@
 import React, { useEffect, useState } from "react";
-import { fetchAdminOrderDetails, updateAdminOrder } from "../../api/admin";
+import {
+  fetchAdminOrderDetail,
+  adminUpdateOrder,
+} from "../../api/admin";
 import { useParams } from "react-router-dom";
-import OrderItemsTable from "../../components/Admin/OrderItemsTable";
 
-const AdminOrderDetails = () => {
+const OrderDetails = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const statuses = [
-    "PENDING",
-    "PROCESSING",
-    "PACKED",
-    "SHIPPED",
-    "OUT_FOR_DELIVERY",
-    "DELIVERED",
-    "CANCELLED",
-  ];
+  const loadOrder = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchAdminOrderDetail(id);
+      setOrder(data);
+    } catch (err) {
+      alert("Failed to load order");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     loadOrder();
   }, []);
 
-  const loadOrder = async () => {
-    const data = await fetchAdminOrderDetails(id);
-    setOrder(data);
+  const updateOrder = async (key, value) => {
+    try {
+      await adminUpdateOrder(id, { [key]: value });
+      alert("Order updated successfully");
+      loadOrder();
+    } catch (err) {
+      alert("Update failed");
+    }
   };
 
-  const updateStatus = async (field, value) => {
-    await updateAdminOrder(id, { [field]: value });
-    loadOrder();
-    alert("Updated successfully!");
-  };
-
-  if (!order) return <p className="text-center mt-5">Loading...</p>;
+  if (loading) return <p>Loading...</p>;
+  if (!order) return <p>Order not found</p>;
 
   return (
-    <div className="container py-3">
-      <h3>Order #{order.order_number}</h3>
+    <div>
+      <h3 className="fw-bold">Order Details</h3>
+      <hr />
 
-      <div className="row mt-3">
-        {/* Left side — Order details */}
-        <div className="col-md-6">
-          <div className="card p-3 shadow-sm mb-3">
-            <h5>Customer Info</h5>
-            <p><strong>Email:</strong> {order.user_email}</p>
-            <p><strong>Date:</strong> {new Date(order.created_at).toLocaleString()}</p>
-          </div>
+      {/* Order Info */}
+      <div className="card mb-4 shadow-sm">
+        <div className="card-body">
+          <h5 className="fw-bold">{order.order_number}</h5>
+          <p>
+            <b>User:</b> {order.user_email}
+          </p>
+          <p>
+            <b>Total Amount:</b> ₹{order.total_amount}
+          </p>
 
-          <div className="card p-3 shadow-sm">
-            <h5>Address</h5>
-            {order.address_details ? (
-              <>
-                <p>{order.address_details.name}</p>
-                <p>{order.address_details.phone}</p>
-                <p>{order.address_details.full_address}</p>
-                <p>{order.address_details.city}, {order.address_details.state}</p>
-              </>
-            ) : (
-              <p>No address available</p>
-            )}
-          </div>
-        </div>
-
-        {/* Right side — Status controls */}
-        <div className="col-md-6">
-          <div className="card p-3 shadow-sm">
-            <h5>Order Controls</h5>
-            
-            <label className="mt-2 fw-semibold">Order Status</label>
+          {/* STATUS SELECT */}
+          <div className="mb-3">
+            <label className="form-label fw-bold">
+              Update Order Status
+            </label>
             <select
               className="form-select"
               value={order.status}
-              onChange={(e) => updateStatus("status", e.target.value)}
+              onChange={(e) => updateOrder("status", e.target.value)}
             >
-              {statuses.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
+              <option value="PENDING">Pending</option>
+              <option value="SHIPPED">Shipped</option>
+              <option value="DELIVERED">Delivered</option>
+              <option value="CANCELLED">Cancelled</option>
             </select>
+          </div>
 
-            <label className="mt-3 fw-semibold">Payment Status</label>
+          {/* PAYMENT STATUS */}
+          <div className="mb-3">
+            <label className="form-label fw-bold">
+              Update Payment Status
+            </label>
             <select
               className="form-select"
               value={order.payment_status}
               onChange={(e) =>
-                updateStatus("payment_status", e.target.value)
+                updateOrder("payment_status", e.target.value)
               }
             >
               <option value="PAID">PAID</option>
-              <option value="COD">COD</option>
               <option value="PENDING">PENDING</option>
+              <option value="FAILED">FAILED</option>
+              <option value="COD">COD</option>
             </select>
-
-            <div className="mt-3">
-              <h5>Total Amount: ₹{order.total_amount}</h5>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Items table */}
-      <div className="card p-3 shadow-sm mt-4">
-        <h5>Order Items</h5>
-        <OrderItemsTable items={order.items} />
+      {/* ADDRESS */}
+      <div className="card mb-4 shadow-sm">
+        <div className="card-body">
+          <h5 className="fw-bold">Customer Address</h5>
+          <p>
+            <b>{order.address_details.name}</b>
+          </p>
+          <p>{order.address_details.phone}</p>
+          <p>
+            {order.address_details.full_address}, {order.address_details.city}
+          </p>
+          <p>
+            {order.address_details.state} - {order.address_details.pincode}
+          </p>
+        </div>
+      </div>
+
+      {/* ITEMS */}
+      <div className="card shadow-sm">
+        <div className="card-body">
+          <h5 className="fw-bold">Order Items</h5>
+          <hr />
+
+          {order.items.map((item, i) => (
+            <div key={i} className="mb-3 pb-3 border-bottom">
+              <p className="fw-bold">{item.product}</p>
+              <p>
+                Qty: <b>{item.quantity}</b>
+              </p>
+              <p>Price: ₹{item.price}</p>
+              <p>Size: {item.size}</p>
+              <p>Color: {item.color}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-export default AdminOrderDetails;
+export default OrderDetails;
