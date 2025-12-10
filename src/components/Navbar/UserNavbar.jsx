@@ -2,6 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useSelector } from "react-redux";
+// import brandLogo from "../../assets/images/logo.jpg";
+
+
+
+
 
 const UserNavbar = () => {
   const cartCount = useSelector((state) => state.cart?.items?.length || 0);

@@ -25,16 +25,14 @@ const Login = () => {
       className="d-flex justify-content-center align-items-center py-5"
       style={{ minHeight: "100vh", background: "#f8f8f8" }}
     >
-      <div
-        className="bg-white p-4 p-md-5 shadow rounded-4"
-        style={{ width: "100%", maxWidth: "430px", animation: "fadeIn .6s" }}
-      >
+      <div className="login-card bg-white p-4 p-md-5 shadow rounded-4">
+
         {/* BRAND TITLE */}
         <h2 className="text-center fw-bold mb-1" style={{ letterSpacing: "1px" }}>
           Welcome back to <span style={{ color: "#000" }}>LUVARA</span>
         </h2>
         <p className="text-center text-muted mb-4">
-          Login using your email to receive OTP 
+          Login using your email to receive OTP
         </p>
 
         {/* EMAIL INPUT */}
@@ -66,8 +64,34 @@ const Login = () => {
         </p>
       </div>
 
-      {/* FADE ANIMATION */}
+      {/* RESPONSIVE STYLES */}
       <style>{`
+        .login-card {
+          width: 100%;
+          max-width: 430px;
+          animation: fadeIn .6s;
+        }
+
+        /* Desktop box look */
+        @media (min-width: 768px) {
+          .login-card {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 20px;
+          }
+        }
+
+        /* Mobile full-width (no box) */
+        @media (max-width: 767px) {
+          .login-card {
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+        }
+
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }

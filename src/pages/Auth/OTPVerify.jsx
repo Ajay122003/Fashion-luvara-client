@@ -17,11 +17,9 @@ const OTPVerify = () => {
     if (!otp) return toast.error("Enter OTP");
 
     try {
-      // 1) Verify OTP → Get Tokens
       const res = await verifyOtpLogin({ email, otp });
       dispatch(setToken(res.data.tokens));
 
-      // 2) Fetch logged-in user details
       const me = await getMe();
       dispatch(setUser(me.data));
 
@@ -37,20 +35,18 @@ const OTPVerify = () => {
       className="d-flex justify-content-center align-items-center py-5"
       style={{ minHeight: "100vh", background: "#f8f8f8" }}
     >
-      <div
-        className="bg-white p-4 p-md-5 shadow rounded-4"
-        style={{ width: "100%", maxWidth: "430px", animation: "fadeIn .6s" }}
-      >
-        {/* BRANDING */}
+      <div className="otp-card bg-white p-4 p-md-5 shadow rounded-4">
+
+        {/* HEADING */}
         <h2 className="text-center fw-bold mb-1" style={{ letterSpacing: "1px" }}>
-          Verify your OTP
+          Verify OTP
         </h2>
         <p className="text-center text-muted mb-4">
-          OTP has been sent to <strong>{email}</strong>
+          We've sent a 6-digit OTP to <strong>{email}</strong>
         </p>
 
         {/* OTP INPUT */}
-        <label className="form-label fw-semibold">Enter 6-digit OTP</label>
+        <label className="form-label fw-semibold">Enter OTP</label>
         <input
           type="text"
           className="form-control mb-4 text-center fs-4 shadow-sm"
@@ -65,18 +61,44 @@ const OTPVerify = () => {
           onChange={(e) => setOTP(e.target.value)}
         />
 
-        {/* VERIFY BUTTON */}
+        {/* BUTTON */}
         <button
           className="btn btn-dark w-100 py-2 fw-semibold"
           style={{ borderRadius: "10px" }}
           onClick={verify}
         >
-          Verify OTP
+          Verify & Login
         </button>
       </div>
 
-      {/* SMOOTH ANIMATION */}
+      {/* RESPONSIVE STYLE */}
       <style>{`
+        .otp-card {
+          width: 100%;
+          max-width: 430px;
+          animation: fadeIn .6s;
+        }
+
+        /* Desktop look → Card with shadow */
+        @media (min-width: 768px) {
+          .otp-card {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 20px;
+          }
+        }
+
+        /* Mobile look → No box, no shadow */
+        @media (max-width: 767px) {
+          .otp-card {
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+        }
+
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }

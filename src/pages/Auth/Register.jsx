@@ -28,11 +28,11 @@ const Register = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center py-5"
-      style={{ minHeight: "100vh", background: "#f8f8f8" }}>
-      
-      <div className="bg-white p-4 p-md-5 shadow rounded-4"
-        style={{ width: "100%", maxWidth: "430px", animation: "fadeIn .6s" }}>
+    <div
+      className="d-flex justify-content-center align-items-center py-5"
+      style={{ minHeight: "100vh", background: "#f8f8f8" }}
+    >
+      <div className="register-card bg-white p-4 p-md-5 shadow rounded-4">
 
         {/* Brand Heading */}
         <h2 className="text-center fw-bold mb-1" style={{ letterSpacing: "1px" }}>
@@ -44,7 +44,6 @@ const Register = () => {
 
         {/* FORM */}
         <form onSubmit={handleSubmit}>
-
           <label className="form-label fw-semibold">Email Address</label>
           <input
             type="email"
@@ -77,7 +76,8 @@ const Register = () => {
 
           <button
             className="btn btn-dark w-100 py-2 fw-semibold"
-            style={{ borderRadius: "10px" }}>
+            style={{ borderRadius: "10px" }}
+          >
             Create Account
           </button>
         </form>
@@ -91,8 +91,31 @@ const Register = () => {
         </p>
       </div>
 
-      {/* Simple fade animation */}
+      {/* CSS for Responsive Box */}
       <style>{`
+        .register-card {
+          width: 100%;
+          animation: fadeIn .6s;
+        }
+
+        /* Desktop only box look */
+        @media (min-width: 768px) {
+          .register-card {
+            max-width: 430px;
+          }
+        }
+
+        /* Mobile view full width (no box feel) */
+        @media (max-width: 767px) {
+          .register-card {
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding-left: 20px;
+            padding-right: 20px;
+            background: transparent !important;
+          }
+        }
+
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
