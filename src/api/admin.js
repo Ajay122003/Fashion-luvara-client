@@ -18,6 +18,21 @@ export const adminLoginVerifyOTP = async (email, otp) => {
 
 
 /* -----------------------------------------------
+   user list
+------------------------------------------------ */
+
+export const fetchAdminUsers = async () => {
+  const res = await apiClient.get("/api/admin-panel/users/");
+  return res.data;
+};
+
+export const fetchAdminSubscriptions = async () => {
+  const res = await apiClient.get("/api/admin-panel/subscriptions/");
+  return res.data;
+};
+
+
+/* -----------------------------------------------
    DASHBOARD STATS
 ------------------------------------------------ */
 export const fetchAdminDashboardStats = async () => {
@@ -142,14 +157,8 @@ export const adminUpdateOrder = async (id, data) => {
   const res = await apiClient.put(`/api/admin-panel/orders/${id}/`, data);
   return res.data;
 };
-/* -----------------------------------------------
-   user list
------------------------------------------------- */
 
-export const fetchAdminUsers = async () => {
-  const res = await apiClient.get("/api/admin-panel/users/");
-  return res.data;
-};
+
 
 
 // ------------------ COUPONS ------------------

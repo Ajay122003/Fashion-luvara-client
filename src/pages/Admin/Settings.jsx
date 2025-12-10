@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  fetchSiteSettings,
-  updateSiteSettings,
-  adminUpdateEmail,
-  adminChangePassword,
-} from "../../api/admin";
+import { fetchSiteSettings, updateSiteSettings, adminUpdateEmail, adminChangePassword,} from "../../api/admin";
 
 const Settings = () => {
   // -------------------------

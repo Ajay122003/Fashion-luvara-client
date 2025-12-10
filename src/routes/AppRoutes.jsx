@@ -31,7 +31,7 @@ import OTPVerify from "../pages/Auth/OTPVerify";
 // Admin Pages
 import AdminLogin from "../pages/Admin/AdminLogin";
 import Dashboard from "../pages/Admin/Dashboard";
-
+import AdminUsersAndSubscribers from "../pages/Admin/AdminUsersAndSubscribers";
 import ManageProducts from "../pages/Admin/ManageProducts";
 import AddProduct from "../pages/Admin/AddProduct";
 import EditProduct from "../pages/Admin/EditProduct";
@@ -131,6 +131,10 @@ const AppRoutes = () => {
         <Route path="products" element={<ManageProducts />} />
         <Route path="products/add" element={<AddProduct />} />
         <Route path="products/:id/edit" element={<EditProduct />} />
+       
+
+        <Route path="users" element={<AdminUsersAndSubscribers />} />
+
 
         {/* Categories */}
         <Route path="categories" element={<ManageCategories />} />

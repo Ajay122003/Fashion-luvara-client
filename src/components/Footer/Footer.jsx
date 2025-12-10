@@ -1,8 +1,14 @@
+import SubscribeBox from "./SubscribeBox";
+
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-black text-center py-4 mt-8">
-      <p className="text-sm">© 2025 Luvara Fashion. All Rights Reserved.</p>
-    </footer>
+    <>
+      <SubscribeBox />
+
+      <footer className=" text-black text-center py-3">
+        © 2025 LUVARA. All Rights Reserved.
+      </footer>
+    </>
   );
 };
 

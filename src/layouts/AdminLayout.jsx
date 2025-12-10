@@ -47,7 +47,9 @@ const AdminLayout = () => {
             <NavLink to="/admin/orders" className="list-group-item list-group-item-action">
               Orders
             </NavLink>
-
+            <NavLink to="/admin/users" className="list-group-item list-group-item-action">
+            Users & Subscribers
+            </NavLink>
             <NavLink to="/admin/settings" className="list-group-item list-group-item-action">
               Settings
             </NavLink>
