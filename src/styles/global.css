@@ -1,9 +1,10 @@
 body {
   background-color: #f5f5f5;
+  font-family: "Poppins", sans-serif;
 }
 
 .admin-layout main {
   background-color: #fdfdfd;
   border-left: 1px solid #eee;
+  font-family: "Poppins", sans-serif; 
 }
-

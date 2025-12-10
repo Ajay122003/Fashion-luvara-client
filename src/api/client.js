@@ -1,17 +1,25 @@
 import axios from "axios";
-import { getAdminToken } from "../utils/storage";
+import storage from "../utils/storage"; // UNIVERSAL TOKEN STORAGE
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:8000", // change to your backend URL
+  baseURL: "http://localhost:8000",
   withCredentials: false,
 });
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getAdminToken();
+    // PRIORITY 1 → Admin token
+    let token = storage.getAdminToken();
+
+    // PRIORITY 2 → User token
+    if (!token) {
+      token = storage.getUserToken();
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)

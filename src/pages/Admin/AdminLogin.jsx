@@ -34,7 +34,7 @@ const AdminLogin = () => {
     <div className="d-flex align-items-center justify-content-center bg-light" style={{ minHeight: "100vh" }}>
       <div className="card shadow-sm" style={{ maxWidth: "420px", width: "100%" }}>
         <div className="card-body">
-          <h3 className="card-title text-center mb-3">Admin Panel Login</h3>
+          <h3 className="card-title text-center mb-3">Admin  Login</h3>
           <p className="text-muted text-center small mb-4">
             Secure access for Luvara Store admins
           </p>
