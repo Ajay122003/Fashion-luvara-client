@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { registerUser } from "../../api/auth";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -28,21 +28,76 @@ const Register = () => {
   };
 
   return (
-    <div className="container py-5" style={{ maxWidth: "450px" }}>
-      <h3 className="mb-4">Create Account</h3>
+    <div className="d-flex justify-content-center align-items-center py-5"
+      style={{ minHeight: "100vh", background: "#f8f8f8" }}>
+      
+      <div className="bg-white p-4 p-md-5 shadow rounded-4"
+        style={{ width: "100%", maxWidth: "430px", animation: "fadeIn .6s" }}>
 
-      <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="Email" className="form-control mb-3"
-          onChange={handleChange} />
+        {/* Brand Heading */}
+        <h2 className="text-center fw-bold mb-1" style={{ letterSpacing: "1px" }}>
+          Welcome to <span style={{ color: "#000" }}>LUVARA</span>
+        </h2>
+        <p className="text-center text-muted mb-4">
+          Create your Luvara account to start shopping in style 
+        </p>
 
-        <input type="text" name="username" placeholder="Username" className="form-control mb-3"
-          onChange={handleChange} />
+        {/* FORM */}
+        <form onSubmit={handleSubmit}>
 
-        <input type="password" name="password" placeholder="Password"
-          className="form-control mb-3" onChange={handleChange} />
+          <label className="form-label fw-semibold">Email Address</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            className="form-control mb-3 shadow-sm"
+            style={{ borderRadius: "10px" }}
+            onChange={handleChange}
+          />
 
-        <button className="btn btn-dark w-100">Register</button>
-      </form>
+          <label className="form-label fw-semibold">Username</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="Choose a username"
+            className="form-control mb-3 shadow-sm"
+            style={{ borderRadius: "10px" }}
+            onChange={handleChange}
+          />
+
+          <label className="form-label fw-semibold">Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Choose a strong password"
+            className="form-control mb-4 shadow-sm"
+            style={{ borderRadius: "10px" }}
+            onChange={handleChange}
+          />
+
+          <button
+            className="btn btn-dark w-100 py-2 fw-semibold"
+            style={{ borderRadius: "10px" }}>
+            Create Account
+          </button>
+        </form>
+
+        {/* Already have account */}
+        <p className="text-center mt-3 mb-0">
+          Already have an account?{" "}
+          <Link to="/login" className="text-decoration-none fw-semibold">
+            Login
+          </Link>
+        </p>
+      </div>
+
+      {/* Simple fade animation */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };
