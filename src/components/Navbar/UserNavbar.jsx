@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -12,33 +12,43 @@ const UserNavbar = () => {
   const user = useSelector((state) => state.auth?.user || null);
 
   const [showSearch, setShowSearch] = useState(false);
-  const [mobileCatOpen, setMobileCatOpen] = useState(false);
+  const [mobileCatOpen, setMobileCatOpen] = useState(false); // toggles on mobile tap
+  const [hoverOpen, setHoverOpen] = useState(false); // toggles on hover-capable devices
 
-  // ⭐ Detect mobile width (<992px)
-  const [isMobileWidth, setIsMobileWidth] = useState(window.innerWidth < 992);
+  // Detect if device supports hover (pointer) — used to enable hover behavior only where it makes sense
+  const hoverSupported = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobileWidth(window.innerWidth < 992);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
+  // Robust close for offcanvas WITHOUT relying on global `bootstrap`
   const closeMenu = () => {
     const menu = document.getElementById("mobileMenu");
     if (!menu) return;
 
-    const bsOffcanvas = bootstrap.Offcanvas.getInstance(menu);
-    if (bsOffcanvas) bsOffcanvas.hide();
+    // remove show state
+    menu.classList.remove("show");
+    menu.style.visibility = "hidden";
+    menu.setAttribute("aria-hidden", "true");
+    menu.style.transform = "translateX(-100%)";
 
+    // remove any leftover backdrop
     const backdrop = document.querySelector(".offcanvas-backdrop");
     if (backdrop) backdrop.remove();
+
+    // reset body classes that bootstrap normally toggles
+    document.body.classList.remove("offcanvas-open");
+    document.body.classList.remove("modal-open");
+    document.body.style.overflow = "";
+  };
+
+  // When user clicks a category in the offcanvas, close it
+  const handleCategoryClick = () => {
+    closeMenu();
+    setMobileCatOpen(false);
+    setHoverOpen(false);
   };
 
   return (
     <>
-      {/* 🔍 SEARCH BAR */}
+      {/* SEARCH BAR */}
       <div
         className="position-fixed top-0 start-0 w-100 bg-white shadow-sm p-3"
         style={{
@@ -70,6 +80,7 @@ const UserNavbar = () => {
             className="btn d-lg-none"
             data-bs-toggle="offcanvas"
             data-bs-target="#mobileMenu"
+            aria-controls="mobileMenu"
           >
             <HiMenu size={25} />
           </button>
@@ -122,35 +133,25 @@ const UserNavbar = () => {
                 <Link to="/new" className="nav-link">New</Link>
               </li>
 
-              {/* ⭐ UPDATED CATEGORY DROPDOWN */}
+              {/* CATEGORY DROPDOWN DESKTOP: also responds to hoverSupported */}
               <li
                 className="nav-item dropdown"
-                onMouseEnter={(e) => {
-                  if (!isMobileWidth) {
-                    const menu = e.currentTarget.querySelector(".dropdown-menu");
-                    menu.style.display = "block";
-                    menu.style.opacity = 1;
-                    menu.style.transform = "translateY(0)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isMobileWidth) {
-                    const menu = e.currentTarget.querySelector(".dropdown-menu");
-                    menu.style.display = "none";
-                    menu.style.opacity = 0;
-                    menu.style.transform = "translateY(10px)";
-                  }
-                }}
+                onMouseEnter={() => hoverSupported && setHoverOpen(true)}
+                onMouseLeave={() => hoverSupported && setHoverOpen(false)}
               >
                 <span
                   className="nav-link dropdown-toggle"
-                  data-bs-toggle={isMobileWidth ? "dropdown" : ""}
+                  data-bs-toggle="dropdown"
                   style={{ cursor: "pointer" }}
+                  aria-expanded={hoverOpen}
                 >
                   Shop by category
                 </span>
 
-                <ul className="dropdown-menu fade">
+                <ul
+                  className={`dropdown-menu fade${hoverOpen ? " show" : ""}`}
+                  style={{ display: hoverOpen ? "block" : undefined }}
+                >
                   {categories.map((cat) => (
                     <li key={cat.id}>
                       <Link className="dropdown-item" to={`/categories/${cat.slug}`}>
@@ -168,13 +169,10 @@ const UserNavbar = () => {
 
             {/* RIGHT ICONS DESKTOP */}
             <div className="d-none d-lg-flex align-items-center gap-4 ms-auto fs-5">
-
               <i className="bi bi-search" role="button" onClick={() => setShowSearch(true)}></i>
 
               {user ? (
-                <Link to="/profile" className="text-dark">
-                  <i className="bi bi-person"></i>
-                </Link>
+                <Link to="/profile" className="text-dark"><i className="bi bi-person"></i></Link>
               ) : (
                 <>
                   <Link to="/register" className="small text-dark text-decoration-none ms-2">Sign up</Link>
@@ -205,9 +203,9 @@ const UserNavbar = () => {
       </nav>
 
       {/* MOBILE OFFCANVAS MENU */}
-      <div className="offcanvas offcanvas-start" id="mobileMenu">
+      <div className="offcanvas offcanvas-start" id="mobileMenu" aria-labelledby="mobileMenuLabel">
         <div className="offcanvas-header">
-          <button className="btn" data-bs-dismiss="offcanvas">
+          <button className="btn" data-bs-dismiss="offcanvas" aria-label="Close" onClick={closeMenu}>
             <i className="bi bi-x-lg fs-3"></i>
           </button>
           <img src={brandLogo2} height="45" alt="logo" />
@@ -217,12 +215,15 @@ const UserNavbar = () => {
           <Link className="d-block py-2" to="/" onClick={closeMenu}>Home</Link>
           <Link className="d-block py-2" to="/new" onClick={closeMenu}>New</Link>
 
-          {/* ⭐ MOBILE CATEGORY DROPDOWN */}
+          {/* MOBILE CATEGORY EXPANDER (tap on mobile, hover on hover-capable) */}
           <div className="mt-2">
             <div
               className="d-flex justify-content-between align-items-center py-2 fw-semibold"
               style={{ cursor: "pointer" }}
-              onClick={() => setMobileCatOpen(!mobileCatOpen)}
+              // For hover-capable devices, open on hover too
+              onClick={() => setMobileCatOpen((s) => !s)}
+              onMouseEnter={() => hoverSupported && setMobileCatOpen(true)}
+              onMouseLeave={() => hoverSupported && setMobileCatOpen(false)}
             >
               <span>Shop by category</span>
               <i className={`bi ${mobileCatOpen ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
@@ -241,7 +242,7 @@ const UserNavbar = () => {
                   key={cat.id}
                   className="d-block py-2 small"
                   to={`/categories/${cat.slug}`}
-                  onClick={closeMenu}
+                  onClick={handleCategoryClick}
                 >
                   {cat.name}
                 </Link>
@@ -267,14 +268,11 @@ const UserNavbar = () => {
         </div>
       </div>
 
-      {/* Smooth Dropdown Animation */}
+      {/* Extra styles for smooth behaviours */}
       <style>{`
-        .dropdown-menu {
-          opacity: 0;
-          transform: translateY(10px);
-          transition: all 0.25s ease;
-          display: none;
-        }
+        /* Desktop dropdown smoothness (still works with our hover state) */
+        .dropdown-menu.fade { transition: transform .18s ease, opacity .18s ease; }
+        .offcanvas { transition: transform .25s ease, visibility .25s; }
       `}</style>
     </>
   );
