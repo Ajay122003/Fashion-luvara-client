@@ -10,8 +10,14 @@ import AdminRoute from "../components/Protected/AdminRoute";
 
 // User Pages
 import Home from "../pages/User/Home";
-import Categories from "../pages/User/Categories";                 // ✅ ADDED
-import CategoryProducts from "../pages/User/CategoryProducts";     // ✅ ADDED
+
+// Category Pages
+import Categories from "../pages/User/Categories";
+import CategoryProducts from "../pages/User/CategoryProducts";
+
+// Collection Pages 
+import Collections from "../pages/User/Collections";
+import CollectionProducts from "../pages/User/CollectionProducts";
 
 // Auth Pages
 import Login from "../pages/Auth/Login";
@@ -22,6 +28,7 @@ import OTPVerify from "../pages/Auth/OTPVerify";
 import AdminLogin from "../pages/Admin/AdminLogin";
 import Dashboard from "../pages/Admin/Dashboard";
 import AdminUsersAndSubscribers from "../pages/Admin/AdminUsersAndSubscribers";
+
 import ManageProducts from "../pages/Admin/ManageProducts";
 import AddProduct from "../pages/Admin/AddProduct";
 import EditProduct from "../pages/Admin/EditProduct";
@@ -39,6 +46,11 @@ import EditCoupon from "../pages/Admin/EditCoupon";
 
 import Settings from "../pages/Admin/Settings";
 
+// ADMIN COLLECTION PAGES
+import ManageCollection from "../pages/Admin/ManageCollection";
+import AddCollection from "../pages/Admin/AddCollection";
+import EditCollection from "../pages/Admin/EditCollection";
+
 
 const AppRoutes = () => {
   return (
@@ -48,10 +60,13 @@ const AppRoutes = () => {
       <Route path="/" element={<UserLayout />}>
         <Route index element={<Home />} />
 
-        {/* CATEGORY ROUTES */}
-        <Route path="categories" element={<Categories />} />                     
-        <Route path="categories/:slug" element={<CategoryProducts />} />         
+        {/* Category Routes */}
+        <Route path="categories" element={<Categories />} />
+        <Route path="categories/:slug" element={<CategoryProducts />} />
 
+        {/* Collection Routes */}
+        <Route path="collections" element={<Collections />} />
+        <Route path="collections/:slug" element={<CollectionProducts />} />
       </Route>
 
       {/* =========================== AUTH ROUTES ============================ */}
@@ -79,13 +94,18 @@ const AppRoutes = () => {
         <Route path="products/add" element={<AddProduct />} />
         <Route path="products/:id/edit" element={<EditProduct />} />
 
-        {/* Users & Subscriptions */}
+        {/* Users */}
         <Route path="users" element={<AdminUsersAndSubscribers />} />
 
         {/* Categories */}
         <Route path="categories" element={<ManageCategories />} />
         <Route path="categories/add" element={<AddCategory />} />
         <Route path="categories/:id/edit" element={<EditCategory />} />
+
+        {/* Collections */}
+        <Route path="collections" element={<ManageCollection />} />
+        <Route path="collections/add" element={<AddCollection />} />
+        <Route path="collections/:id/edit" element={<EditCollection />} />
 
         {/* Orders */}
         <Route path="orders" element={<AdminOrders />} />
@@ -102,9 +122,9 @@ const AppRoutes = () => {
 
       {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />
-
     </Routes>
   );
 };
 
 export default AppRoutes;
+

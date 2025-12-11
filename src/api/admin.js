@@ -110,6 +110,47 @@ export const deleteAdminCategory = async (id) => {
   return res.data;
 };
 
+
+
+
+/* -----------------------------------------------
+   COLLECTIONS CRUD (ADMIN)
+------------------------------------------------ */
+
+// Get all collections
+export const fetchAdminCollections = async () => {
+  const res = await apiClient.get("/api/admin-panel/collections/");
+  return res.data;
+};
+
+// Get a single collection
+export const fetchSingleAdminCollection = async (id) => {
+  const res = await apiClient.get(`/api/admin-panel/collections/${id}/`);
+  return res.data;
+};
+
+// Create a collection
+export const createAdminCollection = async (formData) => {
+  const res = await apiClient.post("/api/admin-panel/collections/", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};
+
+// Update a collection
+export const updateAdminCollection = async (id, formData) => {
+  const res = await apiClient.put(`/api/admin-panel/collections/${id}/`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};
+
+// Delete a collection
+export const deleteAdminCollection = async (id) => {
+  const res = await apiClient.delete(`/api/admin-panel/collections/${id}/`);
+  return res.data;
+};
+
 /* -----------------------------------------------
    SITE SETTINGS (COD / RETURN / CANCEL)
 ------------------------------------------------ */

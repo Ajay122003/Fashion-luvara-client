@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   fetchAdminCategories,
+  fetchAdminCollections,
   updateAdminProduct,
   deleteProductImage,
 } from "../../api/admin";
@@ -21,12 +22,14 @@ const EditProduct = () => {
     sizes: "",
     colors: "",
     category: "",
+    collections: [], // ✅ NEW
     is_active: true,
   });
 
   const [categories, setCategories] = useState([]);
-  const [existingImages, setExistingImages] = useState([]); // old images
-  const [images, setImages] = useState([]); // new images
+  const [collections, setCollections] = useState([]); // ✅ NEW
+  const [existingImages, setExistingImages] = useState([]); 
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -36,19 +39,27 @@ const EditProduct = () => {
     try {
       const prod = await apiClient.get(`/api/admin-panel/products/${id}/`);
       const cats = await fetchAdminCategories();
+      const cols = await fetchAdminCollections();
 
       setCategories(cats);
+      setCollections(cols);
 
       setProduct({
-        ...prod.data,
+        name: prod.data.name,
+        description: prod.data.description,
+        price: prod.data.price,
+        sale_price: prod.data.sale_price || "",
+        stock: prod.data.stock,
         sizes: prod.data.sizes?.join(", ") || "",
         colors: prod.data.colors?.join(", ") || "",
         category: prod.data.category,
+        collections: prod.data.collections || [], // 👈 PRE SELECT COLLECTIONS
         is_active: prod.data.is_active,
       });
 
       setExistingImages(prod.data.images || []);
     } catch (err) {
+      console.log(err);
       alert("Failed to load product");
     }
   };
@@ -80,6 +91,7 @@ const EditProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
+    // Convert sizes/colors
     const sizesArray = product.sizes
       ? product.sizes.split(",").map((s) => s.trim())
       : [];
@@ -91,7 +103,12 @@ const EditProduct = () => {
     form.append("sizes", JSON.stringify(sizesArray));
     form.append("colors", JSON.stringify(colorsArray));
 
-    // Add new images
+    // ✅ ADD COLLECTIONS (M2M)
+    product.collections.forEach((id) => {
+      form.append("collections", id);
+    });
+
+    // New images
     images.forEach((img) => form.append("images", img));
 
     try {
@@ -108,17 +125,15 @@ const EditProduct = () => {
     <div className="container py-4">
       <h3 className="fw-bold mb-3">Edit Product</h3>
 
-      {/* Existing Images */}
+      {/* EXISTING IMAGES */}
       {existingImages.length > 0 && (
         <div className="mb-4">
-          <label className="fw-bold mb-2">Existing Images</label>
-
-          <div className="d-flex flex-wrap gap-3">
+          <label className="fw-bold">Existing Images</label>
+          <div className="d-flex flex-wrap gap-3 mt-2">
             {existingImages.map((img) => (
               <div key={img.id} className="position-relative">
                 <img
                   src={img.image_url}
-                  alt="product"
                   width="90"
                   height="90"
                   className="rounded border"
@@ -146,6 +161,7 @@ const EditProduct = () => {
         images={images}
         setImages={setImages}
         categories={categories}
+        collections={collections}  // 
         buttonText="Update Product"
       />
     </div>

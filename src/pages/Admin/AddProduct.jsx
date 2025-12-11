@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { createAdminProduct, fetchAdminCategories } from "../../api/admin";
+import {
+  createAdminProduct,
+  fetchAdminCategories,
+  fetchAdminCollections,
+} from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
 
@@ -15,22 +19,27 @@ const AddProduct = () => {
     sizes: "",
     colors: "",
     category: "",
+    collections: [],   // ✅ NEW FIELD
     is_active: true,
   });
 
   const [categories, setCategories] = useState([]);
+  const [collections, setCollections] = useState([]);  // ✅ NEW
   const [images, setImages] = useState([]);
 
   useEffect(() => {
-    loadCategories();
+    loadInitialData();
   }, []);
 
-  const loadCategories = async () => {
+  const loadInitialData = async () => {
     try {
-      const data = await fetchAdminCategories();
-      setCategories(data);
+      const catData = await fetchAdminCategories();
+      const colData = await fetchAdminCollections();
+
+      setCategories(catData);
+      setCollections(colData); // 👈 Load collections
     } catch (err) {
-      alert("Failed to load categories");
+      alert("Failed to load categories/collections");
     }
   };
 
@@ -39,7 +48,7 @@ const AddProduct = () => {
 
     const form = new FormData();
 
-    // Basic fields
+    // Basic Fields
     form.append("name", product.name);
     form.append("description", product.description);
     form.append("price", product.price);
@@ -47,12 +56,10 @@ const AddProduct = () => {
     form.append("category", product.category);
     form.append("is_active", product.is_active);
 
-    // Optional sale_price
-    if (product.sale_price) {
-      form.append("sale_price", product.sale_price);
-    }
+    // Optional Sale Price
+    if (product.sale_price) form.append("sale_price", product.sale_price);
 
-    // Convert comma text → array
+    // Convert sizes & colors
     const sizesArray = product.sizes
       ? product.sizes.split(",").map((s) => s.trim())
       : [];
@@ -64,10 +71,13 @@ const AddProduct = () => {
     form.append("sizes", JSON.stringify(sizesArray));
     form.append("colors", JSON.stringify(colorsArray));
 
-    // Add images
-    images.forEach((img) => {
-      form.append("images", img);
+    // ✅ Add collections (M2M)
+    product.collections.forEach((id) => {
+      form.append("collections", id);
     });
+
+    // Images
+    images.forEach((img) => form.append("images", img));
 
     try {
       await createAdminProduct(form);
@@ -90,6 +100,7 @@ const AddProduct = () => {
         images={images}
         setImages={setImages}
         categories={categories}
+        collections={collections}   // ✅ SEND TO FORM
         buttonText="Add Product"
       />
     </div>
@@ -97,4 +108,3 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
-

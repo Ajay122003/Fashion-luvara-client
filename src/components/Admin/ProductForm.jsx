@@ -7,6 +7,7 @@ const ProductForm = ({
   images,
   setImages,
   categories = [],
+  collections = [], // NEW
   buttonText,
 }) => {
   
@@ -52,7 +53,7 @@ const ProductForm = ({
         ></textarea>
       </div>
 
-      {/* PRICE + SALE PRICE */}
+      {/* PRICE */}
       <div className="row">
         <div className="col-md-6 mb-3">
           <label className="form-label fw-bold">Price</label>
@@ -97,9 +98,11 @@ const ProductForm = ({
           <input
             type="text"
             className="form-control"
-            placeholder="S, M, L, XL"
+            placeholder="S, M, L"
             value={product.sizes}
-            onChange={(e) => setProduct({ ...product, sizes: e.target.value })}
+            onChange={(e) =>
+              setProduct({ ...product, sizes: e.target.value })
+            }
           />
         </div>
 
@@ -127,6 +130,7 @@ const ProductForm = ({
           onChange={(e) => setProduct({ ...product, category: e.target.value })}
         >
           <option value="">Select Category</option>
+
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
@@ -135,7 +139,35 @@ const ProductForm = ({
         </select>
       </div>
 
-      {/* ACTIVE / INACTIVE */}
+      {/* COLLECTIONS MULTI SELECT */}
+      <div className="mb-3">
+        <label className="form-label fw-bold">Collections</label>
+
+        <select
+          className="form-select"
+          multiple
+          value={product.collections}
+          onChange={(e) => {
+            const selected = Array.from(
+              e.target.selectedOptions,
+              (opt) => opt.value
+            );
+            setProduct({ ...product, collections: selected });
+          }}
+        >
+          {collections.map((col) => (
+            <option key={col.id} value={col.id}>
+              {col.name}
+            </option>
+          ))}
+        </select>
+
+        <small className="text-muted">
+          Hold CTRL (Windows) or CMD (Mac) to select multiple
+        </small>
+      </div>
+
+      {/* ACTIVE | INACTIVE */}
       <div className="mb-3 form-check">
         <input
           type="checkbox"
@@ -148,7 +180,7 @@ const ProductForm = ({
         <label className="form-check-label">Active Product</label>
       </div>
 
-      {/* IMAGE UPLOAD */}
+      {/* IMAGES */}
       <div className="mb-3">
         <label className="form-label fw-bold">Upload Product Images</label>
         <input
@@ -160,7 +192,7 @@ const ProductForm = ({
         />
       </div>
 
-      {/* IMAGE PREVIEW */}
+      {/* PREVIEW */}
       {images.length > 0 && (
         <div className="mb-3">
           <label className="fw-bold mb-2">Preview</label>
@@ -172,13 +204,12 @@ const ProductForm = ({
                   alt="preview"
                   width="90"
                   height="90"
-                  className="border rounded"
                   style={{ objectFit: "cover" }}
+                  className="border rounded"
                 />
                 <button
                   type="button"
                   className="btn btn-sm btn-danger position-absolute top-0 end-0"
-                  style={{ padding: "2px 6px" }}
                   onClick={() => removeNewImage(i)}
                 >
                   ×

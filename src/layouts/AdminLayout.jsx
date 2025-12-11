@@ -39,6 +39,9 @@ const AdminLayout = () => {
             <NavLink to="/admin/categories" className="list-group-item list-group-item-action">
               Categories
             </NavLink>
+             <NavLink to="/admin/collections" className="list-group-item list-group-item-action">
+              Collections
+            </NavLink>
 
             <NavLink to="/admin/coupons" className="list-group-item list-group-item-action">
               Coupons
