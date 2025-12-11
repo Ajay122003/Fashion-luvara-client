@@ -43,6 +43,7 @@ const Dashboard = () => {
         <DashboardCard title="Today's Revenue" value={`₹${stats.todays_revenue}`} color="info" />
         <DashboardCard title="Pending Orders" value={stats.pending_orders} color="secondary" />
         <DashboardCard title="Delivered Orders" value={stats.delivered_orders} color="success" />
+        <DashboardCard title="Subscribers" value={stats.total_subscribers} color="primary" />
       </div>
 
       {/* BEST SELLERS */}
