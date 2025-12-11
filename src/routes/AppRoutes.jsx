@@ -6,27 +6,17 @@ import UserLayout from "../layouts/UserLayout";
 import AdminLayout from "../layouts/AdminLayout";
 
 // Protected Routes
-// import PrivateRoute from "../components/Protected/PrivateRoute";
 import AdminRoute from "../components/Protected/AdminRoute";
 
 // User Pages
 import Home from "../pages/User/Home";
-// import Categories from "../pages/User/Categories";
-// import ProductDetails from "../pages/User/ProductDetails";
-// import Cart from "../pages/User/Cart";
-// import Wishlist from "../pages/User/Wishlist";
-// import Checkout from "../pages/User/Checkout";
-// import Orders from "../pages/User/Orders";
-// import OrderDetails from "../pages/User/OrderDetails";
+import Categories from "../pages/User/Categories";                 // ✅ ADDED
+import CategoryProducts from "../pages/User/CategoryProducts";     // ✅ ADDED
 
 // Auth Pages
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import OTPVerify from "../pages/Auth/OTPVerify";
-
-// Payment Pages
-// import RazorpaySuccess from "../pages/Payment/RazorpaySuccess";
-// import RazorpayFailed from "../pages/Payment/RazorpayFailed";
 
 // Admin Pages
 import AdminLogin from "../pages/Admin/AdminLogin";
@@ -54,68 +44,25 @@ const AppRoutes = () => {
   return (
     <Routes>
 
-      {/* ===========================
-              USER PUBLIC ROUTES
-      ============================ */}
+      {/* =========================== USER PUBLIC ROUTES ============================ */}
       <Route path="/" element={<UserLayout />}>
         <Route index element={<Home />} />
-        {/* <Route path="categories" element={<Categories />} />
-        <Route path="product/:id" element={<ProductDetails />} /> */}
 
-        {/* Cart & Wishlist */}
-        {/* <Route path="cart" element={<Cart />} />
-        <Route path="wishlist" element={<Wishlist />} /> */}
+        {/* CATEGORY ROUTES */}
+        <Route path="categories" element={<Categories />} />                     
+        <Route path="categories/:slug" element={<CategoryProducts />} />         
 
-        {/* Protected User Routes */}
-        {/* <Route
-          path="checkout"
-          element={
-            <PrivateRoute>
-              <Checkout />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="orders"
-          element={
-            <PrivateRoute>
-              <Orders />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="orders/:id"
-          element={
-            <PrivateRoute>
-              <OrderDetails />
-            </PrivateRoute>
-          }
-        /> */}
       </Route>
 
-      {/* ===========================
-              AUTH ROUTES
-      ============================ */}
+      {/* =========================== AUTH ROUTES ============================ */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<OTPVerify />} />
 
-      {/* ===========================
-              PAYMENT ROUTES
-      ============================ */}
-      {/* <Route path="/payment/success" element={<RazorpaySuccess />} />
-      <Route path="/payment/failed" element={<RazorpayFailed />} /> */}
-
-      {/* ===========================
-              ADMIN AUTH
-      ============================ */}
+      {/* =========================== ADMIN LOGIN ============================ */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
-      {/* ===========================
-          ADMIN PROTECTED ROUTES
-      ============================ */}
+      {/* =========================== ADMIN PROTECTED ROUTES ============================ */}
       <Route
         path="/admin"
         element={
@@ -131,10 +78,9 @@ const AppRoutes = () => {
         <Route path="products" element={<ManageProducts />} />
         <Route path="products/add" element={<AddProduct />} />
         <Route path="products/:id/edit" element={<EditProduct />} />
-       
 
+        {/* Users & Subscriptions */}
         <Route path="users" element={<AdminUsersAndSubscribers />} />
-
 
         {/* Categories */}
         <Route path="categories" element={<ManageCategories />} />
@@ -154,7 +100,7 @@ const AppRoutes = () => {
         <Route path="settings" element={<Settings />} />
       </Route>
 
-      {/* DEFAULT FALLBACK */}
+      {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />
 
     </Routes>
