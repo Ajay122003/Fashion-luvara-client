@@ -2,13 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useSelector } from "react-redux";
-
-// Logos
 import brandLogo from "../../assets/images/logo.png";
 import brandLogo2 from "../../assets/images/logo2.png";
-
-// Bootstrap JS (Must be imported once)
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const UserNavbar = () => {
   const cartCount = useSelector((state) => state.cart?.items?.length || 0);
@@ -17,32 +12,43 @@ const UserNavbar = () => {
   const user = useSelector((state) => state.auth?.user || null);
 
   const [showSearch, setShowSearch] = useState(false);
-  const [mobileCatOpen, setMobileCatOpen] = useState(false);
-  const [hoverOpen, setHoverOpen] = useState(false);
+  const [mobileCatOpen, setMobileCatOpen] = useState(false); // toggles on mobile tap
+  const [hoverOpen, setHoverOpen] = useState(false); // toggles on hover-capable devices
 
-  // Detect hover devices
-  const hoverSupported =
-    typeof window !== "undefined" &&
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  // Detect if device supports hover (pointer) — used to enable hover behavior only where it makes sense
+  const hoverSupported = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  // ⭐ BEST: Close offcanvas using Bootstrap API (NO WARNINGS)
+  // Robust close for offcanvas WITHOUT relying on global `bootstrap`
   const closeMenu = () => {
     const menu = document.getElementById("mobileMenu");
     if (!menu) return;
 
-    const offcanvas = bootstrap.Offcanvas.getInstance(menu) || new bootstrap.Offcanvas(menu);
-    offcanvas.hide();
+    // remove show state
+    menu.classList.remove("show");
+    menu.style.visibility = "hidden";
+    menu.setAttribute("aria-hidden", "true");
+    menu.style.transform = "translateX(-100%)";
 
-    setMobileCatOpen(false);
+    // remove any leftover backdrop
+    const backdrop = document.querySelector(".offcanvas-backdrop");
+    if (backdrop) backdrop.remove();
+
+    // reset body classes that bootstrap normally toggles
+    document.body.classList.remove("offcanvas-open");
+    document.body.classList.remove("modal-open");
+    document.body.style.overflow = "";
   };
 
+  // When user clicks a category in the offcanvas, close it
   const handleCategoryClick = () => {
     closeMenu();
+    setMobileCatOpen(false);
+    setHoverOpen(false);
   };
 
   return (
     <>
-      {/* ================= SEARCH BAR ================= */}
+      {/* SEARCH BAR */}
       <div
         className="position-fixed top-0 start-0 w-100 bg-white shadow-sm p-3"
         style={{
@@ -52,7 +58,11 @@ const UserNavbar = () => {
         }}
       >
         <div className="d-flex align-items-center gap-3">
-          <i className="bi bi-x-lg fs-4" role="button" onClick={() => setShowSearch(false)}></i>
+          <i
+            className="bi bi-x-lg fs-4"
+            role="button"
+            onClick={() => setShowSearch(false)}
+          ></i>
 
           <input
             type="text"
@@ -62,22 +72,31 @@ const UserNavbar = () => {
         </div>
       </div>
 
-      {/* ================= NAVBAR ================= */}
+      {/* NAVBAR */}
       <nav className="navbar navbar-expand-lg bg-white py-3 shadow-sm sticky-top">
         <div className="container-fluid">
-          {/* Mobile Menu Btn */}
-          <button className="btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+          {/* MOBILE MENU BUTTON */}
+          <button
+            className="btn d-lg-none"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileMenu"
+            aria-controls="mobileMenu"
+          >
             <HiMenu size={25} />
           </button>
 
-          {/* Mobile Logo */}
+          {/* MOBILE LOGO */}
           <div className="mx-auto d-lg-none">
             <img src={brandLogo2} height="40" width="145" alt="logo" />
           </div>
 
-          {/* Mobile Right Icons */}
+          {/* MOBILE RIGHT ICONS */}
           <div className="d-lg-none d-flex align-items-center gap-3 ms-auto">
-            <i className="bi bi-search fs-5" role="button" onClick={() => setShowSearch(true)}></i>
+            <i
+              className="bi bi-search fs-5"
+              role="button"
+              onClick={() => setShowSearch(true)}
+            ></i>
 
             <Link to="/wishlist" className="text-dark position-relative fs-5">
               <i className="bi bi-heart"></i>
@@ -98,38 +117,41 @@ const UserNavbar = () => {
             </Link>
           </div>
 
-          {/* =============== DESKTOP NAV CONTENT =============== */}
+          {/* DESKTOP NAV CONTENT */}
           <div className="collapse navbar-collapse">
-            {/* Logo */}
             <div className="d-none d-lg-block me-4">
               <img src={brandLogo} height="85" width="100" alt="logo" />
             </div>
 
-            {/* Left Menu */}
+            {/* LEFT MENU */}
             <ul className="navbar-nav gap-4 fw-normal small">
               <li className="nav-item">
-                <Link to="/" className="nav-link">
-                  Home
-                </Link>
+                <Link to="/" className="nav-link">Home</Link>
               </li>
 
               <li className="nav-item">
-                <Link to="/new" className="nav-link">
-                  New
-                </Link>
+                <Link to="/new" className="nav-link">New</Link>
               </li>
 
-              {/* Category Dropdown Desktop */}
+              {/* CATEGORY DROPDOWN DESKTOP: also responds to hoverSupported */}
               <li
                 className="nav-item dropdown"
                 onMouseEnter={() => hoverSupported && setHoverOpen(true)}
                 onMouseLeave={() => hoverSupported && setHoverOpen(false)}
               >
-                <span className="nav-link dropdown-toggle" style={{ cursor: "pointer" }}>
+                <span
+                  className="nav-link dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  style={{ cursor: "pointer" }}
+                  aria-expanded={hoverOpen}
+                >
                   Shop by category
                 </span>
 
-                <ul className={`dropdown-menu fade ${hoverOpen ? "show" : ""}`}>
+                <ul
+                  className={`dropdown-menu fade${hoverOpen ? " show" : ""}`}
+                  style={{ display: hoverOpen ? "block" : undefined }}
+                >
                   {categories.map((cat) => (
                     <li key={cat.id}>
                       <Link className="dropdown-item" to={`/categories/${cat.slug}`}>
@@ -141,74 +163,72 @@ const UserNavbar = () => {
               </li>
 
               <li className="nav-item">
-                <Link to="/about" className="nav-link">
-                  About us
-                </Link>
+                <Link to="/about" className="nav-link">About us</Link>
               </li>
             </ul>
 
-            {/* Right Menu Desktop */}
+            {/* RIGHT ICONS DESKTOP */}
             <div className="d-none d-lg-flex align-items-center gap-4 ms-auto fs-5">
               <i className="bi bi-search" role="button" onClick={() => setShowSearch(true)}></i>
 
               {user ? (
-                <Link to="/profile" className="text-dark">
-                  <i className="bi bi-person"></i>
-                </Link>
+                <Link to="/profile" className="text-dark"><i className="bi bi-person"></i></Link>
               ) : (
                 <>
-                  <Link to="/register" className="small text-dark text-decoration-none">
-                    Sign up
-                  </Link>
-                  <Link to="/login" className="small text-dark text-decoration-none">
-                    Sign in
-                  </Link>
+                  <Link to="/register" className="small text-dark text-decoration-none ms-2">Sign up</Link>
+                  <Link to="/login" className="small text-dark text-decoration-none">Sign in</Link>
                 </>
               )}
 
               <Link to="/wishlist" className="text-dark position-relative">
                 <i className="bi bi-heart"></i>
-                {wishlistCount > 0 && <span className="badge bg-dark">{wishlistCount}</span>}
+                {wishlistCount > 0 && (
+                  <span className="badge bg-dark text-white rounded-pill position-absolute top-0 start-100 translate-middle">
+                    {wishlistCount}
+                  </span>
+                )}
               </Link>
 
               <Link to="/cart" className="text-dark position-relative">
                 <i className="bi bi-bag"></i>
-                {cartCount > 0 && <span className="badge bg-dark">{cartCount}</span>}
+                {cartCount > 0 && (
+                  <span className="badge bg-dark text-white rounded-pill position-absolute top-0 start-100 translate-middle">
+                    {cartCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* ================= MOBILE OFFCANVAS ================= */}
-      <div className="offcanvas offcanvas-start" id="mobileMenu">
+      {/* MOBILE OFFCANVAS MENU */}
+      <div className="offcanvas offcanvas-start" id="mobileMenu" aria-labelledby="mobileMenuLabel">
         <div className="offcanvas-header">
-          <button className="btn" data-bs-dismiss="offcanvas" onClick={closeMenu}>
+          <button className="btn" data-bs-dismiss="offcanvas" aria-label="Close" onClick={closeMenu}>
             <i className="bi bi-x-lg fs-3"></i>
           </button>
           <img src={brandLogo2} height="45" alt="logo" />
         </div>
 
         <div className="offcanvas-body">
-          <Link className="d-block py-2" to="/" onClick={closeMenu}>
-            Home
-          </Link>
-          <Link className="d-block py-2" to="/new" onClick={closeMenu}>
-            New
-          </Link>
+          <Link className="d-block py-2" to="/" onClick={closeMenu}>Home</Link>
+          <Link className="d-block py-2" to="/new" onClick={closeMenu}>New</Link>
 
-          {/* Mobile Category Expand */}
+          {/* MOBILE CATEGORY EXPANDER (tap on mobile, hover on hover-capable) */}
           <div className="mt-2">
             <div
               className="d-flex justify-content-between align-items-center py-2 fw-semibold"
               style={{ cursor: "pointer" }}
-              onClick={() => setMobileCatOpen(!mobileCatOpen)}
+              // For hover-capable devices, open on hover too
+              onClick={() => setMobileCatOpen((s) => !s)}
+              onMouseEnter={() => hoverSupported && setMobileCatOpen(true)}
+              onMouseLeave={() => hoverSupported && setMobileCatOpen(false)}
             >
               <span>Shop by category</span>
               <i className={`bi ${mobileCatOpen ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
             </div>
 
-            {/* Inner List */}
             <div
               className="ps-3"
               style={{
@@ -230,11 +250,9 @@ const UserNavbar = () => {
             </div>
           </div>
 
-          <Link className="d-block py-2" to="/about" onClick={closeMenu}>
-            About us
-          </Link>
+          <Link className="d-block py-2" to="/about" onClick={closeMenu}>About us</Link>
 
-          {/* Account */}
+          {/* ACCOUNT SECTION */}
           <div className="position-absolute bottom-0 start-0 w-100 p-3 border-top">
             {user ? (
               <Link to="/profile" className="text-dark d-flex align-items-center gap-2" onClick={closeMenu}>
@@ -242,34 +260,24 @@ const UserNavbar = () => {
               </Link>
             ) : (
               <>
-                <Link to="/register" className="d-block py-2 text-dark" onClick={closeMenu}>
-                  Sign up
-                </Link>
-                <Link to="/login" className="d-block py-2 text-dark" onClick={closeMenu}>
-                  Sign in
-                </Link>
+                <Link to="/register" className="d-block py-2 text-dark" onClick={closeMenu}>Sign up</Link>
+                <Link to="/login" className="d-block py-2 text-dark" onClick={closeMenu}>Sign in</Link>
               </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Extra Style */}
+      {/* Extra styles for smooth behaviours */}
       <style>{`
-        .dropdown-menu.fade {
-          opacity: 0;
-          transform: translateY(10px);
-          transition: all .2s ease;
-        }
-        .dropdown-menu.fade.show {
-          opacity: 1;
-          transform: translateY(0);
-          display: block;
-        }
+        /* Desktop dropdown smoothness (still works with our hover state) */
+        .dropdown-menu.fade { transition: transform .18s ease, opacity .18s ease; }
+        .offcanvas { transition: transform .25s ease, visibility .25s; }
       `}</style>
     </>
   );
 };
 
 export default UserNavbar;
+
 
