@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -12,8 +12,19 @@ const UserNavbar = () => {
   const user = useSelector((state) => state.auth?.user || null);
 
   const [showSearch, setShowSearch] = useState(false);
+  const [mobileCatOpen, setMobileCatOpen] = useState(false);
 
-  // ✅ SAFE Bootstrap Offcanvas Close (NO ARIA ERRORS)
+  // ⭐ Detect mobile width (<992px)
+  const [isMobileWidth, setIsMobileWidth] = useState(window.innerWidth < 992);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileWidth(window.innerWidth < 992);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const closeMenu = () => {
     const menu = document.getElementById("mobileMenu");
     if (!menu) return;
@@ -21,7 +32,6 @@ const UserNavbar = () => {
     const bsOffcanvas = bootstrap.Offcanvas.getInstance(menu);
     if (bsOffcanvas) bsOffcanvas.hide();
 
-    // Remove leftover backdrop if Bootstrap leaves it
     const backdrop = document.querySelector(".offcanvas-backdrop");
     if (backdrop) backdrop.remove();
   };
@@ -55,7 +65,6 @@ const UserNavbar = () => {
       {/* NAVBAR */}
       <nav className="navbar navbar-expand-lg bg-white py-3 shadow-sm sticky-top">
         <div className="container-fluid">
-
           {/* MOBILE MENU BUTTON */}
           <button
             className="btn d-lg-none"
@@ -72,14 +81,12 @@ const UserNavbar = () => {
 
           {/* MOBILE RIGHT ICONS */}
           <div className="d-lg-none d-flex align-items-center gap-3 ms-auto">
-
             <i
               className="bi bi-search fs-5"
               role="button"
               onClick={() => setShowSearch(true)}
             ></i>
 
-            {/* WISHLIST */}
             <Link to="/wishlist" className="text-dark position-relative fs-5">
               <i className="bi bi-heart"></i>
               {wishlistCount > 0 && (
@@ -89,7 +96,6 @@ const UserNavbar = () => {
               )}
             </Link>
 
-            {/* CART */}
             <Link to="/cart" className="text-dark position-relative fs-5">
               <i className="bi bi-bag"></i>
               {cartCount > 0 && (
@@ -98,13 +104,10 @@ const UserNavbar = () => {
                 </span>
               )}
             </Link>
-
           </div>
 
           {/* DESKTOP NAV CONTENT */}
           <div className="collapse navbar-collapse">
-
-            {/* Desktop Logo */}
             <div className="d-none d-lg-block me-4">
               <img src={brandLogo} height="85" width="100" alt="logo" />
             </div>
@@ -119,11 +122,29 @@ const UserNavbar = () => {
                 <Link to="/new" className="nav-link">New</Link>
               </li>
 
-              {/* CATEGORY DROPDOWN */}
-              <li className="nav-item dropdown">
+              {/* ⭐ UPDATED CATEGORY DROPDOWN */}
+              <li
+                className="nav-item dropdown"
+                onMouseEnter={(e) => {
+                  if (!isMobileWidth) {
+                    const menu = e.currentTarget.querySelector(".dropdown-menu");
+                    menu.style.display = "block";
+                    menu.style.opacity = 1;
+                    menu.style.transform = "translateY(0)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isMobileWidth) {
+                    const menu = e.currentTarget.querySelector(".dropdown-menu");
+                    menu.style.display = "none";
+                    menu.style.opacity = 0;
+                    menu.style.transform = "translateY(10px)";
+                  }
+                }}
+              >
                 <span
                   className="nav-link dropdown-toggle"
-                  data-bs-toggle="dropdown"
+                  data-bs-toggle={isMobileWidth ? "dropdown" : ""}
                   style={{ cursor: "pointer" }}
                 >
                   Shop by category
@@ -132,10 +153,7 @@ const UserNavbar = () => {
                 <ul className="dropdown-menu fade">
                   {categories.map((cat) => (
                     <li key={cat.id}>
-                      <Link
-                        className="dropdown-item"
-                        to={`/categories/${cat.slug}`}
-                      >
+                      <Link className="dropdown-item" to={`/categories/${cat.slug}`}>
                         {cat.name}
                       </Link>
                     </li>
@@ -151,29 +169,19 @@ const UserNavbar = () => {
             {/* RIGHT ICONS DESKTOP */}
             <div className="d-none d-lg-flex align-items-center gap-4 ms-auto fs-5">
 
-              <i
-                className="bi bi-search"
-                role="button"
-                onClick={() => setShowSearch(true)}
-              ></i>
+              <i className="bi bi-search" role="button" onClick={() => setShowSearch(true)}></i>
 
-              {/* USER LOGIN/PROFILE */}
               {user ? (
                 <Link to="/profile" className="text-dark">
                   <i className="bi bi-person"></i>
                 </Link>
               ) : (
                 <>
-                  <Link to="/register" className="small text-dark text-decoration-none ms-2">
-                    Sign up
-                  </Link>
-                  <Link to="/login" className="small text-dark text-decoration-none">
-                    Sign in
-                  </Link>
+                  <Link to="/register" className="small text-dark text-decoration-none ms-2">Sign up</Link>
+                  <Link to="/login" className="small text-dark text-decoration-none">Sign in</Link>
                 </>
               )}
 
-              {/* WISHLIST */}
               <Link to="/wishlist" className="text-dark position-relative">
                 <i className="bi bi-heart"></i>
                 {wishlistCount > 0 && (
@@ -183,7 +191,6 @@ const UserNavbar = () => {
                 )}
               </Link>
 
-              {/* CART */}
               <Link to="/cart" className="text-dark position-relative">
                 <i className="bi bi-bag"></i>
                 {cartCount > 0 && (
@@ -192,9 +199,7 @@ const UserNavbar = () => {
                   </span>
                 )}
               </Link>
-
             </div>
-
           </div>
         </div>
       </nav>
@@ -209,26 +214,42 @@ const UserNavbar = () => {
         </div>
 
         <div className="offcanvas-body">
-
-          {/* MAIN LINKS */}
           <Link className="d-block py-2" to="/" onClick={closeMenu}>Home</Link>
           <Link className="d-block py-2" to="/new" onClick={closeMenu}>New</Link>
 
-          {/* CATEGORY LINKS */}
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              className="d-block py-2"
-              to={`/categories/${cat.slug}`}
-              onClick={closeMenu}
+          {/* ⭐ MOBILE CATEGORY DROPDOWN */}
+          <div className="mt-2">
+            <div
+              className="d-flex justify-content-between align-items-center py-2 fw-semibold"
+              style={{ cursor: "pointer" }}
+              onClick={() => setMobileCatOpen(!mobileCatOpen)}
             >
-              {cat.name}
-            </Link>
-          ))}
+              <span>Shop by category</span>
+              <i className={`bi ${mobileCatOpen ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
+            </div>
 
-          <Link className="d-block py-2" to="/about" onClick={closeMenu}>
-            About us
-          </Link>
+            <div
+              className="ps-3"
+              style={{
+                maxHeight: mobileCatOpen ? "500px" : "0px",
+                overflow: "hidden",
+                transition: "max-height .35s ease",
+              }}
+            >
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  className="d-block py-2 small"
+                  to={`/categories/${cat.slug}`}
+                  onClick={closeMenu}
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <Link className="d-block py-2" to="/about" onClick={closeMenu}>About us</Link>
 
           {/* ACCOUNT SECTION */}
           <div className="position-absolute bottom-0 start-0 w-100 p-3 border-top">
@@ -252,11 +273,7 @@ const UserNavbar = () => {
           opacity: 0;
           transform: translateY(10px);
           transition: all 0.25s ease;
-        }
-        .dropdown:hover .dropdown-menu {
-          opacity: 1;
-          transform: translateY(0);
-          display: block;
+          display: none;
         }
       `}</style>
     </>

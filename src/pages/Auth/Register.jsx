@@ -86,7 +86,7 @@ const Register = () => {
         <p className="text-center mt-3 mb-0">
           Already have an account?{" "}
           <Link to="/login" className="text-decoration-none fw-semibold">
-            Login
+            Sign in
           </Link>
         </p>
       </div>
