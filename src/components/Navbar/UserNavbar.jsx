@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useSelector } from "react-redux";
-// import brandLogo from "../../assets/images/logo.jpg";
+import brandLogo from "../../assets/images/logo.png";
+import brandLogo2 from "../../assets/images/logo2.png";
 
 
 
@@ -56,8 +57,8 @@ const UserNavbar = () => {
           </button>
 
           {/* MOBILE LOGO */}
-          <div className="mx-auto d-lg-none">
-            <img src="/logo192.png" height="45" alt="logo" />
+          <div className="mx-auto  d-lg-none">
+            <img src={brandLogo2} height="40" width="145" alt="logo" />
           </div>
 
           {/* MOBILE RIGHT ICONS */}
@@ -95,7 +96,7 @@ const UserNavbar = () => {
 
             {/* DESKTOP LOGO LEFT SIDE */}
             <div className="d-none d-lg-block me-4">
-              <img src="/logo192.png" height="55" alt="logo" />
+              <img src={brandLogo} height="85" width="100" alt="logo" />
             </div>
 
             {/* LEFT MENU */}
@@ -152,12 +153,13 @@ const UserNavbar = () => {
                 </Link>
               ) : (
                 <>
-                  <Link to="/login" className="small text-dark text-decoration-none">
-                    Login
-                  </Link>
                   <Link to="/register" className="small text-dark text-decoration-none ms-2">
-                    Register
+                    Sign up
                   </Link>
+                  <Link to="/login" className="small text-dark text-decoration-none">
+                    Sign in
+                  </Link>
+                  
                 </>
               )}
 
@@ -229,8 +231,9 @@ const UserNavbar = () => {
               </Link>
             ) : (
               <>
-                <Link to="/login" className="d-block py-2 text-dark">Login</Link>
-                <Link to="/register" className="d-block py-2 text-dark">Register</Link>
+                <Link to="/register" className="d-block py-2 text-dark">Sign up</Link>
+                <Link to="/login" className="d-block py-2 text-dark">Sign in</Link>
+                
               </>
             )}
           </div>

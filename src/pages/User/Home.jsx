@@ -16,7 +16,7 @@ const Home = () => {
 
       {/* HERO BANNER */}
       <div className="w-full h-56 md:h-72 bg-gray-300 rounded-xl mb-6 flex items-center justify-center text-3xl font-bold">
-        Fashion Starts Here 👗🔥
+        Fashion Starts Here 
       </div>
 
       {/* CATEGORIES */}

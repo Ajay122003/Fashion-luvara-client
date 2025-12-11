@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { subscribeEmail } from "../../api/subscription";
 import { toast } from "react-hot-toast";
+import { HiOutlineMailOpen } from "react-icons/hi";  // ICON
 
 const SubscribeBox = () => {
   const [email, setEmail] = useState("");
@@ -33,15 +34,12 @@ const SubscribeBox = () => {
     >
       <div className="container text-center">
 
-        {/* HEADING */}
-        {/* <h2
-          className="fw-bold mb-2"
-          style={{ letterSpacing: "1px", fontSize: "26px" }}
-        >
-          Subscribe to our emails
-        </h2> */}
+        {/* ICON */}
+        <div className="mb-3" style={{ fontSize: "42px", color: "#000" }}>
+          <HiOutlineMailOpen className="icon-animate" />
+        </div>
 
-        {/* SUBTEXT */}
+        {/* TEXT */}
         <p
           className="text-muted mb-4"
           style={{
@@ -54,48 +52,41 @@ const SubscribeBox = () => {
           Subscribe to our emails
         </p>
 
-        {/* FORM: RESPONSIVE */}
-        <div
-          className="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-2"
-          style={{
-            maxWidth: "480px",
-            margin: "0 auto",
-            width: "100%",
-          }}
-        >
-          {/* INPUT */}
-          <input
-            type="email"
-            className="form-control shadow-sm"
-            placeholder="Enter your email address"
-            style={{
-              padding: "12px 15px",
-              borderRadius: "12px",
-              border: "1px solid #ccc",
-              background: "#f9f9f9",
-              color: "#000",
-              flex: 1,              // makes it stretch on desktop
-              minWidth: "200px",    // prevents shrinking too small
-            }}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {/* FORM */}
+        <div className="row justify-content-center">
+          <div className="col-7 col-sm-7 col-md-6 mb-2 mb-sm-0">
+            <input
+              type="email"
+              className="form-control shadow-sm"
+              placeholder="Enter your email address"
+              style={{
+                padding: "12px 15px",
+                borderRadius: "12px",
+                border: "1px solid #ccc",
+                background: "#f9f9f9",
+                color: "#000",
+              }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-          {/* BUTTON */}
-          <button
-            className="btn fw-semibold px-4 w-100 w-sm-auto"
-            style={{
-              borderRadius: "12px",
-              padding: "12px 25px",
-              backgroundColor: "#000",
-              color: "#fff",
-              letterSpacing: "0.5px",
-              transition: "0.25s",
-            }}
-            onClick={handleSubscribe}
-          >
-            Subscribe
-          </button>
+          <div className="col-5 col-sm-3 col-md-2">
+            <button
+              className="btn fw-semibold w-100"
+              style={{
+                borderRadius: "12px",
+                padding: "12px 25px",
+                backgroundColor: "#000",
+                color: "#fff",
+                letterSpacing: "0.5px",
+                transition: "0.25s",
+              }}
+              onClick={handleSubscribe}
+            >
+              Subscribe
+            </button>
+          </div>
         </div>
 
         {/* SUCCESS MESSAGE */}
@@ -112,17 +103,18 @@ const SubscribeBox = () => {
           </div>
         )}
 
-        {/* Animation */}
+        {/* ANIMATIONS */}
         <style>{`
           @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
           }
-          /* Mobile Optimizations */
-          @media (max-width: 576px) {
-            h2 { font-size: 22px !important; }
-            input { font-size: 14px; }
-            button { font-size: 14px; padding: 12px; }
+          .icon-animate {
+            animation: bounce 1.3s infinite alternate;
+          }
+          @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-6px); }
           }
         `}</style>
 
