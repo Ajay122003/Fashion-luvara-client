@@ -22,14 +22,15 @@ const EditProduct = () => {
     sizes: "",
     colors: "",
     category: "",
-    collections: [], // ✅ NEW
+    collections: [],
     is_active: true,
   });
 
   const [categories, setCategories] = useState([]);
-  const [collections, setCollections] = useState([]); // ✅ NEW
-  const [existingImages, setExistingImages] = useState([]); 
-  const [images, setImages] = useState([]);
+  const [collections, setCollections] = useState([]);
+
+  const [existingImages, setExistingImages] = useState([]); // OLD images
+  const [newImages, setNewImages] = useState([]);           // NEW uploads
 
   useEffect(() => {
     loadData();
@@ -53,7 +54,7 @@ const EditProduct = () => {
         sizes: prod.data.sizes?.join(", ") || "",
         colors: prod.data.colors?.join(", ") || "",
         category: prod.data.category,
-        collections: prod.data.collections || [], // 👈 PRE SELECT COLLECTIONS
+        collections: prod.data.collections || [],
         is_active: prod.data.is_active,
       });
 
@@ -64,8 +65,9 @@ const EditProduct = () => {
     }
   };
 
+  /* ----------------- REMOVE EXISTING IMAGE ----------------- */
   const removeExistingImage = async (imageId) => {
-    if (!window.confirm("Delete this image?")) return;
+    if (!window.confirm("Delete this image permanently?")) return;
 
     try {
       await deleteProductImage(imageId);
@@ -75,6 +77,7 @@ const EditProduct = () => {
     }
   };
 
+  /* ------------------------ SUBMIT ------------------------ */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -103,13 +106,16 @@ const EditProduct = () => {
     form.append("sizes", JSON.stringify(sizesArray));
     form.append("colors", JSON.stringify(colorsArray));
 
-    // ✅ ADD COLLECTIONS (M2M)
-    product.collections.forEach((id) => {
-      form.append("collections", id);
-    });
+    // Collections (M2M)
+    product.collections.forEach((colId) => form.append("collections", colId));
 
-    // New images
-    images.forEach((img) => form.append("images", img));
+    // NEW images
+    newImages.forEach((img) => form.append("images", img));
+
+    // EXISTING images that remain
+    existingImages.forEach((img) =>
+      form.append("existing_images", img.id)
+    );
 
     try {
       await updateAdminProduct(id, form);
@@ -125,7 +131,7 @@ const EditProduct = () => {
     <div className="container py-4">
       <h3 className="fw-bold mb-3">Edit Product</h3>
 
-      {/* EXISTING IMAGES */}
+      {/* EXISTING IMAGES SECTION */}
       {existingImages.length > 0 && (
         <div className="mb-4">
           <label className="fw-bold">Existing Images</label>
@@ -143,7 +149,6 @@ const EditProduct = () => {
                 <button
                   type="button"
                   className="btn btn-sm btn-danger position-absolute top-0 end-0"
-                  style={{ padding: "2px 6px" }}
                   onClick={() => removeExistingImage(img.id)}
                 >
                   ×
@@ -154,14 +159,17 @@ const EditProduct = () => {
         </div>
       )}
 
+      {/* PRODUCT FORM */}
       <ProductForm
         handleSubmit={handleSubmit}
         product={product}
         setProduct={setProduct}
-        images={images}
-        setImages={setImages}
+        existingImages={existingImages}
+        setExistingImages={setExistingImages}
+        newImages={newImages}
+        setNewImages={setNewImages}
         categories={categories}
-        collections={collections}  // 
+        collections={collections}
         buttonText="Update Product"
       />
     </div>

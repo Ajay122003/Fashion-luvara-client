@@ -10,6 +10,8 @@ import AdminRoute from "../components/Protected/AdminRoute";
 
 // User Pages
 import Home from "../pages/User/Home";
+import Products from "../pages/User/Products";           // ✅ NEW
+import ProductDetail from "../pages/User/ProductDetail"; // ✅ NEW
 
 // Category Pages
 import Categories from "../pages/User/Categories";
@@ -50,6 +52,7 @@ import Settings from "../pages/Admin/Settings";
 import ManageCollection from "../pages/Admin/ManageCollection";
 import AddCollection from "../pages/Admin/AddCollection";
 import EditCollection from "../pages/Admin/EditCollection";
+import Cart from "../pages/User/Cart";
 
 
 const AppRoutes = () => {
@@ -60,6 +63,10 @@ const AppRoutes = () => {
       <Route path="/" element={<UserLayout />}>
         <Route index element={<Home />} />
 
+        {/* Product List + Detail */}
+        <Route path="products" element={<Products />} />          {/*  ADDED */}
+        <Route path="product/:id" element={<ProductDetail />} />  {/*  ADDED */}
+        <Route path="/cart" element={<Cart />} />
         {/* Category Routes */}
         <Route path="categories" element={<Categories />} />
         <Route path="categories/:slug" element={<CategoryProducts />} />
@@ -127,4 +134,3 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
-

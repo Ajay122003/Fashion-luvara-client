@@ -4,22 +4,33 @@ const ProductForm = ({
   handleSubmit,
   product,
   setProduct,
-  images,
-  setImages,
+
+  existingImages = [],
+  setExistingImages,
+
+  newImages = [],
+  setNewImages,
+
   categories = [],
-  collections = [], // NEW
+  collections = [],
   buttonText,
 }) => {
-  
+  /* -------------------- NEW IMAGE UPLOAD -------------------- */
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    setImages([...images, ...files]);
+    setNewImages([...newImages, ...files]);
   };
 
   const removeNewImage = (index) => {
-    const updated = [...images];
+    const updated = [...newImages];
     updated.splice(index, 1);
-    setImages(updated);
+    setNewImages(updated);
+  };
+
+  /* -------------------- REMOVE EXISTING IMAGE -------------------- */
+  const removeExistingImage = (id) => {
+    const updated = existingImages.filter((img) => img.id !== id);
+    setExistingImages(updated);
   };
 
   return (
@@ -53,7 +64,7 @@ const ProductForm = ({
         ></textarea>
       </div>
 
-      {/* PRICE */}
+      {/* PRICE + SALE PRICE */}
       <div className="row">
         <div className="col-md-6 mb-3">
           <label className="form-label fw-bold">Price</label>
@@ -91,7 +102,7 @@ const ProductForm = ({
         />
       </div>
 
-      {/* SIZES & COLORS */}
+      {/* SIZES + COLORS */}
       <div className="row">
         <div className="col-md-6 mb-3">
           <label className="form-label fw-bold">Sizes (comma separated)</label>
@@ -130,7 +141,6 @@ const ProductForm = ({
           onChange={(e) => setProduct({ ...product, category: e.target.value })}
         >
           <option value="">Select Category</option>
-
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
@@ -139,10 +149,9 @@ const ProductForm = ({
         </select>
       </div>
 
-      {/* COLLECTIONS MULTI SELECT */}
+      {/* COLLECTIONS (MULTIPLE) */}
       <div className="mb-3">
         <label className="form-label fw-bold">Collections</label>
-
         <select
           className="form-select"
           multiple
@@ -150,24 +159,25 @@ const ProductForm = ({
           onChange={(e) => {
             const selected = Array.from(
               e.target.selectedOptions,
-              (opt) => opt.value
+              (opt) => Number(opt.value)
             );
             setProduct({ ...product, collections: selected });
           }}
         >
-          {collections.map((col) => (
-            <option key={col.id} value={col.id}>
-              {col.name}
-            </option>
-          ))}
+          {collections.length > 0 ? (
+            collections.map((col) => (
+              <option key={col.id} value={col.id}>
+                {col.name}
+              </option>
+            ))
+          ) : (
+            <option disabled>No collections available</option>
+          )}
         </select>
-
-        <small className="text-muted">
-          Hold CTRL (Windows) or CMD (Mac) to select multiple
-        </small>
+        <small className="text-muted">Hold CTRL/CMD to select multiple</small>
       </div>
 
-      {/* ACTIVE | INACTIVE */}
+      {/* ACTIVE */}
       <div className="mb-3 form-check">
         <input
           type="checkbox"
@@ -180,32 +190,60 @@ const ProductForm = ({
         <label className="form-check-label">Active Product</label>
       </div>
 
-      {/* IMAGES */}
+      {/* NEW IMAGE UPLOAD */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Upload Product Images</label>
+        <label className="form-label fw-bold">Upload New Images</label>
         <input
           type="file"
-          className="form-control"
           multiple
           accept="image/*"
+          className="form-control"
           onChange={handleImageUpload}
         />
       </div>
 
-      {/* PREVIEW */}
-      {images.length > 0 && (
-        <div className="mb-3">
-          <label className="fw-bold mb-2">Preview</label>
-          <div className="d-flex flex-wrap gap-3">
-            {images.map((img, i) => (
+      {/* EXISTING IMAGE PREVIEW */}
+      {existingImages.length > 0 && (
+        <>
+          <label className="fw-bold">Existing Images</label>
+          <div className="d-flex flex-wrap gap-3 mb-3">
+            {existingImages.map((img) => (
+              <div key={img.id} className="position-relative">
+                <img
+                  src={img.image_url}
+                  alt="existing"
+                  width="90"
+                  height="90"
+                  className="border rounded"
+                  style={{ objectFit: "cover" }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                  onClick={() => removeExistingImage(img.id)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* NEW IMAGE PREVIEW */}
+      {newImages.length > 0 && (
+        <>
+          <label className="fw-bold">New Images</label>
+          <div className="d-flex flex-wrap gap-3 mb-3">
+            {newImages.map((img, i) => (
               <div key={i} className="position-relative">
                 <img
                   src={URL.createObjectURL(img)}
                   alt="preview"
                   width="90"
                   height="90"
-                  style={{ objectFit: "cover" }}
                   className="border rounded"
+                  style={{ objectFit: "cover" }}
                 />
                 <button
                   type="button"
@@ -217,7 +255,7 @@ const ProductForm = ({
               </div>
             ))}
           </div>
-        </div>
+        </>
       )}
 
       <button className="btn btn-primary w-100 fw-bold mt-3">

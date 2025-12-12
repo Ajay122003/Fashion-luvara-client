@@ -19,13 +19,15 @@ const AddProduct = () => {
     sizes: "",
     colors: "",
     category: "",
-    collections: [],   // ✅ NEW FIELD
+    collections: [],
     is_active: true,
   });
 
   const [categories, setCategories] = useState([]);
-  const [collections, setCollections] = useState([]);  // ✅ NEW
-  const [images, setImages] = useState([]);
+  const [collections, setCollections] = useState([]);
+
+  // For new file uploads (no existing images on Add page)
+  const [newImages, setNewImages] = useState([]);
 
   useEffect(() => {
     loadInitialData();
@@ -37,9 +39,9 @@ const AddProduct = () => {
       const colData = await fetchAdminCollections();
 
       setCategories(catData);
-      setCollections(colData); // 👈 Load collections
+      setCollections(colData);
     } catch (err) {
-      alert("Failed to load categories/collections");
+      alert("Failed to load categories or collections");
     }
   };
 
@@ -48,7 +50,7 @@ const AddProduct = () => {
 
     const form = new FormData();
 
-    // Basic Fields
+    // Basic fields
     form.append("name", product.name);
     form.append("description", product.description);
     form.append("price", product.price);
@@ -56,35 +58,35 @@ const AddProduct = () => {
     form.append("category", product.category);
     form.append("is_active", product.is_active);
 
-    // Optional Sale Price
-    if (product.sale_price) form.append("sale_price", product.sale_price);
+    if (product.sale_price) {
+      form.append("sale_price", product.sale_price);
+    }
 
-    // Convert sizes & colors
-    const sizesArray = product.sizes
+    // Sizes and Colors → convert string → list
+    const sizesList = product.sizes
       ? product.sizes.split(",").map((s) => s.trim())
       : [];
-
-    const colorsArray = product.colors
+    const colorsList = product.colors
       ? product.colors.split(",").map((c) => c.trim())
       : [];
 
-    form.append("sizes", JSON.stringify(sizesArray));
-    form.append("colors", JSON.stringify(colorsArray));
+    form.append("sizes", JSON.stringify(sizesList));
+    form.append("colors", JSON.stringify(colorsList));
 
-    // ✅ Add collections (M2M)
-    product.collections.forEach((id) => {
-      form.append("collections", id);
-    });
+    // Add collections (M2M)
+    product.collections.forEach((collectionId) =>
+      form.append("collections", collectionId)
+    );
 
-    // Images
-    images.forEach((img) => form.append("images", img));
+    // Add uploaded images
+    newImages.forEach((file) => form.append("images", file));
 
     try {
       await createAdminProduct(form);
       alert("Product added successfully!");
       navigate("/admin/products");
     } catch (error) {
-      console.log(error.response?.data);
+      console.error(error.response?.data || error);
       alert("Failed to add product");
     }
   };
@@ -97,10 +99,12 @@ const AddProduct = () => {
         handleSubmit={handleSubmit}
         product={product}
         setProduct={setProduct}
-        images={images}
-        setImages={setImages}
+        existingImages={[]}              // No preloaded images
+        setExistingImages={() => {}}     // Not used in Add form
+        newImages={newImages}
+        setNewImages={setNewImages}
         categories={categories}
-        collections={collections}   // ✅ SEND TO FORM
+        collections={collections}
         buttonText="Add Product"
       />
     </div>

@@ -34,6 +34,7 @@ const Collections = () => {
           <div key={c.id} className="col-6 col-md-4 col-lg-3">
             <Link to={`/collections/${c.slug}`} className="text-decoration-none">
               <div className="card h-100 shadow-sm">
+
                 <div style={{ height: 160, overflow: "hidden" }}>
                   <img
                     src={c.image_url || "/placeholder.png"}
@@ -47,6 +48,7 @@ const Collections = () => {
                   <h6 className="fw-bold mb-1">{c.name}</h6>
                   <small className="text-muted">{c.product_count} items</small>
                 </div>
+
               </div>
             </Link>
           </div>

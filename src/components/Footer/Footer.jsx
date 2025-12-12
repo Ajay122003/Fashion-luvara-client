@@ -5,7 +5,7 @@ const Footer = () => {
     <>
       <SubscribeBox />
 
-      <footer className=" text-black text-center py-3">
+      <footer className=" bg-white text-black text-center py-3">
         © 2025 LUVARA. All Rights Reserved.
       </footer>
     </>

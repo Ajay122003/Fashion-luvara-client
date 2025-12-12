@@ -1,52 +1,52 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { fetchCart } from "../../features/cart/cartSlice";
 
 import brandLogo from "../../assets/images/logo.png";
 import brandLogo2 from "../../assets/images/logo2.png";
 
 const UserNavbar = () => {
-  // --------------------------
-  // ✅ CORRECT REDUX SELECTORS
-  // --------------------------
+  const dispatch = useDispatch();
+
+  // Load cart count on page load
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
+
   const cartCount = useSelector((s) => s.cart?.items?.length ?? 0);
   const wishlistCount = useSelector((s) => s.wishlist?.items?.length ?? 0);
 
   const categories = useSelector((s) => s.categories?.items ?? [], shallowEqual);
   const collections = useSelector((s) => s.collections?.items ?? [], shallowEqual);
-
   const user = useSelector((s) => s.auth?.user ?? null, shallowEqual);
 
-  // --------------------------
-  // UI STATES
-  // --------------------------
   const [showSearch, setShowSearch] = useState(false);
   const [mobileCatOpen, setMobileCatOpen] = useState(false);
   const [mobileColOpen, setMobileColOpen] = useState(false);
   const [hoverCat, setHoverCat] = useState(false);
   const [hoverCol, setHoverCol] = useState(false);
 
-  const hoverSupported = useMemo(
-    () =>
+  const hoverSupported = useMemo(() => {
+    return (
       typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(hover: hover) and (pointer: fine)").matches,
-    []
-  );
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    );
+  }, []);
 
   const closeMenu = () => {
     const menu = document.getElementById("mobileMenu");
     if (!menu) return;
-    menu.classList.remove("show");
-    menu.style.visibility = "hidden";
-    menu.style.transform = "translateX(-100%)";
 
-    const backdrop = document.querySelector(".offcanvas-backdrop");
-    if (backdrop) backdrop.remove();
+    const offcanvas = bootstrap.Offcanvas.getInstance(menu);
+    if (offcanvas) offcanvas.hide();
 
-    document.body.classList.remove("offcanvas-open", "modal-open");
-    document.body.style.overflow = "";
+    setTimeout(() => {
+      document.querySelectorAll(".offcanvas-backdrop").forEach((b) => b.remove());
+      document.body.classList.remove("modal-open", "offcanvas-open");
+      document.body.style.overflow = "";
+    }, 200);
   };
 
   const handleMobileClick = () => {
@@ -76,17 +76,21 @@ const UserNavbar = () => {
         </div>
       </div>
 
-      {/* NAVBAR */}
+      {/* MAIN NAVBAR */}
       <nav className="navbar navbar-expand-lg bg-white py-3 shadow-sm sticky-top">
         <div className="container-fluid">
+
+          {/* MOBILE MENU BUTTON */}
           <button className="btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
             <HiMenu size={25} />
           </button>
 
+          {/* MOBILE LOGO */}
           <div className="mx-auto d-lg-none">
             <img src={brandLogo2} height="40" width="145" alt="logo" />
           </div>
 
+          {/* MOBILE RIGHT ICONS */}
           <div className="d-lg-none d-flex align-items-center gap-3 ms-auto">
             <i className="bi bi-search fs-5" role="button" onClick={() => setShowSearch(true)} />
 
@@ -109,12 +113,12 @@ const UserNavbar = () => {
             </Link>
           </div>
 
+          {/* DESKTOP NAV */}
           <div className="collapse navbar-collapse">
             <div className="d-none d-lg-block me-4">
               <img src={brandLogo} height="85" width="100" alt="logo" />
             </div>
 
-            {/* NAV LINKS */}
             <ul className="navbar-nav gap-4 fw-normal small">
               <li className="nav-item">
                 <Link to="/" className="nav-link">Home</Link>
@@ -130,22 +134,15 @@ const UserNavbar = () => {
                 onMouseEnter={() => hoverSupported && setHoverCat(true)}
                 onMouseLeave={() => hoverSupported && setHoverCat(false)}
               >
-                <span className="nav-link dropdown-toggle" style={{ cursor: "pointer" }}>
-                  Shop by Category
-                </span>
-
-                <ul className={`dropdown-menu fade ${hoverCat ? "show" : ""}`}>
-                  {categories.length === 0 ? (
-                    <li className="px-3 py-2 text-muted">No categories</li>
-                  ) : (
-                    categories.map((cat) => (
-                      <li key={cat.id}>
-                        <Link className="dropdown-item" to={`/categories/${cat.slug}`}>
-                          {cat.name}
-                        </Link>
-                      </li>
-                    ))
-                  )}
+                <span className="nav-link dropdown-toggle">Shop by Category</span>
+                <ul className={`dropdown-menu ${hoverCat ? "show" : ""}`}>
+                  {categories.map((cat) => (
+                    <li key={cat.id}>
+                      <Link className="dropdown-item" to={`/categories/${cat.slug}`}>
+                        {cat.name}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </li>
 
@@ -155,22 +152,15 @@ const UserNavbar = () => {
                 onMouseEnter={() => hoverSupported && setHoverCol(true)}
                 onMouseLeave={() => hoverSupported && setHoverCol(false)}
               >
-                <span className="nav-link dropdown-toggle" style={{ cursor: "pointer" }}>
-                  Shop by Collection
-                </span>
-
-                <ul className={`dropdown-menu fade ${hoverCol ? "show" : ""}`}>
-                  {collections.length === 0 ? (
-                    <li className="px-3 py-2 text-muted">No collections</li>
-                  ) : (
-                    collections.map((col) => (
-                      <li key={col.id}>
-                        <Link className="dropdown-item" to={`/collections/${col.slug}`}>
-                          {col.name}
-                        </Link>
-                      </li>
-                    ))
-                  )}
+                <span className="nav-link dropdown-toggle">Shop by Collection</span>
+                <ul className={`dropdown-menu ${hoverCol ? "show" : ""}`}>
+                  {collections.map((col) => (
+                    <li key={col.id}>
+                      <Link className="dropdown-item" to={`/collections/${col.slug}`}>
+                        {col.name}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </li>
 
@@ -179,7 +169,7 @@ const UserNavbar = () => {
               </li>
             </ul>
 
-            {/* RIGHT SIDE ICONS */}
+            {/* RIGHT SIDE (DESKTOP) */}
             <div className="d-none d-lg-flex align-items-center gap-4 ms-auto fs-5">
               <i className="bi bi-search" role="button" onClick={() => setShowSearch(true)} />
 
@@ -189,8 +179,8 @@ const UserNavbar = () => {
                 </Link>
               ) : (
                 <>
-                  <Link to="/register" className="small text-dark text-decoration-none">Sign up</Link>
-                  <Link to="/login" className="small text-dark text-decoration-none">Sign in</Link>
+                  <Link to="/register" className="small text-dark">Sign up</Link>
+                  <Link to="/login" className="small text-dark">Sign in</Link>
                 </>
               )}
 
@@ -216,7 +206,7 @@ const UserNavbar = () => {
         </div>
       </nav>
 
-      {/* MOBILE OFFCANVAS MENU */}
+      {/* MOBILE MENU */}
       <div className="offcanvas offcanvas-start" id="mobileMenu">
         <div className="offcanvas-header">
           <button className="btn" onClick={closeMenu}>
@@ -229,10 +219,10 @@ const UserNavbar = () => {
           <Link className="d-block py-2" to="/" onClick={handleMobileClick}>Home</Link>
           <Link className="d-block py-2" to="/new" onClick={handleMobileClick}>New</Link>
 
-          {/* MOBILE CATEGORY */}
+          {/* Categories */}
           <div className="mt-2">
             <div
-              className="d-flex justify-content-between align-items-center py-2 fw-semibold"
+              className="d-flex justify-content-between align-items-center py-2"
               onClick={() => setMobileCatOpen((v) => !v)}
             >
               <span>Shop by Category</span>
@@ -260,10 +250,10 @@ const UserNavbar = () => {
             </div>
           </div>
 
-          {/* MOBILE COLLECTION */}
+          {/* Collections */}
           <div className="mt-2">
             <div
-              className="d-flex justify-content-between align-items-center py-2 fw-semibold"
+              className="d-flex justify-content-between align-items-center py-2"
               onClick={() => setMobileColOpen((v) => !v)}
             >
               <span>Shop by Collection</span>
@@ -291,8 +281,11 @@ const UserNavbar = () => {
             </div>
           </div>
 
-          <Link className="d-block py-2" to="/about" onClick={handleMobileClick}>About us</Link>
+          <Link className="d-block py-2" to="/about" onClick={handleMobileClick}>
+            About us
+          </Link>
 
+          {/* USER AREA */}
           <div className="position-absolute bottom-0 start-0 w-100 p-3 border-top">
             {user ? (
               <Link

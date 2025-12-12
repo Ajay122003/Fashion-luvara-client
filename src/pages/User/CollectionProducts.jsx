@@ -6,40 +6,26 @@ const CollectionProducts = () => {
   const { slug } = useParams();
 
   const [collection, setCollection] = useState(null);
-  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Pagination
-  const [nextPage, setNextPage] = useState(null);
-  const [prevPage, setPrevPage] = useState(null);
-  const [page, setPage] = useState(1);
-
-  const loadCollection = async (pageNumber = 1) => {
+  const loadCollection = async () => {
     try {
       setLoading(true);
 
-      const res = await fetchCollectionProducts(slug, { page: pageNumber });
+      const res = await fetchCollectionProducts(slug);
 
-      // API returns pagination wrapper:
-      // { count, next, previous, results: { collection, products } }
+      // Backend returns full collection with products[]
+      setCollection(res.data);
 
-      const data = res.data.results; 
-
-      setCollection(data.collection);
-      setProducts(data.products);
-
-      setNextPage(res.data.next);
-      setPrevPage(res.data.previous);
-      setPage(pageNumber);
     } catch (err) {
-      console.error("❌ Failed to load collection:", err);
+      console.error("Failed to load collection:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadCollection(1);
+    loadCollection();
   }, [slug]);
 
   if (loading)
@@ -50,63 +36,47 @@ const CollectionProducts = () => {
 
   return (
     <div className="container py-4">
-
-      {/* HEADER */}
-      <div className="text-center mb-4">
-        <h3 className="fw-bold">{collection.name}</h3>
-        {collection.description && (
-          <p className="text-muted">{collection.description}</p>
-        )}
-
-        {collection.image_url && (
-          <img
-            src={collection.image_url}
-            alt={collection.name}
-            className="img-fluid rounded shadow-sm my-3"
-            style={{ maxHeight: "300px", objectFit: "cover" }}
-          />
-        )}
-      </div>
-
-      {/* PRODUCT GRID */}
+      <h3 className=" mb-4">
+        {collection.name}
+      </h3>
+      {/* ================= PRODUCT GRID ================= */}
       <div className="row g-4">
-        {products.length === 0 ? (
+        {collection.products?.length === 0 ? (
           <p className="text-center py-4">No products available.</p>
         ) : (
-          products.map((product) => (
+          collection.products.map((product) => (
             <div key={product.id} className="col-6 col-md-4 col-lg-3">
               <Link
                 to={`/product/${product.id}`}
                 className="text-decoration-none text-dark"
               >
-                <div className="card shadow-sm h-100">
+                <div className="card product-card shadow-sm h-100">
 
-                  {/* PRODUCT IMAGE */}
-                  <div style={{ height: "220px", overflow: "hidden" }}>
+                  {/* IMAGE FRAME */}
+                  <div className="product-img-wrapper">
                     <img
-                      src={
-                        product.images?.[0]?.image_url ||
-                        "/placeholder.png"
-                      }
+                      src={product.images?.[0]?.image_url || "/placeholder.png"}
                       alt={product.name}
-                      className="w-100"
-                      style={{ height: "100%", objectFit: "cover" }}
+                      className="product-img"
                     />
                   </div>
 
-                  <div className="card-body">
-                    <h6 className="fw-bold">{product.name}</h6>
+                  <div className="card-body px-2">
+                    <h6 className="fw-semibold mb-1 text-truncate">
+                      {product.name}
+                    </h6>
 
-                    <p className="mb-1 fw-semibold">
-                      ₹{product.effective_price}
+                    <p className="mb-0 fw-bold">
+                      ₹{product.sale_price || product.price}
                     </p>
 
                     {product.sale_price && (
-                      <small className="text-muted text-decoration-line-through">
+                      <p className="text-muted small text-decoration-line-through mb-0">
                         ₹{product.price}
-                      </small>
+                      </p>
                     )}
                   </div>
+
                 </div>
               </Link>
             </div>
@@ -114,26 +84,48 @@ const CollectionProducts = () => {
         )}
       </div>
 
-      {/* PAGINATION */}
-      <div className="d-flex justify-content-center gap-3 mt-4">
-        <button
-          className="btn btn-dark"
-          disabled={!prevPage}
-          onClick={() => loadCollection(page - 1)}
-        >
-          Previous
-        </button>
+      {/* ==================== CSS ==================== */}
+      <style>{`
+        .product-card {
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+          border-radius: 12px;
+        }
+        .product-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
 
-        <button
-          className="btn btn-dark"
-          disabled={!nextPage}
-          onClick={() => loadCollection(page + 1)}
-        >
-          Next
-        </button>
-      </div>
+        .product-img-wrapper {
+          height: 220px;
+          background: #f8f8f8;
+          padding: 8px;
+          border-radius: 12px 12px 0 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .product-img {
+          max-height: 100%;
+          max-width: 100%;
+          object-fit: contain;
+          transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .product-img {
+          transform: scale(1.05);
+        }
+
+        @media (max-width: 576px) {
+          .product-img-wrapper {
+            height: 180px;
+          }
+        }
+      `}</style>
+
     </div>
   );
 };
 
 export default CollectionProducts;
+

@@ -9,6 +9,7 @@ const AddCollection = () => {
     name: "",
     slug: "",
     description: "",
+    sort_order: 0,
     is_active: true,
   });
 
@@ -23,7 +24,7 @@ const AddCollection = () => {
       .replace(/(^-|-$)/g, "");
 
   const handleChange = (e) => {
-    let { name, value } = e.target;
+    const { name, value } = e.target;
 
     setForm({
       ...form,
@@ -43,7 +44,7 @@ const AddCollection = () => {
 
   const submitForm = async () => {
     if (!form.name || !form.slug) {
-      return alert("Name & slug are required!");
+      return alert("Name & Slug are required!");
     }
 
     const data = new FormData();
@@ -51,7 +52,7 @@ const AddCollection = () => {
     if (image) data.append("image", image);
 
     try {
-      await createAdminCollection(data); // ✅ Correct API helper function
+      await createAdminCollection(data);
       alert("Collection created successfully!");
       navigate("/admin/collections");
     } catch (err) {
@@ -105,6 +106,18 @@ const AddCollection = () => {
             value={form.description}
             onChange={handleChange}
           ></textarea>
+        </div>
+
+        {/* SORT ORDER */}
+        <div className="mb-3">
+          <label className="form-label fw-bold">Sort Order</label>
+          <input
+            type="number"
+            name="sort_order"
+            className="form-control"
+            value={form.sort_order}
+            onChange={handleChange}
+          />
         </div>
 
         {/* IMAGE */}

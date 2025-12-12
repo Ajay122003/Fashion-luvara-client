@@ -1,6 +1,9 @@
 import apiClient from "./client";
 
-export const fetchCollections = () => apiClient.get("/api/collections/");
+// Get all collections (public)
+export const fetchCollections = () =>
+  apiClient.get("/api/collections/");
 
-export const fetchCollectionProducts = (slug, params = {}) =>
-  apiClient.get(`/api/collections/${slug}/`, { params });
+// Get products inside a single collection
+export const fetchCollectionProducts = (slug) =>
+  apiClient.get(`/api/collections/slug/${slug}/`);

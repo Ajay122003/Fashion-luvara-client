@@ -6,13 +6,16 @@ import {
 import { Link } from "react-router-dom";
 
 const ManageCollection = () => {
-  const [collections, setCollections] = useState([]);
+  const [collections, setCollections] = useState([]);  // ALWAYS ARRAY
   const [loading, setLoading] = useState(true);
 
   const loadCollections = async () => {
     try {
-      const res = await fetchAdminCollections(); // ✅ CORRECT API
-      setCollections(res);
+      const res = await fetchAdminCollections(); 
+      console.log("Collections:", res);
+
+      // res itself is ARRAY → NOT res.data
+      setCollections(res);     // ✅ FIX
     } catch (err) {
       console.error(err);
       alert("Failed to load collections");
@@ -26,8 +29,8 @@ const ManageCollection = () => {
       return;
 
     try {
-      await deleteAdminCollection(id); // ✅ CORRECT API
-      setCollections(collections.filter((col) => col.id !== id));
+      await deleteAdminCollection(id);
+      setCollections((prev) => prev.filter((col) => col.id !== id));
     } catch (err) {
       console.error(err);
       alert("Delete failed");
@@ -47,7 +50,6 @@ const ManageCollection = () => {
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="fw-bold">Collections</h3>
-
         <Link to="/admin/collections/add" className="btn btn-dark">
           + Add Collection
         </Link>

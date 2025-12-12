@@ -1,54 +1,113 @@
 import { useEffect, useState } from "react";
+import api from "../../api/client";
+import { fetchCollections } from "../../api/collections";
 import { Link } from "react-router-dom";
+import Products from "./Products";
 
 const Home = () => {
+  const [collections, setCollections] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
 
-  // Later connect to API
+  const loadData = async () => {
+    try {
+      const colRes = await fetchCollections();
+      const catRes = await api.get("/api/categories/");
+
+      setCollections(colRes.data);
+      setCategories(catRes.data);
+    } catch (error) {
+      console.log("Home API error:", error);
+    }
+  };
+
   useEffect(() => {
-    // setCategories(...)
-    // setProducts(...)
+    loadData();
   }, []);
 
   return (
-    <div className="px-4">
+    <div className="bg-white py-4">
 
-      {/* HERO BANNER */}
-      <div className="w-full h-56 md:h-72 bg-gray-300 rounded-xl mb-6 flex items-center justify-center text-3xl font-bold">
-        Fashion Starts Here 
+      {/* FULL WIDTH HERO BANNER */}
+      <div className="mb-5">
+        <div className="rounded overflow-hidden" style={{ height: "300px" }}>
+          <img
+            src="/banner-main.jpg"
+            alt="Banner"
+            className="w-100 h-100"
+            style={{ objectFit: "cover" }}
+          />
+        </div>
       </div>
 
-      {/* CATEGORIES */}
-      <h2 className="text-xl font-bold mb-4">Shop by Categories</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {categories.map((cat) => (
-          <Link
-            to={`/categories/${cat.slug}`}
-            key={cat.id}
-            className="bg-white shadow rounded-xl p-4 text-center"
-          >
-            <img src={cat.image_url} alt="" className="h-20 mx-auto mb-2" />
-            {cat.name}
-          </Link>
-        ))}
+      {/* ============================= */}
+      {/* ⭐ COLLECTIONS + CATEGORIES */}
+      {/* ============================= */}
+
+      <div className="container">
+
+        {/* COLLECTIONS TITLE */}
+        <h3 className="mb-4 ">Collections</h3>
+
+        {/* COLLECTIONS GRID */}
+        <div className="row g-4 mb-4">
+          {collections.map((col) => (
+            <div className="col-12 col-md-4" key={col.id}>
+              <Link to={`/collections/${col.slug}`} className="text-decoration-none text-dark">
+
+                <div className="overflow-hidden position-relative ">
+                  <img
+                    src={col.image_url || "/placeholder.png"}
+                    alt={col.name}
+                    className="w-100 image-zoom"
+                    style={{ height: "250px", objectFit: "cover" }}
+                  />
+                </div>
+
+                <p className="mt-2 ">
+                  {col.name} <i className="bi bi-arrow-right"></i>
+                </p>
+
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* CATEGORIES GRID */}
+        <div className="row g-4 mb-5">
+          {categories.map((cat) => (
+            <div className="col-12 col-md-4" key={cat.id}>
+              <Link to={`/categories/${cat.slug}`} className="text-decoration-none text-dark">
+
+                <div className="overflow-hidden position-relative ">
+                  <img
+                    src={cat.image_url || "/placeholder.png"}
+                    alt={cat.name}
+                    className="w-100 image-zoom"
+                    style={{ height: "250px", objectFit: "cover" }}
+                  />
+                </div>
+
+                <p className="mt-2 ">
+                  {cat.name} <i className="bi bi-arrow-right"></i>
+                </p>
+
+              </Link>
+            </div>
+          ))}
+        </div>
+      <Products/>
       </div>
 
-      {/* TRENDING PRODUCTS */}
-      <h2 className="text-xl font-bold mb-4">Trending Products</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {products.map((p) => (
-          <Link
-            to={`/product/${p.id}`}
-            key={p.id}
-            className="bg-white shadow rounded-xl p-3"
-          >
-            <img src={p.image_url} className="h-40 w-full object-cover rounded" />
-            <h3 className="font-medium mt-2">{p.name}</h3>
-            <p className="font-bold">₹{p.price}</p>
-          </Link>
-        ))}
-      </div>
+      {/* IMAGE ZOOM CSS */}
+      <style>{`
+        .image-zoom {
+          transition: transform 0.4s ease;
+        }
+        .image-zoom:hover {
+          transform: scale(1.07);
+        }
+      `}</style>
+
     </div>
   );
 };

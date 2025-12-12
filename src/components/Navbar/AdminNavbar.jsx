@@ -12,7 +12,7 @@ const AdminNavbar = ({ onMenuClick }) => {
         className="btn btn-outline-light d-md-none me-2"
         onClick={onMenuClick}
       >
-        ☰
+        <i class="bi bi-list"></i>
       </button>
 
       <Link className="navbar-brand fw-bold" to="/admin/dashboard">

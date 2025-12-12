@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { fetchSingleAdminCollection, updateAdminCollection } from "../../api/admin";
+import {
+  fetchSingleAdminCollection,
+  updateAdminCollection,
+} from "../../api/admin";
 import { useParams, useNavigate } from "react-router-dom";
 
 const EditCollection = () => {
@@ -10,20 +13,21 @@ const EditCollection = () => {
     name: "",
     slug: "",
     description: "",
+    sort_order: 0,
     is_active: true,
   });
 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  // Auto-slug generator
+  // AUTO SLUG
   const generateSlug = (text) =>
     text
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-  // Load existing collection
+  // LOAD COLLECTION
   const loadCollection = async () => {
     try {
       const data = await fetchSingleAdminCollection(id);
@@ -31,7 +35,8 @@ const EditCollection = () => {
       setForm({
         name: data.name,
         slug: data.slug,
-        description: data.description,
+        description: data.description || "",
+        sort_order: data.sort_order,
         is_active: data.is_active,
       });
 
@@ -46,6 +51,7 @@ const EditCollection = () => {
     loadCollection();
   }, [id]);
 
+  // HANDLE TEXT INPUTS
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -56,14 +62,14 @@ const EditCollection = () => {
     });
   };
 
-  // Image selection
+  // IMAGE SELECT
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     setImage(file);
     if (file) setPreview(URL.createObjectURL(file));
   };
 
-  // UPDATE API CALL
+  // SUBMIT UPDATE
   const handleSubmit = async () => {
     const data = new FormData();
 
@@ -124,7 +130,19 @@ const EditCollection = () => {
           ></textarea>
         </div>
 
-        {/* IMAGE UPLOAD */}
+        {/* SORT ORDER */}
+        <div className="mb-3">
+          <label className="form-label fw-bold">Sort Order</label>
+          <input
+            type="number"
+            name="sort_order"
+            className="form-control"
+            value={form.sort_order}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* IMAGE */}
         <div className="mb-3">
           <label className="form-label fw-bold">Update Image</label>
           <input
@@ -152,19 +170,24 @@ const EditCollection = () => {
           </div>
         )}
 
-        {/* ACTIVE CHECKBOX */}
+        {/* ACTIVE */}
         <div className="form-check mb-3">
           <input
             type="checkbox"
             className="form-check-input"
             checked={form.is_active}
-            onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+            onChange={(e) =>
+              setForm({ ...form, is_active: e.target.checked })
+            }
           />
           <label className="form-check-label">Active</label>
         </div>
 
         {/* SUBMIT */}
-        <button className="btn btn-dark w-100 fw-bold" onClick={handleSubmit}>
+        <button
+          className="btn btn-dark w-100 fw-bold"
+          onClick={handleSubmit}
+        >
           Update Collection
         </button>
       </div>

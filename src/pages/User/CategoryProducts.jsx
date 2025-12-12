@@ -43,7 +43,7 @@ const CategoryProducts = () => {
     <div className="container py-4">
 
       {/* CATEGORY TITLE */}
-      <h3 className="fw-bold mb-4 text-center">
+      <h3 className=" mb-4 ">
         {category.name}
       </h3>
 
@@ -65,7 +65,7 @@ const CategoryProducts = () => {
                     <img
                       src={product.images?.[0]?.image_url}
                       alt={product.name}
-                      className="card-img-top"
+                      className="product-img"
                     />
                   </div>
 
@@ -104,26 +104,27 @@ const CategoryProducts = () => {
           box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
+        /* FULL IMAGE FIT INSIDE CARD */
         .product-img-wrapper {
-          height: 220px;
+          height: 240px;
           overflow: hidden;
           border-radius: 12px 12px 0 0;
         }
 
-        .product-img-wrapper img {
-          height: 100%;
+        .product-img {
           width: 100%;
-          object-fit: cover;
+          height: 100%;
+          object-fit: cover;       /* FULL IMAGE FILL LIKE MYNTRA */
           transition: transform 0.4s ease;
         }
 
-        .product-card:hover img {
-          transform: scale(1.08);
+        .product-card:hover .product-img {
+          transform: scale(1.07);
         }
 
         @media (max-width: 576px) {
           .product-img-wrapper {
-            height: 180px;
+            height: 200px;
           }
         }
       `}</style>
