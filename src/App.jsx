@@ -10,6 +10,7 @@ import { fetchCart } from "./features/cart/cartSlice";
 import { setCategories } from "./features/category/categorySlice";
 import { setCollections } from "./features/collections/collectionSlice";
 
+
 const App = () => {
   const dispatch = useDispatch();
 

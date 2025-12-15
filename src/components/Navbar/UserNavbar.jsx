@@ -149,7 +149,7 @@ const UserNavbar = () => {
           {/* DESKTOP NAV */}
           <div className="collapse navbar-collapse">
             <div className="d-none d-lg-block me-4">
-              <img src={brandLogo} height="85" alt="logo" />
+              <img src={brandLogo} height="85" width="110" alt="logo" />
             </div>
 
             <ul className="navbar-nav gap-4 small">
@@ -248,8 +248,8 @@ const UserNavbar = () => {
         </div>
 
         <div className="offcanvas-body">
-          <Link to="/" className="d-block py-2" onClick={closeMenu}>Home</Link>
-          <Link to="/new" className="d-block py-2" onClick={closeMenu}>New</Link>
+          <Link to="/" className="d-block text-dark py-2" onClick={closeMenu}>Home</Link>
+          <Link to="/new" className="d-block text-dark py-2" onClick={closeMenu}>New</Link>
 
           {/* CATEGORY */}
           <div className="mt-2">
@@ -313,7 +313,7 @@ const UserNavbar = () => {
             </div>
           </div>
 
-          <Link to="/about" className="d-block py-2" onClick={closeMenu}>
+          <Link to="/about" className="d-block text-dark py-2" onClick={closeMenu}>
             About us
           </Link>
 

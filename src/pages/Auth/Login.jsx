@@ -1,22 +1,47 @@
 import { useState } from "react";
 import { sendOtpLogin } from "../../api/auth";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // success | error
+  const [loading, setLoading] = useState(false);
 
   const handleSendOTP = async () => {
-    if (!email) return toast.error("Please enter email");
+    if (!email) {
+      setMessage("Please enter your email address");
+      setMessageType("error");
+      return;
+    }
 
     try {
+      setLoading(true);
+      setMessage("");
+
       await sendOtpLogin({ email });
-      toast.success("OTP sent to your email");
-      navigate("/verify-otp", { state: { email } });
+
+      setMessage("OTP has been sent to your email address.");
+      setMessageType("success");
+
+      setTimeout(() => {
+        navigate("/verify-otp", { state: { email } });
+      }, 1200);
+
     } catch (err) {
-      toast.error(err.response?.data?.error || "Error sending OTP");
+      const data = err.response?.data;
+
+      if (data?.non_field_errors?.[0] === "User not found") {
+        setMessage("Your email is not registered. Please sign up.");
+        setMessageType("error");
+      } else {
+        setMessage("Unable to send OTP. Please try again.");
+        setMessageType("error");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,12 +60,27 @@ const Login = () => {
           Login using your email to receive OTP
         </p>
 
+        {/* MESSAGE */}
+        {message && (
+          <div
+            className={`alert ${
+              messageType === "success" ? "alert-success" : "alert-danger"
+            } py-2`}
+            style={{
+              fontSize: "0.9rem",
+              borderRadius: "10px",
+            }}
+          >
+            {message}
+          </div>
+        )}
+
         {/* EMAIL INPUT */}
         <label className="form-label fw-semibold">Email Address</label>
         <input
           type="email"
           className="form-control mb-4 shadow-sm"
-          placeholder="you@example.com"
+          placeholder="Enter your Email"
           style={{ borderRadius: "10px" }}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -51,8 +91,9 @@ const Login = () => {
           className="btn btn-dark w-100 py-2 fw-semibold"
           style={{ borderRadius: "10px" }}
           onClick={handleSendOTP}
+          disabled={loading}
         >
-          Send OTP
+          {loading ? "Sending OTP..." : "Send OTP"}
         </button>
 
         {/* REGISTER LINK */}
@@ -72,16 +113,6 @@ const Login = () => {
           animation: fadeIn .6s;
         }
 
-        /* Desktop box look */
-        @media (min-width: 768px) {
-          .login-card {
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-radius: 20px;
-          }
-        }
-
-        /* Mobile full-width (no box) */
         @media (max-width: 767px) {
           .login-card {
             background: transparent !important;

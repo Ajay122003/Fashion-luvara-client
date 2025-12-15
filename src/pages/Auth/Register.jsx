@@ -48,7 +48,7 @@ const Register = () => {
           <input
             type="email"
             name="email"
-            placeholder="you@example.com"
+            placeholder="Enter your email"
             className="form-control mb-3 shadow-sm"
             style={{ borderRadius: "10px" }}
             onChange={handleChange}
@@ -58,7 +58,7 @@ const Register = () => {
           <input
             type="text"
             name="username"
-            placeholder="Choose a username"
+            placeholder="username"
             className="form-control mb-3 shadow-sm"
             style={{ borderRadius: "10px" }}
             onChange={handleChange}
@@ -68,7 +68,7 @@ const Register = () => {
           <input
             type="password"
             name="password"
-            placeholder="Choose a strong password"
+            placeholder=" password"
             className="form-control mb-4 shadow-sm"
             style={{ borderRadius: "10px" }}
             onChange={handleChange}

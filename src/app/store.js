@@ -6,6 +6,7 @@ import categoryReducer from "../features/category/categorySlice";
 import collectionReducer from "../features/collections/collectionSlice";
 import cartReducer from "../features/cart/cartSlice";
 import wishlistReducer from "../features/wishlist/wishlistSlice";
+import orderReducer from "../features/order/orderSlice";
 
 const store = configureStore({
   reducer: {
@@ -13,9 +14,10 @@ const store = configureStore({
     dashboard: dashboardReducer,
     auth: authReducer,
     cart: cartReducer,
-    categories: categoryReducer,   // 🔥 Updated (plural + stable)
+    categories: categoryReducer,   //  Updated (plural + stable)
     collections: collectionReducer, 
     wishlist: wishlistReducer,
+    orders: orderReducer,
   },
 });
 

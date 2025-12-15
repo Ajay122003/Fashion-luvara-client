@@ -45,7 +45,7 @@ const Products = () => {
 
       {/* FILTER BAR */}
       <div className="row g-3 mb-4">
-        <div className="col-12 col-md-4">
+        <div className="col-4 col-md-4">
           <select
             className="form-select"
             onChange={(e) => updateFilter("sort", e.target.value)}
@@ -58,7 +58,7 @@ const Products = () => {
           </select>
         </div>
 
-        <div className="col-12 col-md-8">
+        <div className="col-8 col-md-8">
           <input
             type="text"
             className="form-control"
@@ -86,7 +86,7 @@ const Products = () => {
                   <img
                     src={product.images?.[0]?.image_url}
                     alt={product.name}
-                    className="w-100 h-100"
+                    className="w-100 "
                     style={{
                       objectFit: "cover",
                       transition: "transform .3s",

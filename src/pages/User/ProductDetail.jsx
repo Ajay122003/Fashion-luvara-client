@@ -52,8 +52,10 @@ const ProductDetail = () => {
 
   /* ================= ADD TO CART ================= */
   const handleAddToCart = async () => {
-    if (product.sizes?.length && !selectedSize)
-      return alert("Select a size");
+    if (product.sizes?.length && !selectedSize) {
+      alert("Select a size");
+      return;
+    }
 
     await apiClient.post("/api/cart/add/", {
       product_id: product.id,
@@ -69,10 +71,12 @@ const ProductDetail = () => {
     modal.show();
   };
 
-  /* ================= BUY IT NOW ================= */
+  /* ================= BUY NOW ================= */
   const handleBuyNow = async () => {
-    if (product.sizes?.length && !selectedSize)
-      return alert("Select a size");
+    if (product.sizes?.length && !selectedSize) {
+      alert("Select a size");
+      return;
+    }
 
     await apiClient.post("/api/cart/add/", {
       product_id: product.id,
@@ -101,7 +105,7 @@ const ProductDetail = () => {
   return (
     <div className="container py-3 py-md-5">
       <div className="row g-4">
-        {/* IMAGE */}
+        {/* IMAGE SECTION */}
         <div className="col-12 col-md-6">
           <div className="position-relative border rounded p-2">
             <button
@@ -117,12 +121,13 @@ const ProductDetail = () => {
 
             <img
               src={mainImage}
-              alt=""
+              alt={product.name}
               className="w-100"
               style={{ height: "380px", objectFit: "contain" }}
             />
           </div>
 
+          {/* THUMBNAILS */}
           <div className="d-flex gap-2 mt-3 overflow-auto">
             {product.images?.map((img) => (
               <img
@@ -153,9 +158,24 @@ const ProductDetail = () => {
 
           <p className="text-muted small">{product.description}</p>
 
+          {/* SIZE SECTION */}
           {product.sizes?.length > 0 && (
             <div className="my-3">
-              <small className="fw-semibold">Select Size</small>
+              <div className="d-flex justify-content-between align-items-center">
+                <small className="fw-semibold">Size</small>
+
+                {/* SIZE CHART LINK */}
+                <button
+                  type="button"
+                  className="btn btn-link text-dark p-0 text-decoration-none"
+                  data-bs-toggle="modal"
+                  data-bs-target="#sizeChartModal"
+                  style={{ fontSize: "0.85rem" }}
+                >
+                  Size chart
+                </button>
+              </div>
+
               <div className="d-flex flex-wrap gap-2 mt-2">
                 {product.sizes.map((s) => (
                   <button
@@ -201,15 +221,12 @@ const ProductDetail = () => {
         >
           Add to Cart
         </button>
-        <button
-          onClick={handleBuyNow}
-          className="btn btn-dark w-50"
-        >
+        <button onClick={handleBuyNow} className="btn btn-dark w-50">
           Buy it now
         </button>
       </div>
 
-      {/* SUCCESS MODAL */}
+      {/* CART SUCCESS MODAL */}
       <div className="modal fade" id="cartSuccessModal">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content text-center p-4">
@@ -227,9 +244,33 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* SIZE CHART MODAL */}
+      <div className="modal fade" id="sizeChartModal">
+        <div className="modal-dialog modal-dialog-centered modal-lg">
+          <div className="modal-content p-3">
+            <div className="modal-header border-0">
+              <h5 className="modal-title">Size Chart</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div className="modal-body text-center">
+              {/* Image based size chart */}
+              <img
+                src="/size-chart.jpg"
+                alt="Size chart"
+                className="img-fluid rounded"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ProductDetail;
-

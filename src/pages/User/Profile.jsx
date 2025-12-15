@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMe, updateProfile, logoutUser } from "../../api/auth";
-import {
-  getAddresses,
-  addAddress,
-  deleteAddress,
-} from "../../api/address";
+import { getAddresses, addAddress, deleteAddress } from "../../api/address";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
@@ -33,14 +29,30 @@ const Profile = () => {
   }, []);
 
   const loadAll = async () => {
-    const me = await getMe();
-    setProfile(me.data);
-    setUsername(me.data.username);
+    try {
+      const me = await getMe();
 
-    const addr = await getAddresses();
-    setAddresses(addr.data);
+      // 🔥 SAFETY: admin token accidentally used
+      if (me.data.is_staff) {
+        throw new Error("Admin token detected");
+      }
 
-    setLoading(false);
+      setProfile(me.data);
+      setUsername(me.data.username);
+
+      const addr = await getAddresses();
+      setAddresses(addr.data);
+
+    } catch (err) {
+      console.error("Auth error:", err);
+
+      // ❌ token wrong / expired / admin
+      localStorage.clear();
+      navigate("/login");
+      window.location.reload();
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ================= PROFILE UPDATE ================= */
@@ -83,8 +95,10 @@ const Profile = () => {
     } catch (err) {
       console.error("Logout failed", err);
     } finally {
+      // 🔥 VERY IMPORTANT
       localStorage.clear();
       navigate("/login");
+      window.location.reload(); // reset axios interceptor memory
     }
   };
 
@@ -155,11 +169,8 @@ const Profile = () => {
 
       {/* ================= ACTIONS ================= */}
       <div className="d-flex gap-3 flex-wrap mt-4">
-        <button
-          className="btn btn-dark"
-          onClick={() => navigate("/")}
-        >
-          Add Shop
+        <button className="btn btn-dark" onClick={() => navigate("/")}>
+          Go to Shop
         </button>
 
         <button

@@ -12,21 +12,44 @@ const OTPVerify = () => {
 
   const email = state?.email;
   const [otp, setOTP] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const verify = async () => {
-    if (!otp) return toast.error("Enter OTP");
+    if (!otp) {
+      toast.error("Please enter OTP");
+      return;
+    }
 
     try {
+      setLoading(true);
+
+      // ✅ verify OTP
       const res = await verifyOtpLogin({ email, otp });
       dispatch(setToken(res.data.tokens));
 
+      // ✅ get logged-in user
       const me = await getMe();
       dispatch(setUser(me.data));
 
-      toast.success("Login successful!");
+      // ✅ success toast
+      toast.success("Login successful 🎉");
+
       navigate("/");
     } catch (err) {
-      toast.error(err.response?.data?.otp || "Invalid OTP");
+      const data = err.response?.data;
+
+      // 🔥 WRONG / EXPIRED / INVALID OTP
+      if (
+        data?.non_field_errors ||
+        data?.otp ||
+        typeof data === "string"
+      ) {
+        toast.error("Invalid OTP. Please try again.");
+      } else {
+        toast.error("OTP verification failed.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,7 +81,7 @@ const OTPVerify = () => {
             fontWeight: "600",
           }}
           value={otp}
-          onChange={(e) => setOTP(e.target.value)}
+          onChange={(e) => setOTP(e.target.value.replace(/\D/g, ""))}
         />
 
         {/* BUTTON */}
@@ -66,8 +89,9 @@ const OTPVerify = () => {
           className="btn btn-dark w-100 py-2 fw-semibold"
           style={{ borderRadius: "10px" }}
           onClick={verify}
+          disabled={loading}
         >
-          Verify & Login
+          {loading ? "Verifying..." : "Verify & Login"}
         </button>
       </div>
 
@@ -79,16 +103,6 @@ const OTPVerify = () => {
           animation: fadeIn .6s;
         }
 
-        /* Desktop look → Card with shadow */
-        @media (min-width: 768px) {
-          .otp-card {
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-radius: 20px;
-          }
-        }
-
-        /* Mobile look → No box, no shadow */
         @media (max-width: 767px) {
           .otp-card {
             background: transparent !important;

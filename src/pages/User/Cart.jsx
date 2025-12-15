@@ -7,7 +7,7 @@ import { updateCartItem, removeCartItem } from "../../api/cart";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // ✅ FIX
+  const navigate = useNavigate();
 
   const { items, status } = useSelector((s) => s.cart);
 
@@ -40,86 +40,93 @@ const Cart = () => {
   );
 
   if (status === "loading") {
-    return <p className="text-center py-5">Loading cart...</p>;
+    return <p className="text-center py-5">Loading cart…</p>;
+  }
+
+  if (items.length === 0) {
+    return <p className="text-center py-5 fs-5">Your cart is empty.</p>;
   }
 
   return (
     <div className="container py-4">
       <h3 className="fw-bold mb-4">Shopping Cart</h3>
 
-      {items.length === 0 && (
-        <p className="text-center py-5 fs-5">Your cart is empty.</p>
-      )}
-
       <div className="row g-4">
-        {/* CART ITEMS */}
+        {/* ================= CART ITEMS ================= */}
         <div className="col-12 col-lg-8">
           {items.map((item) => (
             <div
               key={item.id}
-              className="d-flex flex-column flex-md-row p-3 border rounded shadow-sm mb-3"
+              className="cart-item card border-0 shadow-sm mb-3"
             >
-              <div className="text-center">
+              <div className="card-body d-flex gap-3">
+
+                {/* IMAGE */}
                 <img
                   src={item.product.images?.[0]?.image_url}
-                  alt=""
-                  className="rounded"
-                  style={{
-                    width: "140px",
-                    height: "150px",
-                    objectFit: "cover",
-                  }}
+                  alt={item.product.name}
+                  className="cart-img"
                 />
-              </div>
 
-              <div className="ms-md-3 mt-3 mt-md-0 flex-grow-1">
-                <h6 className="fw-bold">{item.product.name}</h6>
+                {/* DETAILS */}
+                <div className="flex-grow-1">
+                  <h6 className="fw-bold mb-1">
+                    {item.product.name}
+                  </h6>
 
-                <p className="mb-1 fw-semibold">
-                  ₹{item.product.sale_price || item.product.price}
-                </p>
-
-                {item.size && (
-                  <p className="small mb-1">
-                    <strong>Size:</strong> {item.size}
+                  <p className="fw-semibold mb-1">
+                    ₹{item.product.sale_price || item.product.price}
                   </p>
-                )}
 
-                <div className="d-flex align-items-center gap-2 mt-2">
-                  <button
-                    className="btn btn-outline-dark btn-sm"
-                    disabled={item.quantity === 1}
-                    onClick={() => updateQty(item.id, item.quantity - 1)}
-                  >
-                    -
-                  </button>
+                  {item.size && (
+                    <p className="small text-muted mb-2">
+                      Size: <strong>{item.size}</strong>
+                    </p>
+                  )}
 
-                  <span className="px-2 fw-bold">{item.quantity}</span>
+                  {/* QTY */}
+                  <div className="d-flex align-items-center gap-2">
+                    <button
+                      className="btn btn-outline-dark btn-sm"
+                      disabled={item.quantity === 1}
+                      onClick={() =>
+                        updateQty(item.id, item.quantity - 1)
+                      }
+                    >
+                      −
+                    </button>
 
-                  <button
-                    className="btn btn-outline-dark btn-sm"
-                    onClick={() => updateQty(item.id, item.quantity + 1)}
-                  >
-                    +
-                  </button>
+                    <span className="fw-bold px-2">
+                      {item.quantity}
+                    </span>
+
+                    <button
+                      className="btn btn-outline-dark btn-sm"
+                      onClick={() =>
+                        updateQty(item.id, item.quantity + 1)
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
 
+                {/* REMOVE */}
                 <button
-                  className="btn btn-link text-danger mt-2 p-0"
+                  className="btn btn-link text-danger align-self-start p-0"
                   onClick={() => removeItem(item.id)}
                 >
-                  <i className="bi bi-trash3"></i>
+                  <i className="bi bi-trash3 fs-5"></i>
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* ORDER SUMMARY */}
+        {/* ================= ORDER SUMMARY ================= */}
         <div className="col-12 col-lg-4">
-          <div className="border rounded p-3 shadow-sm">
-            <h5 className="fw-bold">Order Summary</h5>
-            <hr />
+          <div className="order-summary card border-0 shadow-sm p-3">
+            <h5 className="fw-bold mb-3">Order Summary</h5>
 
             {items.map((item) => (
               <div
@@ -136,7 +143,7 @@ const Cart = () => {
             <hr />
 
             <div className="d-flex justify-content-between fw-bold fs-5">
-              <span>Total:</span>
+              <span>Total</span>
               <span>₹{totalAmount}</span>
             </div>
 
@@ -144,13 +151,36 @@ const Cart = () => {
               className="btn btn-dark w-100 mt-3"
               onClick={() => navigate("/checkout")}
             >
-              Checkout
+              Proceed to Checkout
             </button>
           </div>
         </div>
       </div>
+
+      {/* ================= STYLES ================= */}
+      <style>{`
+        .cart-img {
+          width: 120px;
+          height: 140px;
+          object-fit: cover;
+          border-radius: 8px;
+        }
+
+        @media (max-width: 576px) {
+          .cart-img {
+            width: 90px;
+            height: 110px;
+          }
+        }
+
+        .order-summary {
+          position: sticky;
+          top: 80px;
+        }
+      `}</style>
     </div>
   );
 };
 
 export default Cart;
+

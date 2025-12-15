@@ -37,7 +37,7 @@ const Wishlist = () => {
               <Link to={`/product/${item.product.id}`}>
                 <img
                   src={item.product.images?.[0]?.image_url}
-                  className="card-img-top"
+                  className="card-img-top img-fluid w-100"
                   style={{ height: "220px", objectFit: "cover" }}
                 />
               </Link>

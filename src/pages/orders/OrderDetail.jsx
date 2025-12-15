@@ -1,10 +1,11 @@
-// src/pages/orders/OrderDetail.jsx
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getOrderDetail } from "../../api/order";
 
 const OrderDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -17,70 +18,97 @@ const OrderDetail = () => {
       const res = await getOrderDetail(id);
       setOrder(res.data);
     } catch {
-      alert("Failed to load order");
+      alert("Failed to load order details");
+      navigate("/orders");
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <p className="text-center py-5">Loading order...</p>;
-  if (!order) return <p className="text-center py-5">Order not found</p>;
+  if (loading)
+    return <p className="text-center py-5">Loading order...</p>;
+
+  if (!order)
+    return <p className="text-center py-5">Order not found</p>;
 
   return (
     <div className="container py-4" style={{ maxWidth: 900 }}>
-      <h4 className="mb-3">Order Details</h4>
+      {/* HEADER */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h4>Order #{order.order_id || order.id}</h4>
+        <span
+          className={`badge fs-6 ${
+            order.status === "DELIVERED"
+              ? "bg-success"
+              : "bg-warning text-dark"
+          }`}
+        >
+          {order.status}
+        </span>
+      </div>
 
-      {/* ORDER INFO */}
-      <div className="card p-3 shadow-sm mb-4">
-        <div className="d-flex justify-content-between flex-wrap">
-          <div>
-            <strong>Order ID:</strong> {order.order_id || order.id}
-            <br />
-            <small className="text-muted">
-              {new Date(order.created_at).toLocaleString()}
-            </small>
-          </div>
-
-          <span className="badge bg-dark align-self-start">
-            {order.status}
-          </span>
+      {/* ADDRESS */}
+      <div className="card shadow-sm mb-3">
+        <div className="card-body">
+          <h6>Delivery Address</h6>
+          <p className="mb-0">
+            <strong>{order.address.name}</strong> – {order.address.phone}
+          </p>
+          <small className="text-muted">
+            {order.address.full_address}, {order.address.city} –{" "}
+            {order.address.pincode}
+          </small>
         </div>
       </div>
 
       {/* ITEMS */}
-      <div className="card p-3 shadow-sm mb-4">
-        <h6 className="mb-3">Items</h6>
+      <div className="card shadow-sm mb-3">
+        <div className="card-body">
+          <h6 className="mb-3">Items</h6>
 
-        {order.items.map((item) => (
-          <div
-            key={item.id}
-            className="d-flex justify-content-between mb-2"
-          >
-            <div>
-              {item.product_name} × {item.quantity}
+          {order.items.map((item) => (
+            <div
+              key={item.id}
+              className="d-flex justify-content-between align-items-center border-bottom py-2"
+            >
+              <div>
+                <strong>{item.product.name}</strong>
+                <p className="small mb-0">
+                  Qty: {item.quantity}
+                  {item.size && <> | Size: {item.size}</>}
+                </p>
+              </div>
+
+              <span className="fw-bold">₹{item.total_price}</span>
             </div>
-            <strong>₹{item.total_price}</strong>
-          </div>
-        ))}
-
-        <hr />
-
-        <div className="d-flex justify-content-between fw-bold">
-          <span>Total</span>
-          <span>₹{order.total_amount}</span>
+          ))}
         </div>
       </div>
 
-      {/* ADDRESS */}
-      <div className="card p-3 shadow-sm">
-        <h6 className="mb-2">Delivery Address</h6>
-        <p className="mb-1">{order.address.name}</p>
-        <p className="mb-1">{order.address.phone}</p>
-        <p className="mb-0">
-          {order.address.full_address}, {order.address.city} –{" "}
-          {order.address.pincode}
-        </p>
+      {/* SUMMARY */}
+      <div className="card shadow-sm">
+        <div className="card-body">
+          <div className="d-flex justify-content-between">
+            <span>Payment</span>
+            <strong>{order.payment_method}</strong>
+          </div>
+
+          <hr />
+
+          <div className="d-flex justify-content-between fs-5 fw-bold">
+            <span>Total</span>
+            <span>₹{order.total_amount}</span>
+          </div>
+        </div>
       </div>
+
+      {/* ACTIONS */}
+      <button
+        className="btn btn-outline-dark mt-4"
+        onClick={() => navigate("/orders")}
+      >
+        ← Back to Orders
+      </button>
     </div>
   );
 };
