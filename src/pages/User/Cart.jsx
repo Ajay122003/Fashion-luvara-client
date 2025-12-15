@@ -1,31 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { getCartItems, updateCartItem, removeCartItem } from "../../api/cart";
-import { useDispatch } from "react-redux";
-import { setCartItems } from "../../features/cart/cartSlice";
+// src/pages/cart/Cart.jsx
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchCart } from "../../features/cart/cartSlice";
+import { updateCartItem, removeCartItem } from "../../api/cart";
 
 const Cart = () => {
-  const [items, setItems] = useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // ✅ FIX
 
-  const loadCart = async () => {
-    try {
-      const res = await getCartItems();
-      setItems(res.data);
-      dispatch(setCartItems(res.data));
-    } catch (err) {
-      console.error("Failed to load cart", err);
-    }
-  };
+  const { items, status } = useSelector((s) => s.cart);
 
   useEffect(() => {
-    loadCart();
-  }, []);
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   const updateQty = async (id, qty) => {
     if (qty < 1) return;
     try {
       await updateCartItem(id, qty);
-      loadCart();
+      dispatch(fetchCart());
     } catch (err) {
       alert(err.response?.data?.error || "Failed to update cart");
     }
@@ -34,16 +28,20 @@ const Cart = () => {
   const removeItem = async (id) => {
     try {
       await removeCartItem(id);
-      loadCart();
-    } catch (err) {
+      dispatch(fetchCart());
+    } catch {
       alert("Could not remove item");
     }
   };
 
   const totalAmount = items.reduce(
-    (sum, item) => sum + item.product.effective_price * item.quantity,
+    (sum, item) => sum + item.total_price,
     0
   );
+
+  if (status === "loading") {
+    return <p className="text-center py-5">Loading cart...</p>;
+  }
 
   return (
     <div className="container py-4">
@@ -54,17 +52,16 @@ const Cart = () => {
       )}
 
       <div className="row g-4">
-        {/* ----------------------- CART ITEMS ------------------------ */}
+        {/* CART ITEMS */}
         <div className="col-12 col-lg-8">
           {items.map((item) => (
             <div
               key={item.id}
               className="d-flex flex-column flex-md-row p-3 border rounded shadow-sm mb-3"
             >
-              {/* IMAGE */}
               <div className="text-center">
                 <img
-                  src={item.product.images[0]?.image_url}
+                  src={item.product.images?.[0]?.image_url}
                   alt=""
                   className="rounded"
                   style={{
@@ -75,12 +72,11 @@ const Cart = () => {
                 />
               </div>
 
-              {/* DETAILS */}
               <div className="ms-md-3 mt-3 mt-md-0 flex-grow-1">
                 <h6 className="fw-bold">{item.product.name}</h6>
 
                 <p className="mb-1 fw-semibold">
-                  ₹{item.product.effective_price}
+                  ₹{item.product.sale_price || item.product.price}
                 </p>
 
                 {item.size && (
@@ -89,13 +85,6 @@ const Cart = () => {
                   </p>
                 )}
 
-                {item.color && (
-                  <p className="small mb-1">
-                    <strong>Color:</strong> {item.color}
-                  </p>
-                )}
-
-                {/* QUANTITY CONTROLS */}
                 <div className="d-flex align-items-center gap-2 mt-2">
                   <button
                     className="btn btn-outline-dark btn-sm"
@@ -115,22 +104,20 @@ const Cart = () => {
                   </button>
                 </div>
 
-                {/* REMOVE */}
                 <button
                   className="btn btn-link text-danger mt-2 p-0"
                   onClick={() => removeItem(item.id)}
                 >
-                  <i class="bi bi-trash3"></i>
+                  <i className="bi bi-trash3"></i>
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* ----------------------- ORDER SUMMARY ------------------------ */}
+        {/* ORDER SUMMARY */}
         <div className="col-12 col-lg-4">
           <div className="border rounded p-3 shadow-sm">
-
             <h5 className="fw-bold">Order Summary</h5>
             <hr />
 
@@ -142,21 +129,23 @@ const Cart = () => {
                 <span>
                   {item.product.name} × {item.quantity}
                 </span>
-                <span>
-                  ₹{item.product.effective_price * item.quantity}
-                </span>
+                <span>₹{item.total_price}</span>
               </div>
             ))}
 
             <hr />
 
-            {/* TOTAL */}
             <div className="d-flex justify-content-between fw-bold fs-5">
               <span>Total:</span>
               <span>₹{totalAmount}</span>
             </div>
 
-            <button className="btn btn-dark w-100 mt-3">Checkout</button>
+            <button
+              className="btn btn-dark w-100 mt-3"
+              onClick={() => navigate("/checkout")}
+            >
+              Checkout
+            </button>
           </div>
         </div>
       </div>
@@ -165,4 +154,3 @@ const Cart = () => {
 };
 
 export default Cart;
-

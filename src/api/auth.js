@@ -15,5 +15,8 @@ export const passwordLogin = (data) =>
 export const getMe = () => 
   apiClient.get("/api/auth/me/");
 
+export const updateProfile = (data) =>
+  apiClient.put("/api/auth/me/update/", data);
+
 export const logoutUser = (refresh) =>
   apiClient.post("/api/auth/logout/", { refresh });

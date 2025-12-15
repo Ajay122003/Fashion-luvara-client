@@ -10,14 +10,19 @@ import AdminRoute from "../components/Protected/AdminRoute";
 
 // User Pages
 import Home from "../pages/User/Home";
-import Products from "../pages/User/Products";           // ✅ NEW
-import ProductDetail from "../pages/User/ProductDetail"; // ✅ NEW
+import Products from "../pages/User/Products";
+import ProductDetail from "../pages/User/ProductDetail";
+import Cart from "../pages/User/Cart";
+import Wishlist from "../pages/User/Wishlist"; // ✅ ADDED
+import Profile from "../pages/User/Profile";
+import Orders from "../pages/orders/Orders";
+import OrderDetail from "../pages/orders/OrderDetail";
 
 // Category Pages
 import Categories from "../pages/User/Categories";
 import CategoryProducts from "../pages/User/CategoryProducts";
 
-// Collection Pages 
+// Collection Pages
 import Collections from "../pages/User/Collections";
 import CollectionProducts from "../pages/User/CollectionProducts";
 
@@ -25,7 +30,8 @@ import CollectionProducts from "../pages/User/CollectionProducts";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import OTPVerify from "../pages/Auth/OTPVerify";
-
+import Checkout from "../pages/checkout/Checkout";
+import OrderSuccess from "../pages/orders/OrderSuccess";
 // Admin Pages
 import AdminLogin from "../pages/Admin/AdminLogin";
 import Dashboard from "../pages/Admin/Dashboard";
@@ -48,25 +54,26 @@ import EditCoupon from "../pages/Admin/EditCoupon";
 
 import Settings from "../pages/Admin/Settings";
 
-// ADMIN COLLECTION PAGES
+// Admin Collection Pages
 import ManageCollection from "../pages/Admin/ManageCollection";
 import AddCollection from "../pages/Admin/AddCollection";
 import EditCollection from "../pages/Admin/EditCollection";
-import Cart from "../pages/User/Cart";
-
 
 const AppRoutes = () => {
   return (
     <Routes>
-
       {/* =========================== USER PUBLIC ROUTES ============================ */}
       <Route path="/" element={<UserLayout />}>
         <Route index element={<Home />} />
 
         {/* Product List + Detail */}
-        <Route path="products" element={<Products />} />          {/*  ADDED */}
-        <Route path="product/:id" element={<ProductDetail />} />  {/*  ADDED */}
-        <Route path="/cart" element={<Cart />} />
+        <Route path="products" element={<Products />} />
+        <Route path="product/:id" element={<ProductDetail />} />
+
+        {/* Cart & Wishlist */}
+        <Route path="cart" element={<Cart />} />
+        <Route path="wishlist" element={<Wishlist />} /> {/* ✅ ADDED */}
+
         {/* Category Routes */}
         <Route path="categories" element={<Categories />} />
         <Route path="categories/:slug" element={<CategoryProducts />} />
@@ -80,7 +87,11 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<OTPVerify />} />
-
+      <Route path="profile" element={<Profile />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/order-success" element={<OrderSuccess />} />
+      <Route path="/orders" element={<Orders />} />
+      <Route path="/orders/:id" element={<OrderDetail />} />
       {/* =========================== ADMIN LOGIN ============================ */}
       <Route path="/admin/login" element={<AdminLogin />} />
 

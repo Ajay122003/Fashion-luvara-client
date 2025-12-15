@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import UserNavbar from "../components/Navbar/UserNavbar";
 import Footer from "../components/Footer/Footer";
+import Profile from "../pages/User/Profile";
 
 const UserLayout = () => {
   return (
@@ -12,6 +13,7 @@ const UserLayout = () => {
       {/* PAGE CONTENT */}
       <main className="flex-1">
         <Outlet />
+        
       </main>
 
       {/* FOOTER */}
