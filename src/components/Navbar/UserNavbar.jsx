@@ -116,7 +116,7 @@ const UserNavbar = () => {
 
           {/* MOBILE LOGO */}
           <div className="mx-auto d-lg-none">
-            <img src={brandLogo2} height="40" alt="logo" />
+            <img src={brandLogo2} height="40" width="145" alt="logo" />
           </div>
 
           {/* MOBILE ICONS */}
