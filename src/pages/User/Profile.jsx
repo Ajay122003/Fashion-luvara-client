@@ -29,31 +29,23 @@ const Profile = () => {
   }, []);
 
   const loadAll = async () => {
-    try {
-      const me = await getMe();
+  try {
+    const me = await getMe();   // backend decides user/admin
 
-      // 🔥 SAFETY: admin token accidentally used
-      if (me.data.is_staff) {
-        throw new Error("Admin token detected");
-      }
+    setProfile(me.data);
+    setUsername(me.data.username);
 
-      setProfile(me.data);
-      setUsername(me.data.username);
+    const addr = await getAddresses();
+    setAddresses(addr.data);
 
-      const addr = await getAddresses();
-      setAddresses(addr.data);
+  } catch (err) {
+    localStorage.clear();
+    navigate("/login", { replace: true });
+  } finally {
+    setLoading(false);
+  }
+};
 
-    } catch (err) {
-      console.error("Auth error:", err);
-
-      // ❌ token wrong / expired / admin
-      localStorage.clear();
-      navigate("/login");
-      window.location.reload();
-    } finally {
-      setLoading(false);
-    }
-  };
 
   /* ================= PROFILE UPDATE ================= */
   const saveProfile = async () => {
