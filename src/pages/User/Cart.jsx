@@ -1,7 +1,6 @@
-// src/pages/cart/Cart.jsx
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { fetchCart } from "../../features/cart/cartSlice";
 import { updateCartItem, removeCartItem } from "../../api/cart";
 
@@ -39,17 +38,40 @@ const Cart = () => {
     0
   );
 
+  /* ================= LOADING ================= */
   if (status === "loading") {
     return <p className="text-center py-5">Loading cart…</p>;
   }
 
+  /* ================= EMPTY CART ================= */
   if (items.length === 0) {
-    return <p className="text-center py-5 fs-5">Your cart is empty.</p>;
+    return (
+      <div className="container py-5 text-center">
+        <i className="bi bi-cart-x fs-1 text-muted"></i>
+        <h4 className="fw-bold mt-3">Your cart is empty</h4>
+        <p className="text-muted mb-4">
+          Looks like you haven’t added anything yet
+        </p>
+
+        <Link to="/" className="btn btn-dark px-4">
+          Continue Shopping
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div className="container py-4">
-      <h3 className="fw-bold mb-4">Shopping Cart</h3>
+      {/* HEADER */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold mb-0">Shopping Cart</h3>
+        <button
+          className="btn btn-link text-decoration-none"
+          onClick={() => navigate("/")}
+        >
+          ← Continue shopping
+        </button>
+      </div>
 
       <div className="row g-4">
         {/* ================= CART ITEMS ================= */}
@@ -57,7 +79,7 @@ const Cart = () => {
           {items.map((item) => (
             <div
               key={item.id}
-              className="cart-item card border-0 shadow-sm mb-3"
+              className="card border-0 shadow-sm mb-3"
             >
               <div className="card-body d-flex gap-3">
 
@@ -125,7 +147,7 @@ const Cart = () => {
 
         {/* ================= ORDER SUMMARY ================= */}
         <div className="col-12 col-lg-4">
-          <div className="order-summary card border-0 shadow-sm p-3">
+          <div className="card border-0 shadow-sm p-3 order-summary">
             <h5 className="fw-bold mb-3">Order Summary</h5>
 
             {items.map((item) => (
@@ -153,6 +175,10 @@ const Cart = () => {
             >
               Proceed to Checkout
             </button>
+
+            <p className="small text-muted text-center mt-2">
+              Taxes & shipping calculated at checkout
+            </p>
           </div>
         </div>
       </div>
@@ -175,7 +201,7 @@ const Cart = () => {
 
         .order-summary {
           position: sticky;
-          top: 80px;
+          top: 90px;
         }
       `}</style>
     </div>

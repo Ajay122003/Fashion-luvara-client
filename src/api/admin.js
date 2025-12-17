@@ -164,6 +164,12 @@ export const fetchSiteSettings = async () => {
   return res.data;
 };
 
+export const fetchPublicSettings = async () => {
+  const res = await apiClient.get("/api/admin-panel/public-settings/");
+  return res.data;   // 🔥 IMPORTANT
+};
+
+
 // Update admin email
 export const adminUpdateEmail = async (data) => {
   const res = await apiClient.put("/api/admin-panel/update-email/", data);

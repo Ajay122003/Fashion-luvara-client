@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { fetchSiteSettings, updateSiteSettings, adminUpdateEmail, adminChangePassword,} from "../../api/admin";
+import {
+  fetchSiteSettings,
+  updateSiteSettings,
+  adminUpdateEmail,
+  adminChangePassword,
+} from "../../api/admin";
 
 const Settings = () => {
-  // -------------------------
-  // SITE SETTINGS
-  // -------------------------
+  /* =========================
+     SITE SETTINGS
+  ========================= */
   const [settings, setSettings] = useState({
     enable_cod: true,
     allow_order_cancel: true,
     allow_order_return: true,
+    shipping_charge: 50,
+    free_shipping_min_amount: 999,
   });
 
   const [loading, setLoading] = useState(true);
@@ -18,7 +25,11 @@ const Settings = () => {
     try {
       setLoading(true);
       const data = await fetchSiteSettings();
-      setSettings(data);
+      setSettings({
+        ...data,
+        shipping_charge: Number(data.shipping_charge),
+        free_shipping_min_amount: Number(data.free_shipping_min_amount),
+      });
     } catch (err) {
       alert("Failed to load settings");
     } finally {
@@ -30,8 +41,22 @@ const Settings = () => {
     loadSettings();
   }, []);
 
+  /* =========================
+     HANDLERS
+  ========================= */
   const handleToggle = (e) => {
-    setSettings({ ...settings, [e.target.name]: e.target.checked });
+    setSettings({
+      ...settings,
+      [e.target.name]: e.target.checked,
+    });
+  };
+
+  // 🔥 IMPORTANT FIX (NUMBER)
+  const handleNumberChange = (e) => {
+    setSettings({
+      ...settings,
+      [e.target.name]: Number(e.target.value),
+    });
   };
 
   const saveSettings = async () => {
@@ -40,15 +65,16 @@ const Settings = () => {
       await updateSiteSettings(settings);
       alert("Settings updated successfully!");
     } catch (err) {
+      console.error(err.response?.data);
       alert("Error updating settings");
     } finally {
       setSaving(false);
     }
   };
 
-  // -------------------------
-  // CHANGE EMAIL
-  // -------------------------
+  /* =========================
+     CHANGE EMAIL
+  ========================= */
   const [newEmail, setNewEmail] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
 
@@ -71,9 +97,9 @@ const Settings = () => {
     }
   };
 
-  // -------------------------
-  // CHANGE PASSWORD
-  // -------------------------
+  /* =========================
+     CHANGE PASSWORD
+  ========================= */
   const [passwordData, setPasswordData] = useState({
     old_password: "",
     new_password: "",
@@ -82,7 +108,10 @@ const Settings = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   const handlePasswordField = (e) => {
-    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+    setPasswordData({
+      ...passwordData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const updatePassword = async () => {
@@ -93,11 +122,7 @@ const Settings = () => {
       setPasswordLoading(true);
       const res = await adminChangePassword(passwordData);
       alert(res.message);
-
-      setPasswordData({
-        old_password: "",
-        new_password: "",
-      });
+      setPasswordData({ old_password: "", new_password: "" });
     } catch (err) {
       alert(
         err.response?.data?.old_password ||
@@ -113,7 +138,7 @@ const Settings = () => {
     <div>
       <h3 className="mb-4 fw-bold">Admin Settings</h3>
 
-      {/* SITE SETTINGS */}
+      {/* ================= SITE SETTINGS ================= */}
       <div className="card shadow-sm mb-4">
         <div className="card-body">
           <h5 className="fw-bold">Store Controls</h5>
@@ -123,6 +148,7 @@ const Settings = () => {
             <p>Loading settings...</p>
           ) : (
             <>
+              {/* COD */}
               <div className="form-check form-switch mb-3">
                 <input
                   className="form-check-input"
@@ -136,6 +162,7 @@ const Settings = () => {
                 </label>
               </div>
 
+              {/* CANCEL */}
               <div className="form-check form-switch mb-3">
                 <input
                   className="form-check-input"
@@ -149,7 +176,8 @@ const Settings = () => {
                 </label>
               </div>
 
-              <div className="form-check form-switch mb-3">
+              {/* RETURN */}
+              <div className="form-check form-switch mb-4">
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -162,8 +190,35 @@ const Settings = () => {
                 </label>
               </div>
 
+              {/* 🚚 SHIPPING SETTINGS */}
+              <h6 className="fw-bold">Shipping Settings</h6>
+
+              <div className="mb-3">
+                <label className="form-label">Shipping Charge (₹)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="shipping_charge"
+                  value={settings.shipping_charge}
+                  onChange={handleNumberChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">
+                  Free Shipping Above (₹)
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="free_shipping_min_amount"
+                  value={settings.free_shipping_min_amount}
+                  onChange={handleNumberChange}
+                />
+              </div>
+
               <button
-                className="btn btn-dark"
+                className="btn btn-dark mt-2"
                 disabled={saving}
                 onClick={saveSettings}
               >
@@ -174,7 +229,7 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* CHANGE EMAIL */}
+      {/* ================= CHANGE EMAIL ================= */}
       <div className="card shadow-sm mb-4">
         <div className="card-body">
           <h5 className="fw-bold">Change Admin Email</h5>
@@ -185,7 +240,6 @@ const Settings = () => {
             <input
               type="email"
               className="form-control"
-              placeholder="Enter new admin email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
             />
@@ -201,7 +255,7 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* CHANGE PASSWORD */}
+      {/* ================= CHANGE PASSWORD ================= */}
       <div className="card shadow-sm mb-4">
         <div className="card-body">
           <h5 className="fw-bold">Change Admin Password</h5>
@@ -213,19 +267,17 @@ const Settings = () => {
               type="password"
               className="form-control"
               name="old_password"
-              placeholder="Enter old password"
               value={passwordData.old_password}
               onChange={handlePasswordField}
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label">New Password (min 10 chars)</label>
+            <label className="form-label">New Password</label>
             <input
               type="password"
               className="form-control"
               name="new_password"
-              placeholder="Enter new password"
               value={passwordData.new_password}
               onChange={handlePasswordField}
             />

@@ -147,8 +147,9 @@ const UserNavbar = () => {
           </div>
 
           {/* DESKTOP NAV */}
+        
           <div className="collapse navbar-collapse">
-            <div className="d-none d-lg-block me-4">
+            <div className=" d-none d-lg-block me-4">
               <img src={brandLogo} height="85" width="110" alt="logo" />
             </div>
 
@@ -198,7 +199,7 @@ const UserNavbar = () => {
             </ul>
 
             {/* DESKTOP RIGHT */}
-            <div className="ms-auto d-none d-lg-flex gap-4 fs-5">
+            <div className="ms-auto  d-none d-lg-flex gap-4 fs-5">
               <i
                 className="bi bi-search"
                 role="button"
@@ -225,10 +226,10 @@ const UserNavbar = () => {
                 )}
               </Link>
 
-              <Link to="/cart" className="position-relative text-dark">
+              <Link to="/cart" className="  position-relative text-dark">
                 <i className="bi bi-bag" />
                 {cartCount > 0 && (
-                  <span className="badge bg-dark position-absolute top-0 start-100 translate-middle">
+                  <span className="  badge bg-dark position-absolute top-0 start-100 translate-middle">
                     {cartCount}
                   </span>
                 )}
@@ -237,6 +238,7 @@ const UserNavbar = () => {
           </div>
         </div>
       </nav>
+    
 
       {/* ================= MOBILE OFFCANVAS ================= */}
       <div className="offcanvas offcanvas-start" id="mobileMenu">
