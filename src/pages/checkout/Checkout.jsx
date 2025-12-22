@@ -49,6 +49,7 @@ const Checkout = () => {
       loadAddresses();
       loadSettings();
     }
+    // eslint-disable-next-line
   }, []);
 
   const loadAddresses = async () => {
@@ -66,10 +67,11 @@ const Checkout = () => {
   };
 
   /* ================= PRICE ================= */
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + Number(item.total_price),
-    0
-  );
+  const subtotal = cartItems.reduce((sum, item) => {
+    const product = item.variant.product;
+    const price = product.sale_price || product.price;
+    return sum + price * item.quantity;
+  }, 0);
 
   const freeMin = Number(settings?.free_shipping_min_amount || 0);
   const shipCharge = Number(settings?.shipping_charge || 0);
@@ -193,73 +195,6 @@ const Checkout = () => {
                     })
                   }
                 />
-                <label className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={newAddress.save_for_future}
-                    onChange={(e) =>
-                      setNewAddress({
-                        ...newAddress,
-                        save_for_future: e.target.checked,
-                      })
-                    }
-                  />
-                  <span className="ms-2">
-                    Save this address for future
-                  </span>
-                </label>
-              </div>
-            )}
-          </div>
-
-          {/* BILLING ADDRESS */}
-          <div className="card p-3 shadow-sm mb-3">
-            <h5>Billing Address</h5>
-
-            <label className="form-check mb-2">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={sameAsDelivery}
-                onChange={(e) =>
-                  setSameAsDelivery(e.target.checked)
-                }
-              />
-              <span className="ms-2">
-                Same as delivery address
-              </span>
-            </label>
-
-            {!sameAsDelivery && (
-              <div>
-                {["name", "phone", "pincode", "city", "state"].map(
-                  (f) => (
-                    <input
-                      key={f}
-                      className="form-control mb-2"
-                      placeholder={f.toUpperCase()}
-                      value={billingAddress[f]}
-                      onChange={(e) =>
-                        setBillingAddress({
-                          ...billingAddress,
-                          [f]: e.target.value,
-                        })
-                      }
-                    />
-                  )
-                )}
-                <textarea
-                  className="form-control"
-                  placeholder="Full address"
-                  value={billingAddress.full_address}
-                  onChange={(e) =>
-                    setBillingAddress({
-                      ...billingAddress,
-                      full_address: e.target.value,
-                    })
-                  }
-                />
               </div>
             )}
           </div>
@@ -287,17 +222,25 @@ const Checkout = () => {
             <h5>Order Summary</h5>
             <hr />
 
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="d-flex justify-content-between mb-2"
-              >
-                <span>
-                  {item.product.name} × {item.quantity}
-                </span>
-                <span>₹{item.total_price}</span>
-              </div>
-            ))}
+            {cartItems.map((item) => {
+              const product = item.variant.product;
+              const price = product.sale_price || product.price;
+
+              return (
+                <div
+                  key={item.id}
+                  className="d-flex justify-content-between mb-2"
+                >
+                  <span>
+                    {product.name} ({item.variant.size}) ×{" "}
+                    {item.quantity}
+                  </span>
+                  <span>
+                    ₹{(price * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              );
+            })}
 
             <hr />
 

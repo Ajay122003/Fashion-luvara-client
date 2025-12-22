@@ -4,21 +4,21 @@ const ProductForm = ({
   handleSubmit,
   product,
   setProduct,
-
-  existingImages = [],
-  setExistingImages,
-
-  newImages = [],
-  setNewImages,
-
   categories = [],
   collections = [],
+  newImages = [],
+  setNewImages,
   buttonText,
 }) => {
-  /* -------------------- NEW IMAGE UPLOAD -------------------- */
+  /* ================= IMAGE UPLOAD ================= */
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    setNewImages([...newImages, ...files]);
+
+    // 🔥 append images (multiple select support)
+    setNewImages((prev) => [...prev, ...files]);
+
+    // reset input so same file can be selected again
+    e.target.value = null;
   };
 
   const removeNewImage = (index) => {
@@ -27,33 +27,51 @@ const ProductForm = ({
     setNewImages(updated);
   };
 
-  /* -------------------- REMOVE EXISTING IMAGE -------------------- */
-  const removeExistingImage = (id) => {
-    const updated = existingImages.filter((img) => img.id !== id);
-    setExistingImages(updated);
+  /* ================= VARIANTS ================= */
+  const addVariant = () => {
+    setProduct({
+      ...product,
+      variants: [
+        ...product.variants,
+        { size: "", color: "", stock: 0 },
+      ],
+    });
+  };
+
+  const updateVariant = (index, field, value) => {
+    const updated = [...product.variants];
+    updated[index][field] = value;
+    setProduct({ ...product, variants: updated });
+  };
+
+  const removeVariant = (index) => {
+    const updated = [...product.variants];
+    updated.splice(index, 1);
+    setProduct({ ...product, variants: updated });
   };
 
   return (
     <form
       onSubmit={handleSubmit}
       className="p-4 shadow rounded bg-white"
-      style={{ maxWidth: "800px" }}
+      style={{ maxWidth: 900 }}
     >
-      {/* NAME */}
+      {/* ================= NAME ================= */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Product Name</label>
+        <label className="fw-bold">Product Name</label>
         <input
-          type="text"
           className="form-control"
           value={product.name}
           required
-          onChange={(e) => setProduct({ ...product, name: e.target.value })}
+          onChange={(e) =>
+            setProduct({ ...product, name: e.target.value })
+          }
         />
       </div>
 
-      {/* DESCRIPTION */}
+      {/* ================= DESCRIPTION ================= */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Description</label>
+        <label className="fw-bold">Description</label>
         <textarea
           className="form-control"
           rows="3"
@@ -61,138 +79,154 @@ const ProductForm = ({
           onChange={(e) =>
             setProduct({ ...product, description: e.target.value })
           }
-        ></textarea>
+        />
       </div>
 
-      {/* PRICE + SALE PRICE */}
+      {/* ================= PRICE ================= */}
       <div className="row">
         <div className="col-md-6 mb-3">
-          <label className="form-label fw-bold">Price</label>
+          <label className="fw-bold">Price</label>
           <input
             type="number"
             className="form-control"
             value={product.price}
             required
-            onChange={(e) => setProduct({ ...product, price: e.target.value })}
+            onChange={(e) =>
+              setProduct({
+                ...product,
+                price: Number(e.target.value),
+              })
+            }
           />
         </div>
 
         <div className="col-md-6 mb-3">
-          <label className="form-label fw-bold">Sale Price (Optional)</label>
+          <label className="fw-bold">Sale Price</label>
           <input
             type="number"
             className="form-control"
             value={product.sale_price}
             onChange={(e) =>
-              setProduct({ ...product, sale_price: e.target.value })
+              setProduct({
+                ...product,
+                sale_price: Number(e.target.value),
+              })
             }
           />
         </div>
       </div>
 
-      {/* STOCK */}
+      {/* ================= CATEGORY ================= */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Stock</label>
-        <input
-          type="number"
-          className="form-control"
-          value={product.stock}
-          required
-          onChange={(e) => setProduct({ ...product, stock: e.target.value })}
-        />
-      </div>
-
-      {/* SIZES + COLORS */}
-      <div className="row">
-        <div className="col-md-6 mb-3">
-          <label className="form-label fw-bold">Sizes (comma separated)</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="S, M, L"
-            value={product.sizes}
-            onChange={(e) =>
-              setProduct({ ...product, sizes: e.target.value })
-            }
-          />
-        </div>
-
-        <div className="col-md-6 mb-3">
-          <label className="form-label fw-bold">Colors (comma separated)</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Red, Black"
-            value={product.colors}
-            onChange={(e) =>
-              setProduct({ ...product, colors: e.target.value })
-            }
-          />
-        </div>
-      </div>
-
-      {/* CATEGORY */}
-      <div className="mb-3">
-        <label className="form-label fw-bold">Category</label>
+        <label className="fw-bold">Category</label>
         <select
           className="form-select"
           value={product.category}
           required
-          onChange={(e) => setProduct({ ...product, category: e.target.value })}
+          onChange={(e) =>
+            setProduct({ ...product, category: e.target.value })
+          }
         >
-          <option value="">Select Category</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
+          <option value="">Select category</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
             </option>
           ))}
         </select>
       </div>
 
-      {/* COLLECTIONS (MULTIPLE) */}
+      {/* ================= COLLECTIONS ================= */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Collections</label>
+        <label className="fw-bold">Collections</label>
         <select
-          className="form-select"
           multiple
+          className="form-select"
           value={product.collections}
           onChange={(e) => {
-            const selected = Array.from(
+            const values = Array.from(
               e.target.selectedOptions,
-              (opt) => Number(opt.value)
+              (o) => Number(o.value)
             );
-            setProduct({ ...product, collections: selected });
+            setProduct({ ...product, collections: values });
           }}
         >
-          {collections.length > 0 ? (
-            collections.map((col) => (
-              <option key={col.id} value={col.id}>
-                {col.name}
-              </option>
-            ))
-          ) : (
-            <option disabled>No collections available</option>
-          )}
+          {collections.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
         </select>
-        <small className="text-muted">Hold CTRL/CMD to select multiple</small>
       </div>
 
-      {/* ACTIVE */}
-      <div className="mb-3 form-check">
-        <input
-          type="checkbox"
-          className="form-check-input"
-          checked={product.is_active}
-          onChange={(e) =>
-            setProduct({ ...product, is_active: e.target.checked })
-          }
-        />
-        <label className="form-check-label">Active Product</label>
-      </div>
-
-      {/* NEW IMAGE UPLOAD */}
+      {/* ================= VARIANTS ================= */}
       <div className="mb-3">
-        <label className="form-label fw-bold">Upload New Images</label>
+        <label className="fw-bold">Size • Color • Stock</label>
+
+        {product.variants.map((v, i) => (
+          <div key={i} className="row g-2 mb-2 align-items-center">
+            <div className="col-md-3">
+              <input
+                className="form-control"
+                placeholder="Size"
+                value={v.size}
+                required
+                onChange={(e) =>
+                  updateVariant(i, "size", e.target.value.trim())
+                }
+              />
+            </div>
+
+            <div className="col-md-3">
+              <input
+                className="form-control"
+                placeholder="Color"
+                value={v.color}
+                required
+                onChange={(e) =>
+                  updateVariant(i, "color", e.target.value.trim())
+                }
+              />
+            </div>
+
+            <div className="col-md-3">
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Stock"
+                value={v.stock}
+                min="0"
+                required
+                onChange={(e) =>
+                  updateVariant(i, "stock", Number(e.target.value))
+                }
+              />
+            </div>
+
+            <div className="col-md-2">
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => removeVariant(i)}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          className="btn btn-outline-dark mt-2"
+          onClick={addVariant}
+        >
+          + Add Variant
+        </button>
+      </div>
+
+      {/* ================= IMAGES ================= */}
+      <div className="mb-3">
+        <label className="fw-bold">Images</label>
         <input
           type="file"
           multiple
@@ -200,41 +234,10 @@ const ProductForm = ({
           className="form-control"
           onChange={handleImageUpload}
         />
-      </div>
 
-      {/* EXISTING IMAGE PREVIEW */}
-      {existingImages.length > 0 && (
-        <>
-          <label className="fw-bold">Existing Images</label>
-          <div className="d-flex flex-wrap gap-3 mb-3">
-            {existingImages.map((img) => (
-              <div key={img.id} className="position-relative">
-                <img
-                  src={img.image_url}
-                  alt="existing"
-                  width="90"
-                  height="90"
-                  className="border rounded"
-                  style={{ objectFit: "cover" }}
-                />
-                <button
-                  type="button"
-                  className="btn btn-sm btn-danger position-absolute top-0 end-0"
-                  onClick={() => removeExistingImage(img.id)}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* NEW IMAGE PREVIEW */}
-      {newImages.length > 0 && (
-        <>
-          <label className="fw-bold">New Images</label>
-          <div className="d-flex flex-wrap gap-3 mb-3">
+        {/* PREVIEW */}
+        {newImages.length > 0 && (
+          <div className="d-flex flex-wrap gap-2 mt-3">
             {newImages.map((img, i) => (
               <div key={i} className="position-relative">
                 <img
@@ -242,7 +245,7 @@ const ProductForm = ({
                   alt="preview"
                   width="90"
                   height="90"
-                  className="border rounded"
+                  className="rounded border"
                   style={{ objectFit: "cover" }}
                 />
                 <button
@@ -255,10 +258,23 @@ const ProductForm = ({
               </div>
             ))}
           </div>
-        </>
-      )}
+        )}
+      </div>
 
-      <button className="btn btn-primary w-100 fw-bold mt-3">
+      {/* ================= ACTIVE ================= */}
+      <div className="form-check mb-3">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          checked={product.is_active}
+          onChange={(e) =>
+            setProduct({ ...product, is_active: e.target.checked })
+          }
+        />
+        <label className="form-check-label">Active</label>
+      </div>
+
+      <button className="btn btn-primary w-100 fw-bold">
         {buttonText}
       </button>
     </form>
@@ -266,3 +282,5 @@ const ProductForm = ({
 };
 
 export default ProductForm;
+
+

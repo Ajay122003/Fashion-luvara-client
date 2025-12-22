@@ -1,7 +1,36 @@
-import { useLocation, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import apiClient from "../../api/client";
+import { clearCart } from "../../features/cart/cartSlice";
 
 const OrderSuccess = () => {
   const { state } = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If user refreshes or comes without order data
+    if (!state) {
+      navigate("/");
+      return;
+    }
+
+    // 🔥 CLEAR CART (Frontend + Backend)
+    const clearUserCart = async () => {
+      try {
+        await apiClient.delete("/api/cart/clear/");
+      } catch (err) {
+        // backend failure shouldn't block UI
+        console.error("Failed to clear cart", err);
+      } finally {
+        // clear redux cart anyway
+        dispatch(clearCart());
+      }
+    };
+
+    clearUserCart();
+  }, [state, dispatch, navigate]);
 
   if (!state) return null;
 

@@ -12,7 +12,7 @@ const Payment = () => {
   const [method, setMethod] = useState("COD");
   const [loading, setLoading] = useState(false);
 
-  // 🔒 Safety
+  //  Safety
   if (!state?.order_id) {
     navigate("/cart");
     return null;

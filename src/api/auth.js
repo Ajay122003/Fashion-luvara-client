@@ -20,3 +20,4 @@ export const updateProfile = (data) =>
 
 export const logoutUser = (refresh) =>
   apiClient.post("/api/auth/logout/", { refresh });
+

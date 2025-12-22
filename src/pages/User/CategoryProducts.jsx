@@ -42,15 +42,21 @@ const CategoryProducts = () => {
   return (
     <div className="container py-4">
 
-      {/* CATEGORY TITLE */}
-      <h3 className=" mb-4 ">
-        {category.name}
-      </h3>
+      {/* CATEGORY TITLE + COUNT */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold mb-0">{category.name}</h3>
+
+        <span className="text-muted fw-semibold">
+          {category.products?.length || 0} Products
+        </span>
+      </div>
 
       {/* PRODUCTS GRID */}
       <div className="row g-4">
         {category.products?.length === 0 ? (
-          <p className="text-center py-5">No products available in this category.</p>
+          <p className="text-center py-5">
+            No products available in this category.
+          </p>
         ) : (
           category.products.map((product) => (
             <div className="col-6 col-md-4 col-lg-3" key={product.id}>
@@ -99,12 +105,12 @@ const CategoryProducts = () => {
           transition: transform 0.25s ease, box-shadow 0.25s ease;
           border-radius: 12px;
         }
+
         .product-card:hover {
           transform: translateY(-4px);
           box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        /* FULL IMAGE FIT INSIDE CARD */
         .product-img-wrapper {
           height: 240px;
           overflow: hidden;
@@ -114,7 +120,7 @@ const CategoryProducts = () => {
         .product-img {
           width: 100%;
           height: 100%;
-          object-fit: cover;       /* FULL IMAGE FILL LIKE MYNTRA */
+          object-fit: cover;
           transition: transform 0.4s ease;
         }
 

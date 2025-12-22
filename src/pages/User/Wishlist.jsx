@@ -30,7 +30,8 @@ const Wishlist = () => {
   if (items.length === 0) {
     return (
       <div className="container py-5 text-center">
-        <i className="bi bi-heart fs-1 text-muted mb-3"></i>
+        {/* ❤️ Animated Heart */}
+        <i className="bi bi-heart-fill wishlist-heart mb-3"></i>
 
         <h4 className="fw-bold mb-2">
           Your wishlist is empty
@@ -40,9 +41,58 @@ const Wishlist = () => {
           Save items you like so you can find them easily later.
         </p>
 
-        <Link to="/" className="btn btn-dark px-4">
-          Continue Shopping
+        {/* MATCHED CONTINUE SHOPPING */}
+        <Link to="/" className="continue-shopping-btn">
+          <i className="bi bi-arrow-left"></i>
+          <span>Continue Shopping</span>
         </Link>
+
+        {/* EMPTY WISHLIST CSS */}
+        <style>{`
+          .wishlist-heart {
+            font-size: 54px;
+            
+            animation: heartBeat 1.3s infinite;
+            display: inline-block;
+          }
+
+          @keyframes heartBeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.15); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+          }
+
+          .continue-shopping-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 22px;
+            border-radius: 30px;
+            border: 1px solid #111;
+            background: #fff;
+            color: #111;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+          }
+
+          .continue-shopping-btn i {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+          }
+
+          .continue-shopping-btn:hover {
+            background: #111;
+            color: #fff;
+          }
+
+          .continue-shopping-btn:hover i {
+            transform: translateX(-4px);
+          }
+        `}</style>
       </div>
     );
   }
@@ -55,7 +105,7 @@ const Wishlist = () => {
       <div className="row g-4">
         {items.map((item) => (
           <div className="col-6 col-md-4 col-lg-3" key={item.id}>
-            <div className="card shadow-sm h-100 border-0">
+            <div className="card shadow-sm h-100 border-0 wishlist-card">
 
               {/* IMAGE */}
               <Link to={`/product/${item.product.id}`}>
@@ -88,11 +138,23 @@ const Wishlist = () => {
                   Remove
                 </button>
               </div>
-
             </div>
           </div>
         ))}
       </div>
+
+      {/* CARD HOVER */}
+      <style>{`
+        .wishlist-card {
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+          border-radius: 12px;
+        }
+
+        .wishlist-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+      `}</style>
     </div>
   );
 };

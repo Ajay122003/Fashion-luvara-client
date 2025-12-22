@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fetchCart } from "../../features/cart/cartSlice";
 import { updateCartItem, removeCartItem } from "../../api/cart";
 
@@ -14,8 +14,9 @@ const Cart = () => {
     dispatch(fetchCart());
   }, [dispatch]);
 
-  const updateQty = async (id, qty) => {
-    if (qty < 1) return;
+  const updateQty = async (id, qty, maxStock) => {
+    if (qty < 1 || qty > maxStock) return;
+
     try {
       await updateCartItem(id, qty);
       dispatch(fetchCart());
@@ -34,7 +35,11 @@ const Cart = () => {
   };
 
   const totalAmount = items.reduce(
-    (sum, item) => sum + item.total_price,
+    (sum, item) =>
+      sum +
+      (item.variant.product.sale_price ||
+        item.variant.product.price) *
+        item.quantity,
     0
   );
 
@@ -46,16 +51,44 @@ const Cart = () => {
   /* ================= EMPTY CART ================= */
   if (items.length === 0) {
     return (
-      <div className="container py-5 text-center">
-        <i className="bi bi-cart-x fs-1 text-muted"></i>
+      <div className="container py-5 text-center empty-cart-wrap">
+        <i className="bi bi-cart-x cart-animate mb-3"></i>
+
         <h4 className="fw-bold mt-3">Your cart is empty</h4>
         <p className="text-muted mb-4">
           Looks like you haven’t added anything yet
         </p>
 
-        <Link to="/" className="btn btn-dark px-4">
-          Continue Shopping
-        </Link>
+        <button
+          className="continue-shopping-btn"
+          onClick={() => navigate("/")}
+        >
+          <i className="bi bi-arrow-left"></i>
+          <span>Continue Shopping</span>
+        </button>
+
+        <style>{`
+          .cart-animate {
+            font-size: 64px;
+            color: #6c757d;
+            animation: cartBounce 1.4s infinite;
+          }
+          @keyframes cartBounce {
+            0% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+            50% { transform: translateY(0); }
+          }
+          .continue-shopping-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid #111;
+            background: #fff;
+            font-weight: 600;
+          }
+        `}</style>
       </div>
     );
   }
@@ -64,105 +97,101 @@ const Cart = () => {
     <div className="container py-4">
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="fw-bold mb-0">Shopping Cart</h3>
-        <button
-          className="btn btn-link text-decoration-none"
-          onClick={() => navigate("/")}
-        >
-          ← Continue shopping
+        <button className="continue-shopping" onClick={() => navigate("/")}>
+          <i className="bi bi-arrow-left"></i>
+          <span>Continue Shopping</span>
         </button>
+        <h3 className="fw-bold mb-0">Shopping Cart</h3>
       </div>
 
       <div className="row g-4">
-        {/* ================= CART ITEMS ================= */}
+        {/* CART ITEMS */}
         <div className="col-12 col-lg-8">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="card border-0 shadow-sm mb-3"
-            >
-              <div className="card-body d-flex gap-3">
+          {items.map((item) => {
+            const { variant } = item;
+            const product = variant.product;
 
-                {/* IMAGE */}
-                <img
-                  src={item.product.images?.[0]?.image_url}
-                  alt={item.product.name}
-                  className="cart-img"
-                />
+            return (
+              <div key={item.id} className="card border-0 shadow-sm mb-3">
+                <div className="card-body d-flex gap-3">
+                  <img
+                    src={product.images?.[0]?.image_url}
+                    alt={product.name}
+                    className="cart-img"
+                  />
 
-                {/* DETAILS */}
-                <div className="flex-grow-1">
-                  <h6 className="fw-bold mb-1">
-                    {item.product.name}
-                  </h6>
+                  <div className="flex-grow-1">
+                    <h6 className="fw-bold mb-1">{product.name}</h6>
 
-                  <p className="fw-semibold mb-1">
-                    ₹{item.product.sale_price || item.product.price}
-                  </p>
-
-                  {item.size && (
-                    <p className="small text-muted mb-2">
-                      Size: <strong>{item.size}</strong>
+                    <p className="small mb-1">
+                      Size: <strong>{variant.size}</strong>
                     </p>
-                  )}
 
-                  {/* QTY */}
-                  <div className="d-flex align-items-center gap-2">
-                    <button
-                      className="btn btn-outline-dark btn-sm"
-                      disabled={item.quantity === 1}
-                      onClick={() =>
-                        updateQty(item.id, item.quantity - 1)
-                      }
-                    >
-                      −
-                    </button>
+                    <p className="fw-semibold mb-1">
+                      ₹{product.sale_price || product.price}
+                    </p>
 
-                    <span className="fw-bold px-2">
-                      {item.quantity}
-                    </span>
+                    <p className="small mb-2">
+                      {variant.stock > 0 ? (
+                        <span className="text-success">
+                          In stock ({variant.stock})
+                        </span>
+                      ) : (
+                        <span className="text-danger">Out of stock</span>
+                      )}
+                    </p>
 
-                    <button
-                      className="btn btn-outline-dark btn-sm"
-                      onClick={() =>
-                        updateQty(item.id, item.quantity + 1)
-                      }
-                    >
-                      +
-                    </button>
+                    <div className="d-flex align-items-center gap-2">
+                      <button
+                        className="btn btn-outline-dark btn-sm"
+                        disabled={item.quantity === 1}
+                        onClick={() =>
+                          updateQty(
+                            item.id,
+                            item.quantity - 1,
+                            variant.stock
+                          )
+                        }
+                      >
+                        −
+                      </button>
+
+                      <span className="fw-bold px-2">
+                        {item.quantity}
+                      </span>
+
+                      <button
+                        className="btn btn-outline-dark btn-sm"
+                        disabled={item.quantity >= variant.stock}
+                        onClick={() =>
+                          updateQty(
+                            item.id,
+                            item.quantity + 1,
+                            variant.stock
+                          )
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {/* REMOVE */}
-                <button
-                  className="btn btn-link text-danger align-self-start p-0"
-                  onClick={() => removeItem(item.id)}
-                >
-                  <i className="bi bi-trash3 fs-5"></i>
-                </button>
+                  <button
+                    className="btn btn-link text-danger p-0"
+                    onClick={() => removeItem(item.id)}
+                  >
+                    <i className="bi bi-trash3 fs-5"></i>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* ================= ORDER SUMMARY ================= */}
+        {/* ORDER SUMMARY */}
         <div className="col-12 col-lg-4">
           <div className="card border-0 shadow-sm p-3 order-summary">
             <h5 className="fw-bold mb-3">Order Summary</h5>
-
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="d-flex justify-content-between small mb-2"
-              >
-                <span>
-                  {item.product.name} × {item.quantity}
-                </span>
-                <span>₹{item.total_price}</span>
-              </div>
-            ))}
-
-            <hr />
 
             <div className="d-flex justify-content-between fw-bold fs-5">
               <span>Total</span>
@@ -175,15 +204,10 @@ const Cart = () => {
             >
               Proceed to Checkout
             </button>
-
-            <p className="small text-muted text-center mt-2">
-              Taxes & shipping calculated at checkout
-            </p>
           </div>
         </div>
       </div>
 
-      {/* ================= STYLES ================= */}
       <style>{`
         .cart-img {
           width: 120px;
@@ -191,17 +215,14 @@ const Cart = () => {
           object-fit: cover;
           border-radius: 8px;
         }
-
-        @media (max-width: 576px) {
-          .cart-img {
-            width: 90px;
-            height: 110px;
-          }
-        }
-
         .order-summary {
           position: sticky;
           top: 90px;
+        }
+        .continue-shopping {
+          background: none;
+          border: none;
+          font-weight: 600;
         }
       `}</style>
     </div>

@@ -7,7 +7,6 @@ const ManageProducts = () => {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
 
-  // delete modal
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -58,6 +57,30 @@ const ManageProducts = () => {
     }
   };
 
+  /* ---------------- VARIANT STOCK RENDER ---------------- */
+  const renderVariantStock = (variants = []) => {
+    if (!variants || variants.length === 0) {
+      return <span className="text-muted">—</span>;
+    }
+
+    return (
+      <div className="d-flex flex-wrap gap-1">
+        {variants.map((v) => (
+          <span
+            key={v.id}
+            className={`badge ${
+              v.stock > 0
+                ? "bg-success-subtle text-success"
+                : "bg-danger-subtle text-danger"
+            }`}
+          >
+            {v.size} / {v.color} : {v.stock}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   if (loading)
     return (
       <p className="text-center py-5 fw-semibold">
@@ -98,7 +121,7 @@ const ManageProducts = () => {
                 <th>Name</th>
                 <th>Price</th>
                 <th>Sale</th>
-                <th>Stock</th>
+                <th>Stock (Size / Color)</th>
                 <th>Status</th>
                 <th className="text-end">Actions</th>
               </tr>
@@ -124,7 +147,7 @@ const ManageProducts = () => {
                       {p.sale_price ? `₹${p.sale_price}` : "—"}
                     </td>
 
-                    <td>{p.stock}</td>
+                    <td>{renderVariantStock(p.variants)}</td>
 
                     <td>
                       {p.is_active ? (
@@ -185,8 +208,11 @@ const ManageProducts = () => {
                   {p.sale_price ? `₹${p.sale_price}` : "—"}
                 </div>
 
-                <div className="mb-1">
-                  <strong>Stock:</strong> {p.stock}
+                <div className="mb-2">
+                  <strong>Stock:</strong>
+                  <div className="mt-1">
+                    {renderVariantStock(p.variants)}
+                  </div>
                 </div>
 
                 <div className="mb-2">

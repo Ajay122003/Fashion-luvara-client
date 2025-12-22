@@ -18,19 +18,17 @@ const EditProduct = () => {
     description: "",
     price: "",
     sale_price: "",
-    stock: "",
-    sizes: "",
-    colors: "",
     category: "",
     collections: [],
     is_active: true,
+    variants: [], // { size, color, stock }
   });
 
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
 
-  const [existingImages, setExistingImages] = useState([]); // OLD images
-  const [newImages, setNewImages] = useState([]);           // NEW uploads
+  const [existingImages, setExistingImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -38,7 +36,10 @@ const EditProduct = () => {
 
   const loadData = async () => {
     try {
-      const prod = await apiClient.get(`/api/admin-panel/products/${id}/`);
+      const prodRes = await apiClient.get(
+        `/api/admin-panel/products/${id}/`
+      );
+
       const cats = await fetchAdminCategories();
       const cols = await fetchAdminCollections();
 
@@ -46,47 +47,51 @@ const EditProduct = () => {
       setCollections(cols);
 
       setProduct({
-        name: prod.data.name,
-        description: prod.data.description,
-        price: prod.data.price,
-        sale_price: prod.data.sale_price || "",
-        stock: prod.data.stock,
-        sizes: prod.data.sizes?.join(", ") || "",
-        colors: prod.data.colors?.join(", ") || "",
-        category: prod.data.category,
-        collections: prod.data.collections || [],
-        is_active: prod.data.is_active,
+        name: prodRes.data.name || "",
+        description: prodRes.data.description || "",
+        price: prodRes.data.price || "",
+        sale_price: prodRes.data.sale_price || "",
+        category: prodRes.data.category || "",
+        collections: prodRes.data.collections || [],
+        is_active: prodRes.data.is_active,
+        variants: prodRes.data.variants || [],
       });
 
-      setExistingImages(prod.data.images || []);
+      setExistingImages(prodRes.data.images || []);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       alert("Failed to load product");
     }
   };
 
-  /* ----------------- REMOVE EXISTING IMAGE ----------------- */
+  /* ---------------- REMOVE EXISTING IMAGE ---------------- */
   const removeExistingImage = async (imageId) => {
     if (!window.confirm("Delete this image permanently?")) return;
 
     try {
       await deleteProductImage(imageId);
-      setExistingImages(existingImages.filter((img) => img.id !== imageId));
-    } catch (err) {
+      setExistingImages((prev) =>
+        prev.filter((img) => img.id !== imageId)
+      );
+    } catch {
       alert("Failed to delete image");
     }
   };
 
-  /* ------------------------ SUBMIT ------------------------ */
+  /* ---------------- SUBMIT ---------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (product.variants.length === 0) {
+      alert("Add at least one variant");
+      return;
+    }
 
     const form = new FormData();
 
     form.append("name", product.name);
     form.append("description", product.description);
     form.append("price", product.price);
-    form.append("stock", product.stock);
     form.append("category", product.category);
     form.append("is_active", product.is_active);
 
@@ -94,35 +99,34 @@ const EditProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
-    // Convert sizes/colors
-    const sizesArray = product.sizes
-      ? product.sizes.split(",").map((s) => s.trim())
-      : [];
+    // ✅ VARIANTS (size + color + stock)
+    form.append(
+      "variants",
+      JSON.stringify(
+        product.variants.map((v) => ({
+          size: v.size,
+          color: v.color,
+          stock: v.stock,
+        }))
+      )
+    );
 
-    const colorsArray = product.colors
-      ? product.colors.split(",").map((c) => c.trim())
-      : [];
+    // ✅ COLLECTIONS
+    product.collections.forEach((cid) =>
+      form.append("collections", cid)
+    );
 
-    form.append("sizes", JSON.stringify(sizesArray));
-    form.append("colors", JSON.stringify(colorsArray));
-
-    // Collections (M2M)
-    product.collections.forEach((colId) => form.append("collections", colId));
-
-    // NEW images
-    newImages.forEach((img) => form.append("images", img));
-
-    // EXISTING images that remain
-    existingImages.forEach((img) =>
-      form.append("existing_images", img.id)
+    // ✅ NEW IMAGES
+    newImages.forEach((img) =>
+      form.append("images", img)
     );
 
     try {
       await updateAdminProduct(id, form);
       alert("Product updated successfully!");
       navigate("/admin/products");
-    } catch (error) {
-      console.log(error.response?.data);
+    } catch (err) {
+      console.error(err.response?.data || err);
       alert("Failed to update product");
     }
   };
@@ -131,7 +135,7 @@ const EditProduct = () => {
     <div className="container py-4">
       <h3 className="fw-bold mb-3">Edit Product</h3>
 
-      {/* EXISTING IMAGES SECTION */}
+      {/* EXISTING IMAGES */}
       {existingImages.length > 0 && (
         <div className="mb-4">
           <label className="fw-bold">Existing Images</label>
@@ -140,6 +144,7 @@ const EditProduct = () => {
               <div key={img.id} className="position-relative">
                 <img
                   src={img.image_url}
+                  alt="product"
                   width="90"
                   height="90"
                   className="rounded border"
@@ -164,12 +169,10 @@ const EditProduct = () => {
         handleSubmit={handleSubmit}
         product={product}
         setProduct={setProduct}
-        existingImages={existingImages}
-        setExistingImages={setExistingImages}
-        newImages={newImages}
-        setNewImages={setNewImages}
         categories={categories}
         collections={collections}
+        newImages={newImages}
+        setNewImages={setNewImages}
         buttonText="Update Product"
       />
     </div>

@@ -58,6 +58,7 @@ import Settings from "../pages/Admin/Settings";
 import ManageCollection from "../pages/Admin/ManageCollection";
 import AddCollection from "../pages/Admin/AddCollection";
 import EditCollection from "../pages/Admin/EditCollection";
+import RelatedProducts from "../pages/User/RelatedProducts";
 
 const AppRoutes = () => {
   return (
@@ -69,6 +70,7 @@ const AppRoutes = () => {
         {/* Product List + Detail */}
         <Route path="products" element={<Products />} />
         <Route path="product/:id" element={<ProductDetail />} />
+        <Route path="product/:id" element={<RelatedProducts />} />
 
         {/* Cart & Wishlist */}
         <Route path="cart" element={<Cart />} />
@@ -94,6 +96,7 @@ const AppRoutes = () => {
       <Route path="/orders/:id" element={<OrderDetail />} />
       {/* =========================== ADMIN LOGIN ============================ */}
       <Route path="/admin/login" element={<AdminLogin />} />
+      
 
       {/* =========================== ADMIN PROTECTED ROUTES ============================ */}
       <Route

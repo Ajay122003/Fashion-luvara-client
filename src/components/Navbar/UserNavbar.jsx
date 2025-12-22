@@ -206,16 +206,45 @@ const UserNavbar = () => {
                 onClick={() => setShowSearch(true)}
               />
 
-              {user ? (
-                <Link to="/profile" className="text-dark">
-                  <i className="bi bi-person" />
-                </Link>
-              ) : (
-                <>
-                  <Link to="/login" className="small text-dark">Sign in</Link>
-                  <Link to="/register" className="small text-dark">Sign up</Link>
-                </>
-              )}
+              {/* USER ICON / AUTH */}
+<div className="nav-item dropdown">
+  {user ? (
+    /* LOGGED IN */
+    <Link
+      to="/profile"
+      className="text-dark d-flex align-items-center"
+    >
+      <i className="bi bi-person fs-5" />
+    </Link>
+  ) : (
+    /* NOT LOGGED IN */
+    <>
+      <span
+        className="nav-link dropdown-toggle text-dark"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+        style={{ cursor: "pointer" }}
+      >
+        <i className="bi bi-person fs-5" />
+      </span>
+
+      <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+        <li>
+          <Link className="dropdown-item" to="/login">
+            Sign in
+          </Link>
+        </li>
+        <li>
+          <Link className="dropdown-item" to="/register">
+            Sign up
+          </Link>
+        </li>
+      </ul>
+    </>
+  )}
+</div>
+
 
               <Link to="/wishlist" className="position-relative text-dark">
                 <i className="bi bi-heart" />
@@ -250,8 +279,8 @@ const UserNavbar = () => {
         </div>
 
         <div className="offcanvas-body">
-          <Link to="/" className="d-block text-dark py-2" onClick={closeMenu}>Home</Link>
-          <Link to="/new" className="d-block text-dark py-2" onClick={closeMenu}>New</Link>
+          <Link to="/" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>Home</Link>
+          <Link to="/new" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>New</Link>
 
           {/* CATEGORY */}
           <div className="mt-2">
@@ -315,7 +344,7 @@ const UserNavbar = () => {
             </div>
           </div>
 
-          <Link to="/about" className="d-block text-dark py-2" onClick={closeMenu}>
+          <Link to="/about" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>
             About us
           </Link>
 
@@ -331,10 +360,10 @@ const UserNavbar = () => {
               </Link>
             ) : (
               <>
-                <Link className="d-block py-2 text-dark" to="/register" onClick={closeMenu}>
+                <Link className="d-block py-2 text-dark text-decoration-none" to="/register" onClick={closeMenu}>
                   Sign up
                 </Link>
-                <Link className="d-block py-2 text-dark" to="/login" onClick={closeMenu}>
+                <Link className="d-block py-2 text-dark text-decoration-none" to="/login" onClick={closeMenu}>
                   Sign in
                 </Link>
               </>

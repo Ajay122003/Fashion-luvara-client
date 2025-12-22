@@ -25,7 +25,7 @@ const Dashboard = () => {
   const loadLowStock = async () => {
     try {
       const data = await fetchLowStockProducts();
-      setLowStock(data.results);
+      setLowStock(data.results || []);
     } catch {
       alert("Failed to load low-stock products");
     }
@@ -82,8 +82,10 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   {stats.best_selling_products.map((item) => (
-                    <tr key={item.product_id}>
-                      <td className="fw-medium">{item.product__name}</td>
+                    <tr key={item.variant__product_id}>
+                      <td className="fw-medium">
+                        {item.variant__product__name}
+                      </td>
                       <td>
                         <img
                           src={item.image || "/placeholder.png"}
@@ -127,7 +129,7 @@ const Dashboard = () => {
                   <tr>
                     <th>Product</th>
                     <th>Image</th>
-                    <th>Stock</th>
+                    <th>Variant Stock</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -148,8 +150,19 @@ const Dashboard = () => {
                           style={{ objectFit: "cover" }}
                         />
                       </td>
-                      <td className="fw-bold text-danger">
-                        {p.stock}
+                      <td>
+                        {p.variants.map((v) => (
+                          <span
+                            key={v.id}
+                            className={`badge me-1 ${
+                              v.stock <= stats.low_stock_threshold
+                                ? "bg-danger"
+                                : "bg-secondary"
+                            }`}
+                          >
+                            {v.size} : {v.stock}
+                          </span>
+                        ))}
                       </td>
                     </tr>
                   ))}

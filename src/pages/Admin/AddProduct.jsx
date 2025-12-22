@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  createAdminProduct,
-  fetchAdminCategories,
-  fetchAdminCollections,
-} from "../../api/admin";
+import { createAdminProduct, fetchAdminCategories, fetchAdminCollections,} from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
 
@@ -15,46 +11,34 @@ const AddProduct = () => {
     description: "",
     price: "",
     sale_price: "",
-    stock: "",
-    sizes: "",
-    colors: "",
     category: "",
     collections: [],
     is_active: true,
+    variants: [], // { size, color, stock }
   });
 
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
-
-  // For new file uploads (no existing images on Add page)
   const [newImages, setNewImages] = useState([]);
 
   useEffect(() => {
-    loadInitialData();
+    fetchAdminCategories().then(setCategories);
+    fetchAdminCollections().then(setCollections);
   }, []);
-
-  const loadInitialData = async () => {
-    try {
-      const catData = await fetchAdminCategories();
-      const colData = await fetchAdminCollections();
-
-      setCategories(catData);
-      setCollections(colData);
-    } catch (err) {
-      alert("Failed to load categories or collections");
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (product.variants.length === 0) {
+      alert("Add at least one variant");
+      return;
+    }
+
     const form = new FormData();
 
-    // Basic fields
     form.append("name", product.name);
     form.append("description", product.description);
     form.append("price", product.price);
-    form.append("stock", product.stock);
     form.append("category", product.category);
     form.append("is_active", product.is_active);
 
@@ -62,52 +46,39 @@ const AddProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
-    // Sizes and Colors → convert string → list
-    const sizesList = product.sizes
-      ? product.sizes.split(",").map((s) => s.trim())
-      : [];
-    const colorsList = product.colors
-      ? product.colors.split(",").map((c) => c.trim())
-      : [];
+    //VARIANTS (size + color + stock)
+    product.variants.forEach((v, i) => {
+      form.append(`variants[${i}][size]`, v.size);
+      form.append(`variants[${i}][color]`, v.color);
+      form.append(`variants[${i}][stock]`, v.stock);
+    });
 
-    form.append("sizes", JSON.stringify(sizesList));
-    form.append("colors", JSON.stringify(colorsList));
-
-    // Add collections (M2M)
-    product.collections.forEach((collectionId) =>
-      form.append("collections", collectionId)
-    );
-
-    // Add uploaded images
-    newImages.forEach((file) => form.append("images", file));
+    // IMAGES
+    newImages.forEach((img) => {
+      form.append("images", img);
+    });
 
     try {
       await createAdminProduct(form);
       alert("Product added successfully!");
       navigate("/admin/products");
-    } catch (error) {
-      console.error(error.response?.data || error);
+    } catch (err) {
+      console.error(err.response?.data);
       alert("Failed to add product");
     }
   };
 
   return (
-    <div className="container py-4">
-      <h3 className="fw-bold mb-3">Add Product</h3>
-
-      <ProductForm
-        handleSubmit={handleSubmit}
-        product={product}
-        setProduct={setProduct}
-        existingImages={[]}              // No preloaded images
-        setExistingImages={() => {}}     // Not used in Add form
-        newImages={newImages}
-        setNewImages={setNewImages}
-        categories={categories}
-        collections={collections}
-        buttonText="Add Product"
-      />
-    </div>
+    <ProductForm
+      handleSubmit={handleSubmit}
+      product={product}
+      setProduct={setProduct}
+      categories={categories}
+      collections={collections}
+      newImages={newImages}
+      setNewImages={setNewImages}
+      buttonText="Add Product"
+    />
   );
 };
 
