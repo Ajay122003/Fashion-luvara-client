@@ -1,40 +1,60 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import AppRoutes from "./routes/AppRoutes";
-import { useDispatch } from "react-redux";
 
-import apiClient from "./api/client";
 import { getCategories } from "./api/category";
 import { fetchCollections } from "./api/collections";
+import { getMe } from "./api/auth";
 
-import { fetchCart } from "./features/cart/cartSlice"; 
+import { fetchCart } from "./features/cart/cartSlice";
 import { setCategories } from "./features/category/categorySlice";
 import { setCollections } from "./features/collections/collectionSlice";
-
+import { setUser } from "./features/auth/authSlice";
+import { initAuth } from "./features/auth/authSlice";
+import storage from "./utils/storage";
 
 const App = () => {
   const dispatch = useDispatch();
 
-  const loadInitialData = async () => {
+  const user = useSelector((state) => state.auth.user);
+  const userToken = storage.getUserToken();
+
+  /* ================= LOAD PUBLIC DATA ================= */
+  const loadPublicData = async () => {
     try {
-      // Load Categories
-      const catRes = await getCategories();
-      dispatch(setCategories(catRes.data));
+      const categories = await getCategories();
+      dispatch(setCategories(categories.data ?? categories));
 
-      // Load Collections
-      const colRes = await fetchCollections();
-      dispatch(setCollections(colRes.data));
-
-      // Load Cart Items Count
-      dispatch(fetchCart());
-
+      const collections = await fetchCollections();
+      dispatch(setCollections(collections.data ?? collections));
     } catch (err) {
-      console.error("Failed to load initial data", err);
+      console.error("Failed to load public data", err);
+    }
+  };
+
+  /* ================= RESTORE USER SESSION ================= */
+  const restoreUserSession = async () => {
+    if (!userToken || user) return;
+
+    try {
+      const me = await getMe();
+      dispatch(setUser(me));
+      dispatch(fetchCart());
+    } catch {
+      // token invalid → clear only user token
+      storage.clearUserToken();
     }
   };
 
   useEffect(() => {
-    loadInitialData();
+    loadPublicData();
+    restoreUserSession();
   }, []);
+
+  
+  useEffect(() => {
+    dispatch(initAuth()); // 
+  }, [dispatch]);
 
   return <AppRoutes />;
 };

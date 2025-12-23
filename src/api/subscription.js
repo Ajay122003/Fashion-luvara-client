@@ -1,5 +1,6 @@
-import apiClient from "./client";
+import publicClient from "./publicClient";
 
 export const subscribeEmail = async (email) => {
-  return apiClient.post("/api/subscribe/", { email });
+  const res = await publicClient.post("/api/subscribe/", { email });
+  return res.data;
 };

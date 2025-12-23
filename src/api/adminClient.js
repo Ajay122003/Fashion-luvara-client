@@ -1,14 +1,14 @@
 import axios from "axios";
 import storage from "../utils/storage";
 
-const apiClient = axios.create({
+const adminClient = axios.create({
   baseURL: "http://localhost:8000",
   withCredentials: false,
 });
 
-apiClient.interceptors.request.use(
+adminClient.interceptors.request.use(
   (config) => {
-    const token = storage.getUserToken(); // ✅ USER TOKEN ONLY
+    const token = storage.getAdminToken(); // ✅ ADMIN TOKEN ONLY
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -21,16 +21,16 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-//  auto logout user if token invalid
-apiClient.interceptors.response.use(
+//  auto logout admin if token invalid
+adminClient.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      storage.clearUserToken();
-      window.location.href = "/login";
+      storage.clearAdminToken();
+      window.location.href = "/admin/login";
     }
     return Promise.reject(err);
   }
 );
 
-export default apiClient;
+export default adminClient;

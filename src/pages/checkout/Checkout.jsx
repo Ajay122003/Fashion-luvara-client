@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { getAddresses } from "../../api/address";
 import { createOrder } from "../../api/order";
 import { fetchPublicSettings } from "../../api/admin";
+import apiClient from "../../api/client";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
@@ -35,6 +36,12 @@ const Checkout = () => {
     state: "",
     full_address: "",
   });
+
+  /* ================= COUPON ================= */
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   /* ================= OTHER ================= */
   const [payment, setPayment] = useState("COD");
@@ -84,9 +91,43 @@ const Checkout = () => {
 
   const GST_PERCENTAGE = 3;
   const gstAmount =
-    ((subtotal + shipping) * GST_PERCENTAGE) / 100;
+    ((subtotal + shipping - couponDiscount) * GST_PERCENTAGE) /
+    100;
 
-  const grandTotal = subtotal + shipping + gstAmount;
+  const grandTotal =
+    subtotal + shipping + gstAmount - couponDiscount;
+
+  /* ================= APPLY COUPON ================= */
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+
+    setApplyingCoupon(true);
+    setCouponError("");
+
+    try {
+      const res = await apiClient.post("/api/coupons/apply/", {
+        code: couponCode,
+        amount: subtotal + shipping,
+      });
+
+      setCouponDiscount(res.data.discount);
+    } catch (err) {
+      setCouponDiscount(0);
+      setCouponError(
+        err.response?.data?.non_field_errors?.[0] ||
+          err.response?.data ||
+          "Invalid coupon"
+      );
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode("");
+    setCouponDiscount(0);
+    setCouponError("");
+  };
 
   /* ================= PLACE ORDER ================= */
   const handlePlaceOrder = async () => {
@@ -97,6 +138,7 @@ const Checkout = () => {
         billing_address: sameAsDelivery
           ? null
           : billingAddress,
+        coupon_code: couponCode || null,
       };
 
       if (useNewAddress) {
@@ -244,6 +286,44 @@ const Checkout = () => {
 
             <hr />
 
+            {/* COUPON UI */}
+            <div className="mb-3">
+              <input
+                className="form-control mb-2"
+                placeholder="Enter coupon code"
+                value={couponCode}
+                onChange={(e) =>
+                  setCouponCode(e.target.value.toUpperCase())
+                }
+                disabled={couponDiscount > 0}
+              />
+
+              {couponDiscount === 0 ? (
+                <button
+                  className="btn btn-outline-dark w-100"
+                  onClick={handleApplyCoupon}
+                  disabled={applyingCoupon}
+                >
+                  {applyingCoupon
+                    ? "Applying..."
+                    : "Apply Coupon"}
+                </button>
+              ) : (
+                <button
+                  className="btn btn-outline-danger w-100"
+                  onClick={handleRemoveCoupon}
+                >
+                  Remove Coupon
+                </button>
+              )}
+
+              {couponError && (
+                <small className="text-danger">
+                  {couponError}
+                </small>
+              )}
+            </div>
+
             <div className="d-flex justify-content-between">
               <span>Subtotal</span>
               <span>₹{subtotal.toFixed(2)}</span>
@@ -253,6 +333,13 @@ const Checkout = () => {
               <span>Shipping</span>
               <span>{shipping ? `₹${shipping}` : "Free"}</span>
             </div>
+
+            {couponDiscount > 0 && (
+              <div className="d-flex justify-content-between text-success">
+                <span>Coupon Discount</span>
+                <span>- ₹{couponDiscount.toFixed(2)}</span>
+              </div>
+            )}
 
             <div className="d-flex justify-content-between">
               <span>GST (3%)</span>
@@ -281,3 +368,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+

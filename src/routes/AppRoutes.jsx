@@ -6,32 +6,33 @@ import UserLayout from "../layouts/UserLayout";
 import AdminLayout from "../layouts/AdminLayout";
 
 // Protected Routes
+import PrivateRoute from "../components/Protected/PrivateRoute";
 import AdminRoute from "../components/Protected/AdminRoute";
 
-// User Pages
+// User Pages (PUBLIC)
 import Home from "../pages/User/Home";
 import Products from "../pages/User/Products";
 import ProductDetail from "../pages/User/ProductDetail";
+import Categories from "../pages/User/Categories";
+import CategoryProducts from "../pages/User/CategoryProducts";
+import Collections from "../pages/User/Collections";
+import CollectionProducts from "../pages/User/CollectionProducts";
+import RelatedProducts from "../pages/User/RelatedProducts";
+
+// User Pages (PROTECTED)
 import Cart from "../pages/User/Cart";
-import Wishlist from "../pages/User/Wishlist"; // ✅ ADDED
+import Wishlist from "../pages/User/Wishlist";
 import Profile from "../pages/User/Profile";
 import Orders from "../pages/orders/Orders";
 import OrderDetail from "../pages/orders/OrderDetail";
-
-// Category Pages
-import Categories from "../pages/User/Categories";
-import CategoryProducts from "../pages/User/CategoryProducts";
-
-// Collection Pages
-import Collections from "../pages/User/Collections";
-import CollectionProducts from "../pages/User/CollectionProducts";
+import Checkout from "../pages/checkout/Checkout";
+import OrderSuccess from "../pages/orders/OrderSuccess";
 
 // Auth Pages
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import OTPVerify from "../pages/Auth/OTPVerify";
-import Checkout from "../pages/checkout/Checkout";
-import OrderSuccess from "../pages/orders/OrderSuccess";
+
 // Admin Pages
 import AdminLogin from "../pages/Admin/AdminLogin";
 import Dashboard from "../pages/Admin/Dashboard";
@@ -45,6 +46,10 @@ import ManageCategories from "../pages/Admin/ManageCategories";
 import AddCategory from "../pages/Admin/AddCategory";
 import EditCategory from "../pages/Admin/EditCategory";
 
+import ManageCollection from "../pages/Admin/ManageCollection";
+import AddCollection from "../pages/Admin/AddCollection";
+import EditCollection from "../pages/Admin/EditCollection";
+
 import AdminOrders from "../pages/Admin/AdminOrders";
 import AdminOrderDetails from "../pages/Admin/AdminOrderDetails";
 
@@ -54,49 +59,92 @@ import EditCoupon from "../pages/Admin/EditCoupon";
 
 import Settings from "../pages/Admin/Settings";
 
-// Admin Collection Pages
-import ManageCollection from "../pages/Admin/ManageCollection";
-import AddCollection from "../pages/Admin/AddCollection";
-import EditCollection from "../pages/Admin/EditCollection";
-import RelatedProducts from "../pages/User/RelatedProducts";
-
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* =========================== USER PUBLIC ROUTES ============================ */}
+      {/* =========================== USER ROUTES ============================ */}
       <Route path="/" element={<UserLayout />}>
+        {/* PUBLIC */}
         <Route index element={<Home />} />
-
-        {/* Product List + Detail */}
         <Route path="products" element={<Products />} />
         <Route path="product/:id" element={<ProductDetail />} />
-        <Route path="product/:id" element={<RelatedProducts />} />
+        <Route path="product/:id/related" element={<RelatedProducts />} />
 
-        {/* Cart & Wishlist */}
-        <Route path="cart" element={<Cart />} />
-        <Route path="wishlist" element={<Wishlist />} /> {/* ✅ ADDED */}
-
-        {/* Category Routes */}
         <Route path="categories" element={<Categories />} />
         <Route path="categories/:slug" element={<CategoryProducts />} />
 
-        {/* Collection Routes */}
+
         <Route path="collections" element={<Collections />} />
         <Route path="collections/:slug" element={<CollectionProducts />} />
+
+        {/* PROTECTED USER ROUTES */}
+        <Route
+          path="cart"
+          element={<PrivateRoute> <Cart />  </PrivateRoute>}
+        />
+
+        <Route
+          path="wishlist"
+          element={
+            <PrivateRoute>
+              <Wishlist />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="orders"
+          element={
+            <PrivateRoute>
+              <Orders />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="orders/:id"
+          element={
+            <PrivateRoute>
+              <OrderDetail />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="checkout"
+          element={
+            <PrivateRoute>
+              <Checkout />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="order-success"
+          element={
+            <PrivateRoute>
+              <OrderSuccess />
+            </PrivateRoute>
+          }
+        />
       </Route>
 
       {/* =========================== AUTH ROUTES ============================ */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<OTPVerify />} />
-      <Route path="profile" element={<Profile />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/order-success" element={<OrderSuccess />} />
-      <Route path="/orders" element={<Orders />} />
-      <Route path="/orders/:id" element={<OrderDetail />} />
+
       {/* =========================== ADMIN LOGIN ============================ */}
       <Route path="/admin/login" element={<AdminLogin />} />
-      
 
       {/* =========================== ADMIN PROTECTED ROUTES ============================ */}
       <Route
@@ -141,7 +189,7 @@ const AppRoutes = () => {
         <Route path="settings" element={<Settings />} />
       </Route>
 
-      {/* FALLBACK */}
+      {/* =========================== FALLBACK ============================ */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

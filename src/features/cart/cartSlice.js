@@ -1,11 +1,18 @@
-// src/features/cart/cartSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../../api/client";
+import storage from "../../utils/storage";
 
 /* ================= FETCH CART ================= */
 export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (_, { rejectWithValue }) => {
+    const token = storage.getUserToken();
+
+    // 🔥 IMPORTANT: STOP API CALL IF NOT LOGGED IN
+    if (!token) {
+      return rejectWithValue("User not logged in");
+    }
+
     try {
       const res = await apiClient.get("/api/cart/");
       return res.data;
@@ -44,11 +51,19 @@ const cartSlice = createSlice({
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.items = action.payload;
         state.status = "succeeded";
+        state.error = null;
       })
 
       .addCase(fetchCart.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        // 🔥 Silently ignore if user not logged in
+        if (action.payload === "User not logged in") {
+          state.items = [];
+          state.status = "idle";
+          state.error = null;
+        } else {
+          state.status = "failed";
+          state.error = action.payload;
+        }
       });
   },
 });

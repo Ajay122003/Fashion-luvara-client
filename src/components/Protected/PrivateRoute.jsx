@@ -1,10 +1,18 @@
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
+import storage from "../../utils/storage";
 
 const PrivateRoute = ({ children }) => {
-  const token = useSelector((state) => state.auth.token);
+  const reduxToken = useSelector((state) => state.auth.token);
+  const localToken = storage.getUserToken();
 
-  return token ? children : <Navigate to="/login" />;
+  // 🔥 Allow access if token exists ANYWHERE
+  if (reduxToken || localToken) {
+    return children;
+  }
+
+  return <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;
+

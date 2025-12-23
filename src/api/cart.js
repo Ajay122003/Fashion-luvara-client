@@ -5,7 +5,11 @@ export const addToCart = ({ variant_id, quantity }) =>
   apiClient.post("/api/cart/add/", { variant_id, quantity });
 
 // Get all cart items
-export const getCartItems = () => apiClient.get("/api/cart/");
+export const getCartItems = async () => {
+  const res = await apiClient.get("/api/cart/");
+  return res.data;
+};
+
 
 // Update quantity
 export const updateCartItem = (id, quantity) =>

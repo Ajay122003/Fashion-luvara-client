@@ -12,8 +12,11 @@ export const verifyOtpLogin = (data) =>
 export const passwordLogin = (data) => 
   apiClient.post("/api/auth/login/", data);
 
-export const getMe = () => 
-  apiClient.get("/api/auth/me/");
+export const getMe = async () => {
+  const res = await apiClient.get("/api/auth/me/");
+  return res.data;
+};
+
 
 export const updateProfile = (data) =>
   apiClient.put("/api/auth/me/update/", data);

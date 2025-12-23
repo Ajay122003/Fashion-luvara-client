@@ -17,7 +17,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [mainImage, setMainImage] = useState(null);
 
-  // 🔥 VARIANT STATE
+  //  VARIANT STATE
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);

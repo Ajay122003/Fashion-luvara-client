@@ -15,15 +15,21 @@ const Orders = () => {
   const loadOrders = async () => {
     try {
       const res = await getMyOrders();
-      setOrders(res.data);
-    } catch {
-      alert("Failed to load orders");
+      setOrders(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        navigate("/login");
+      } else {
+        alert("Failed to load orders");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <p className="text-center py-5">Loading orders...</p>;
+  if (loading) {
+    return <p className="text-center py-5">Loading orders...</p>;
+  }
 
   return (
     <div className="container py-4" style={{ maxWidth: 900 }}>
@@ -51,7 +57,9 @@ const Orders = () => {
             </div>
 
             <div className="text-end">
-              <span className="fw-bold">₹{order.total_amount}</span>
+              <span className="fw-bold">
+                ₹{order.total_amount}
+              </span>
               <br />
               <span
                 className={`badge ${

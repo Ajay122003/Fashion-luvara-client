@@ -1,16 +1,21 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { adminLoginStep1, adminLoginVerifyOTP } from "../../api/admin";
-import { saveAdminToken, clearAdminToken } from "../../utils/storage";
+import storage from "../../utils/storage";
+
+/* =======================
+   THUNKS
+======================= */
 
 export const adminLogin = createAsyncThunk(
   "admin/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const data = await adminLoginStep1(email, password);
-      return data; // {message, admin_email}
+      return await adminLoginStep1(email, password);
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.detail || err.response?.data || "Login failed"
+        err.response?.data?.detail ||
+        err.response?.data ||
+        "Login failed"
       );
     }
   }
@@ -20,23 +25,32 @@ export const adminVerifyOTP = createAsyncThunk(
   "admin/verifyOtp",
   async ({ email, otp }, { rejectWithValue }) => {
     try {
-      const data = await adminLoginVerifyOTP(email, otp);
-      return data; // {tokens}
+      return await adminLoginVerifyOTP(email, otp);
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.detail || err.response?.data || "OTP verify failed"
+        err.response?.data?.detail ||
+        err.response?.data ||
+        "OTP verification failed"
       );
     }
   }
 );
 
+/* =======================
+   INITIAL STATE
+======================= */
+
 const initialState = {
-  isAuthenticated: !!localStorage.getItem("admin_access_token"),
+  isAuthenticated: false,   // 🔥 redux-only
   loading: false,
   error: null,
-  step: 1, // 1 = login, 2 = otp
-  pendingEmail: "", // email for OTP step
+  step: 1,                 // 1 = login, 2 = otp
+  pendingEmail: "",
 };
+
+/* =======================
+   SLICE
+======================= */
 
 const adminSlice = createSlice({
   name: "admin",
@@ -46,11 +60,12 @@ const adminSlice = createSlice({
       state.isAuthenticated = false;
       state.step = 1;
       state.pendingEmail = "";
-      clearAdminToken();
+      storage.clearAdminToken(); // ✅ allowed here
     },
   },
   extraReducers: (builder) => {
     builder
+      /* LOGIN STEP 1 */
       .addCase(adminLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -62,8 +77,10 @@ const adminSlice = createSlice({
       })
       .addCase(adminLogin.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Login failed";
+        state.error = action.payload;
       })
+
+      /* OTP VERIFY */
       .addCase(adminVerifyOTP.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -72,15 +89,17 @@ const adminSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.step = 1;
-        const tokens = action.payload.tokens;
-        saveAdminToken(tokens.access, tokens.refresh);
+
+        const { access, refresh } = action.payload.tokens;
+        storage.saveAdminToken(access, refresh); // ✅ OK in thunk flow
       })
       .addCase(adminVerifyOTP.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "OTP verify failed";
+        state.error = action.payload;
       });
   },
 });
 
 export const { adminLogout } = adminSlice.actions;
 export default adminSlice.reducer;
+

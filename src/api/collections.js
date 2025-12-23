@@ -1,9 +1,10 @@
-import apiClient from "./client";
+// src/api/collections.js
+import publicClient from "./publicClient";  // ✅ no token
 
 // Get all collections (public)
 export const fetchCollections = () =>
-  apiClient.get("/api/collections/");
+  publicClient.get("/api/collections/");
 
 // Get products inside a single collection
 export const fetchCollectionProducts = (slug) =>
-  apiClient.get(`/api/collections/slug/${slug}/`);
+  publicClient.get(`/api/collections/slug/${slug}/`);

@@ -1,6 +1,11 @@
-import api from "./client";
+// src/api/category.js
+import publicClient from "./publicClient";  //  no token client
 
-export const getCategories = () => api.get("/api/categories/");
+export const getCategories = async () => {
+  const res = await publicClient.get("/api/categories/");
+  return res.data;
+};
+
 
 export const getCategoryDetail = (slug) =>
-  api.get(`/api/categories/slug/${slug}/`);
+  publicClient.get(`/api/categories/slug/${slug}/`);

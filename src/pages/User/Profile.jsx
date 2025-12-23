@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
-import { getMe, updateProfile, logoutUser } from "../../api/auth";
-import { getAddresses, addAddress, deleteAddress } from "../../api/address";
+import {
+  getMe,
+  updateProfile,
+  logoutUser,
+} from "../../api/auth";
+import {
+  getAddresses,
+  addAddress,
+  deleteAddress,
+} from "../../api/address";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import storage from "../../utils/storage";
+import { useDispatch } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   /* ================= PROFILE ================= */
   const [profile, setProfile] = useState(null);
@@ -29,29 +42,37 @@ const Profile = () => {
   }, []);
 
   const loadAll = async () => {
-  try {
-    const me = await getMe();   // backend decides user/admin
+    try {
+      const me = await getMe();
+      setProfile(me);
+      setUsername(me.username);
 
-    setProfile(me.data);
-    setUsername(me.data.username);
-
-    const addr = await getAddresses();
-    setAddresses(addr.data);
-
-  } catch (err) {
-    localStorage.clear();
-    navigate("/login", { replace: true });
-  } finally {
-    setLoading(false);
-  }
-};
-
+      const addr = await getAddresses();
+      setAddresses(addr);
+    } catch (err) {
+      // 🔥 user-only logout
+      storage.clearUserToken();
+      dispatch(logout());
+      navigate("/login", { replace: true });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* ================= PROFILE UPDATE ================= */
   const saveProfile = async () => {
-    await updateProfile({ username });
-    alert("Profile updated");
-    loadAll();
+    if (!username) {
+      toast.error("Username cannot be empty");
+      return;
+    }
+
+    try {
+      await updateProfile({ username });
+      toast.success("Profile updated");
+      loadAll();
+    } catch {
+      toast.error("Profile update failed");
+    }
   };
 
   /* ================= ADDRESS ================= */
@@ -60,47 +81,63 @@ const Profile = () => {
   };
 
   const saveAddress = async () => {
-    await addAddress(addrForm);
-    setAddrForm({
-      name: "",
-      phone: "",
-      pincode: "",
-      city: "",
-      state: "",
-      full_address: "",
-    });
-    loadAll();
+    const { name, phone, pincode, city, full_address } = addrForm;
+
+    if (!name || !phone || !pincode || !city || !full_address) {
+      toast.error("All address fields are required");
+      return;
+    }
+
+    try {
+      await addAddress(addrForm);
+      toast.success("Address added");
+      setAddrForm({
+        name: "",
+        phone: "",
+        pincode: "",
+        city: "",
+        state: "",
+        full_address: "",
+      });
+      loadAll();
+    } catch {
+      toast.error("Failed to add address");
+    }
   };
 
   const removeAddress = async (id) => {
-    await deleteAddress(id);
-    loadAll();
+    try {
+      await deleteAddress(id);
+      toast.success("Address deleted");
+      loadAll();
+    } catch {
+      toast.error("Failed to delete address");
+    }
   };
 
   /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     try {
-      const refresh = localStorage.getItem("refresh");
-      if (refresh) {
-        await logoutUser(refresh);
-      }
-    } catch (err) {
-      console.error("Logout failed", err);
+      await logoutUser(); // refresh handled internally
+    } catch {
+      // ignore
     } finally {
-      // 🔥 VERY IMPORTANT
-      localStorage.clear();
-      navigate("/login");
-      window.location.reload(); // reset axios interceptor memory
+      storage.clearUserToken();
+      dispatch(logout());
+      navigate("/login", { replace: true });
+      window.location.reload(); // reset axios memory
     }
   };
 
-  if (loading) return <p className="text-center py-5">Loading...</p>;
+  if (loading)
+    return <p className="text-center py-5">Loading...</p>;
 
+  /* ================= UI ================= */
   return (
     <div className="container py-4" style={{ maxWidth: 900 }}>
       <h3 className="mb-4">My Account</h3>
 
-      {/* ================= PROFILE CARD ================= */}
+      {/* PROFILE CARD */}
       <div className="card shadow-sm mb-4">
         <div className="card-body d-flex justify-content-between align-items-center flex-wrap">
           <div>
@@ -108,10 +145,14 @@ const Profile = () => {
             <p className="mb-1 text-muted">{profile.email}</p>
             <span
               className={`badge ${
-                profile.is_email_verified ? "bg-success" : "bg-warning"
+                profile.is_email_verified
+                  ? "bg-success"
+                  : "bg-warning"
               }`}
             >
-              {profile.is_email_verified ? "Email Verified" : "Not Verified"}
+              {profile.is_email_verified
+                ? "Email Verified"
+                : "Not Verified"}
             </span>
           </div>
 
@@ -125,7 +166,7 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* ================= ADDRESS ================= */}
+      {/* ADDRESSES */}
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5>Saved Addresses</h5>
         <button
@@ -146,7 +187,8 @@ const Profile = () => {
           <div className="card-body">
             <strong>{addr.name}</strong> – {addr.phone}
             <p className="mb-1">
-              {addr.full_address}, {addr.city} – {addr.pincode}
+              {addr.full_address}, {addr.city} –{" "}
+              {addr.pincode}
             </p>
 
             <button
@@ -159,9 +201,12 @@ const Profile = () => {
         </div>
       ))}
 
-      {/* ================= ACTIONS ================= */}
+      {/* ACTIONS */}
       <div className="d-flex gap-3 flex-wrap mt-4">
-        <button className="btn btn-dark" onClick={() => navigate("/")}>
+        <button
+          className="btn btn-dark"
+          onClick={() => navigate("/")}
+        >
           Go to Shop
         </button>
 
@@ -172,12 +217,15 @@ const Profile = () => {
           My Orders
         </button>
 
-        <button className="btn btn-outline-danger" onClick={handleLogout}>
+        <button
+          className="btn btn-outline-danger"
+          onClick={handleLogout}
+        >
           Sign Out
         </button>
       </div>
 
-      {/* ================= PROFILE MODAL ================= */}
+      {/* PROFILE MODAL */}
       <div className="modal fade" id="profileModal">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content p-3">
@@ -186,11 +234,16 @@ const Profile = () => {
             <input
               className="form-control my-3"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) =>
+                setUsername(e.target.value)
+              }
             />
 
             <div className="d-flex justify-content-end gap-2">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
+              <button
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
                 Cancel
               </button>
               <button
@@ -205,7 +258,7 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* ================= ADDRESS MODAL ================= */}
+      {/* ADDRESS MODAL */}
       <div className="modal fade" id="addressModal">
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content p-3">
@@ -245,7 +298,10 @@ const Profile = () => {
             </div>
 
             <div className="d-flex justify-content-end gap-2">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
+              <button
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
                 Cancel
               </button>
               <button

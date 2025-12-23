@@ -1,8 +1,11 @@
 import apiClient from "./client";
 
 /* Get all addresses */
-export const getAddresses = () =>
-  apiClient.get("/api/address/");
+export const getAddresses = async () => {
+  const res = await apiClient.get("/api/address/");
+  return res.data;
+};
+
 
 /* Add new address */
 export const addAddress = (data) =>
