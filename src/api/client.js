@@ -6,9 +6,10 @@ const apiClient = axios.create({
   withCredentials: false,
 });
 
+/* ================= REQUEST INTERCEPTOR ================= */
 apiClient.interceptors.request.use(
   (config) => {
-    const token = storage.getUserToken(); // ✅ USER TOKEN ONLY
+    const token = storage.getUserToken();
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -21,15 +22,23 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-//  auto logout user if token invalid
+/* ================= RESPONSE INTERCEPTOR ================= */
 apiClient.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const currentPath = window.location.pathname;
+
+    if (status === 401) {
       storage.clearUserToken();
-      window.location.href = "/login";
+
+      // 🚫 prevent redirect loop
+      if (currentPath !== "/login") {
+        window.location.href = "/login";
+      }
     }
-    return Promise.reject(err);
+
+    return Promise.reject(error);
   }
 );
 

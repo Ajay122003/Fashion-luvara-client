@@ -14,11 +14,11 @@ const Orders = () => {
 
   const loadOrders = async () => {
     try {
-      const res = await getMyOrders();
-      setOrders(Array.isArray(res.data) ? res.data : []);
+      const data = await getMyOrders(); // ✅ already array
+      setOrders(Array.isArray(data) ? data : []);
     } catch (err) {
       if (err.response?.status === 401) {
-        navigate("/login");
+        navigate("/login", { replace: true });
       } else {
         alert("Failed to load orders");
       }
@@ -49,7 +49,7 @@ const Orders = () => {
           <div className="card-body d-flex justify-content-between flex-wrap">
             <div>
               <h6 className="mb-1">
-                Order #{order.order_id || order.id}
+                Order #{order.order_number || order.id}
               </h6>
               <small className="text-muted">
                 {new Date(order.created_at).toLocaleDateString()}
@@ -57,9 +57,7 @@ const Orders = () => {
             </div>
 
             <div className="text-end">
-              <span className="fw-bold">
-                ₹{order.total_amount}
-              </span>
+              <span className="fw-bold">₹{order.total_amount}</span>
               <br />
               <span
                 className={`badge ${

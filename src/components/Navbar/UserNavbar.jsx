@@ -5,9 +5,11 @@ import { useSelector, shallowEqual, useDispatch } from "react-redux";
 
 import { fetchCart } from "../../features/cart/cartSlice";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
+import storage from "../../utils/storage";
 
 import brandLogo from "../../assets/images/logo.png";
 import brandLogo2 from "../../assets/images/logo2.png";
+const token = storage.getUserToken();
 
 const UserNavbar = () => {
   const dispatch = useDispatch();
@@ -15,9 +17,12 @@ const UserNavbar = () => {
 
   /* ================= LOAD CART + WISHLIST ================= */
   useEffect(() => {
+  if (token) {
     dispatch(fetchCart());
     dispatch(fetchWishlist());
-  }, [dispatch]);
+  }
+}, [dispatch, token]);
+
 
   /* ================= AUTO CLOSE OFFCANVAS ON ROUTE CHANGE (🔥 FIX) ================= */
   useEffect(() => {

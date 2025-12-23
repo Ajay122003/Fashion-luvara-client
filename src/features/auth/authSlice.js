@@ -1,13 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import storage from "../../utils/storage";
 
-const token = storage.getUserToken();
-
 const initialState = {
   user: null,
-  token: token || null,
+  token: null,
   loading: false,
-  initialized: false, // 🔥 VERY IMPORTANT
+  initialized: false,
 };
 
 const authSlice = createSlice({
@@ -15,7 +13,8 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     initAuth(state) {
-      state.token = storage.getUserToken();
+      const token = storage.getUserToken();
+      state.token = token || null;
       state.initialized = true;
     },
 
@@ -32,6 +31,7 @@ const authSlice = createSlice({
     logout(state) {
       state.token = null;
       state.user = null;
+      state.initialized = true;
       storage.clearUserToken();
     },
   },
