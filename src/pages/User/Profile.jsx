@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  getMe,
-  updateProfile,
-  logoutUser,
-} from "../../api/auth";
-import {
-  getAddresses,
-  addAddress,
-  deleteAddress,
-} from "../../api/address";
+import { getMe, updateProfile, logoutUser,} from "../../api/auth";
+import { getAddresses, addAddress, deleteAddress,} from "../../api/address";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import storage from "../../utils/storage";
@@ -50,7 +42,7 @@ const Profile = () => {
       const addr = await getAddresses();
       setAddresses(addr);
     } catch (err) {
-      // 🔥 user-only logout
+      //  user-only logout
       storage.clearUserToken();
       dispatch(logout());
       navigate("/login", { replace: true });

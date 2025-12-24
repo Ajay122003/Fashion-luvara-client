@@ -1,24 +1,51 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
 import { toggleWishlist } from "../../api/wishlist";
 import { Link } from "react-router-dom";
 
+import storage from "../../utils/storage";
+import {
+  getGuestWishlist,
+  toggleGuestWishlist,
+} from "../../utils/guestWishlist";
+
 const Wishlist = () => {
   const dispatch = useDispatch();
   const { items, status } = useSelector((s) => s.wishlist);
 
-  useEffect(() => {
-    dispatch(fetchWishlist());
-  }, [dispatch]);
+  const [guestItems, setGuestItems] = useState([]);
 
+  const token = storage.getUserToken();
+
+  /* ================= LOAD WISHLIST ================= */
+  useEffect(() => {
+    // 🔐 Logged in user
+    if (token) {
+      dispatch(fetchWishlist());
+    } else {
+      // 👤 Guest user
+      const ids = getGuestWishlist();
+      setGuestItems(ids);
+    }
+  }, [dispatch, token]);
+
+  /* ================= REMOVE ITEM ================= */
   const removeFromWishlist = async (productId) => {
+    // 👤 Guest
+    if (!token) {
+      toggleGuestWishlist(productId);
+      setGuestItems(getGuestWishlist());
+      return;
+    }
+
+    // 🔐 Login
     await toggleWishlist(productId);
     dispatch(fetchWishlist());
   };
 
   /* ================= LOADING ================= */
-  if (status === "loading") {
+  if (token && status === "loading") {
     return (
       <p className="text-center py-5 fs-5">
         Loading wishlist…
@@ -27,10 +54,11 @@ const Wishlist = () => {
   }
 
   /* ================= EMPTY WISHLIST ================= */
-  if (items.length === 0) {
+  const isEmpty = token ? items.length === 0 : guestItems.length === 0;
+
+  if (isEmpty) {
     return (
       <div className="container py-5 text-center">
-        {/* ❤️ Animated Heart */}
         <i className="bi bi-heart-fill wishlist-heart mb-3"></i>
 
         <h4 className="fw-bold mb-2">
@@ -41,17 +69,14 @@ const Wishlist = () => {
           Save items you like so you can find them easily later.
         </p>
 
-        {/* MATCHED CONTINUE SHOPPING */}
         <Link to="/" className="continue-shopping-btn">
           <i className="bi bi-arrow-left"></i>
           <span>Continue Shopping</span>
         </Link>
 
-        {/* EMPTY WISHLIST CSS */}
         <style>{`
           .wishlist-heart {
             font-size: 54px;
-            
             animation: heartBeat 1.3s infinite;
             display: inline-block;
           }
@@ -79,82 +104,90 @@ const Wishlist = () => {
             transition: all 0.3s ease;
           }
 
-          .continue-shopping-btn i {
-            font-size: 16px;
-            transition: transform 0.3s ease;
-          }
-
           .continue-shopping-btn:hover {
             background: #111;
             color: #fff;
-          }
-
-          .continue-shopping-btn:hover i {
-            transform: translateX(-4px);
           }
         `}</style>
       </div>
     );
   }
 
-  /* ================= WISHLIST ITEMS ================= */
+  /* ================= LOGIN WISHLIST ================= */
+  if (token) {
+    return (
+      <div className="container py-4">
+        <h3 className="fw-bold mb-4">My Wishlist</h3>
+
+        <div className="row g-4">
+          {items.map((item) => (
+            <div className="col-6 col-md-4 col-lg-3" key={item.id}>
+              <div className="card shadow-sm h-100 border-0 wishlist-card">
+                <Link to={`/product/${item.product.id}`}>
+                  <div className="ratio ratio-1x1">
+                    <img
+                      src={item.product.images?.[0]?.image_url}
+                      alt={item.product.name}
+                      className="img-fluid"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                </Link>
+
+                <div className="card-body p-2 d-flex flex-column">
+                  <h6 className="small fw-semibold text-truncate">
+                    {item.product.name}
+                  </h6>
+
+                  <p className="small fw-bold mb-2">
+                    ₹{item.product.sale_price || item.product.price}
+                  </p>
+
+                  <button
+                    onClick={() => removeFromWishlist(item.product.id)}
+                    className="btn btn-outline-danger btn-sm mt-auto"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  /* ================= GUEST WISHLIST ================= */
   return (
     <div className="container py-4">
       <h3 className="fw-bold mb-4">My Wishlist</h3>
 
       <div className="row g-4">
-        {items.map((item) => (
-          <div className="col-6 col-md-4 col-lg-3" key={item.id}>
-            <div className="card shadow-sm h-100 border-0 wishlist-card">
+        {guestItems.map((id) => (
+          <div className="col-6 col-md-4 col-lg-3" key={id}>
+            <div className="card shadow-sm h-100 border-0 p-3 text-center">
+              <p className="small mb-3">
+                Product ID: {id}
+              </p>
 
-              {/* IMAGE */}
-              <Link to={`/product/${item.product.id}`}>
-                <div className="ratio ratio-1x1">
-                  <img
-                    src={item.product.images?.[0]?.image_url}
-                    alt={item.product.name}
-                    className="card-img-top img-fluid"
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
+              <Link
+                to={`/product/${id}`}
+                className="btn btn-outline-dark btn-sm mb-2"
+              >
+                View Product
               </Link>
 
-              {/* DETAILS */}
-              <div className="card-body p-2 d-flex flex-column">
-                <h6 className="small fw-semibold mb-1 text-truncate">
-                  {item.product.name}
-                </h6>
-
-                <p className="small mb-2 fw-bold">
-                  ₹{item.product.sale_price || item.product.price}
-                </p>
-
-                <button
-                  onClick={() =>
-                    removeFromWishlist(item.product.id)
-                  }
-                  className="btn btn-outline-danger btn-sm w-100 mt-auto"
-                >
-                  Remove
-                </button>
-              </div>
+              <button
+                onClick={() => removeFromWishlist(id)}
+                className="btn btn-outline-danger btn-sm"
+              >
+                Remove
+              </button>
             </div>
           </div>
         ))}
       </div>
-
-      {/* CARD HOVER */}
-      <style>{`
-        .wishlist-card {
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
-          border-radius: 12px;
-        }
-
-        .wishlist-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-        }
-      `}</style>
     </div>
   );
 };

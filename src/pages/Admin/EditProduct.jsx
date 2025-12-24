@@ -5,7 +5,7 @@ import {
   updateAdminProduct,
   deleteProductImage,
 } from "../../api/admin";
-import apiClient from "../../api/client";
+import adminClient from "../../api/adminClient";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
 
@@ -36,7 +36,7 @@ const EditProduct = () => {
 
   const loadData = async () => {
     try {
-      const prodRes = await apiClient.get(
+      const prodRes = await adminClient.get(
         `/api/admin-panel/products/${id}/`
       );
 

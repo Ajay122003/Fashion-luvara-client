@@ -103,7 +103,11 @@ const AdminLayout = () => {
               >
                 Categories
               </NavLink>
-
+              <NavLink to="/admin/collections"
+               className="list-group-item list-group-item-action"
+                onClick={() => setShowSidebar(false)}>
+              Collections
+            </NavLink>
               <NavLink
                 to="/admin/coupons"
                 className="list-group-item list-group-item-action"
@@ -119,6 +123,10 @@ const AdminLayout = () => {
               >
                 Orders
               </NavLink>
+              <NavLink to="/admin/users" className="list-group-item list-group-item-action"
+              onClick={() => setShowSidebar(false)}>
+               Users & Subscribers
+               </NavLink>
 
               <NavLink
                 to="/admin/settings"
@@ -136,7 +144,7 @@ const AdminLayout = () => {
                   setShowSidebar(false);
                 }}
               >
-                Logout ⟶
+                Logout <i class="bi bi-arrow-right"></i>
               </button>
             </div>
           </div>

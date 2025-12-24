@@ -1,4 +1,3 @@
-// src/features/wishlist/wishlistSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getWishlist } from "../../api/wishlist";
 
@@ -6,8 +5,7 @@ import { getWishlist } from "../../api/wishlist";
 export const fetchWishlist = createAsyncThunk(
   "wishlist/fetchWishlist",
   async () => {
-    const res = await getWishlist();
-    return res.data;
+    return await getWishlist(); // ✅ FIXED
   }
 );
 
@@ -16,12 +14,10 @@ const wishlistSlice = createSlice({
 
   initialState: {
     items: [],
-    status: "idle", // idle | loading | succeeded | failed
+    status: "idle",
   },
 
-  /* ================= LOCAL (OPTIMISTIC) REDUCERS ================= */
   reducers: {
-    // 🔥 Optional: Optimistic toggle (NO fetch)
     toggleLocalWishlist: (state, action) => {
       const productId = action.payload;
 
@@ -30,13 +26,13 @@ const wishlistSlice = createSlice({
       );
 
       if (index !== -1) {
-        // remove from wishlist
         state.items.splice(index, 1);
+      } else {
+        state.items.unshift({ product_id: productId });
       }
     },
   },
 
-  /* ================= ASYNC REDUCERS ================= */
   extraReducers: (builder) => {
     builder
       .addCase(fetchWishlist.pending, (state) => {
@@ -52,6 +48,6 @@ const wishlistSlice = createSlice({
   },
 });
 
-/* ================= EXPORTS ================= */
 export const { toggleLocalWishlist } = wishlistSlice.actions;
 export default wishlistSlice.reducer;
+

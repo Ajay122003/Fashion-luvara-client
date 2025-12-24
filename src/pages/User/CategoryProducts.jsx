@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../../api/client";
+import publicClient from "../../api/publicClient";
 
 const CategoryProducts = () => {
   const { slug } = useParams();
@@ -10,7 +10,7 @@ const CategoryProducts = () => {
 
   const loadCategory = async () => {
     try {
-      const res = await api.get(`/api/categories/slug/${slug}/`);
+      const res = await publicClient.get(`/api/categories/slug/${slug}/`);
       setCategory(res.data);
     } catch (err) {
       console.error("Category not found", err);

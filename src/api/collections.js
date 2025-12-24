@@ -1,5 +1,5 @@
 // src/api/collections.js
-import publicClient from "./publicClient";  // ✅ no token
+import publicClient from "./publicClient";  //  no token
 
 // Get all collections (public)
 export const fetchCollections = () =>

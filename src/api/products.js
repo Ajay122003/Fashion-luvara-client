@@ -17,7 +17,7 @@ export const fetchProductDetail = async (id) => {
   return res.data;
 };
 
-// 🔥 GET RELATED PRODUCTS (YOU MAY ALSO LIKE)
+//  GET RELATED PRODUCTS (YOU MAY ALSO LIKE)
 export const fetchRelatedProducts = async (id) => {
   const res = await publicClient.get(
     `/api/products/${id}/related/`

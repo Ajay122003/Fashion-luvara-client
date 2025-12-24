@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../api/client";
+import publicClient from "../../api/publicClient";
 import { fetchCollections } from "../../api/collections";
 import { Link } from "react-router-dom";
 import Products from "./Products";
@@ -12,7 +12,7 @@ const Home = () => {
   const loadData = async () => {
     try {
       const colRes = await fetchCollections();
-      const catRes = await api.get("/api/categories/");
+      const catRes = await publicClient.get("/api/categories/");
 
       setCollections(colRes.data);
       setCategories(catRes.data);

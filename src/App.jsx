@@ -12,7 +12,7 @@ import { getMe } from "./api/auth";
 import { fetchCart } from "./features/cart/cartSlice";
 import { setCategories } from "./features/category/categorySlice";
 import { setCollections } from "./features/collections/collectionSlice";
-import { setUser } from "./features/auth/authSlice";
+import { setUser, logout, initAuth } from "./features/auth/authSlice";
 
 // Utils
 import storage from "./utils/storage";
@@ -21,7 +21,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.auth.user);
-  const userToken = storage.getUserToken();
+  const token = storage.getUserToken();
 
   // 🔒 Prevent multiple public API calls (429 FIX)
   const hasLoadedPublicData = useRef(false);
@@ -46,23 +46,28 @@ const App = () => {
     loadPublicData();
   }, [dispatch]);
 
+  /* ================= INIT AUTH (ONCE) ================= */
+  useEffect(() => {
+    dispatch(initAuth());
+  }, [dispatch]);
+
   /* ================= RESTORE USER SESSION ================= */
   useEffect(() => {
-    if (!userToken || user) return;
+    if (!token || user) return;
 
     const restoreUserSession = async () => {
       try {
         const res = await getMe();
-        dispatch(setUser(res.data));   // ✅ CORRECT
-        dispatch(fetchCart());         // load cart after auth
-      } catch (err) {
-        // ❌ Token expired / invalid
+        dispatch(setUser(res.data ?? res));
+        dispatch(fetchCart());
+      } catch {
         storage.clearUserToken();
+        dispatch(logout());
       }
     };
 
     restoreUserSession();
-  }, [dispatch, userToken, user]);
+  }, [dispatch, token, user]);
 
   return <AppRoutes />;
 };

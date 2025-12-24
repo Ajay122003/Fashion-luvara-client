@@ -2,13 +2,12 @@ import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-
 import { fetchCart } from "../../features/cart/cartSlice";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
 import storage from "../../utils/storage";
-
 import brandLogo from "../../assets/images/logo.png";
 import brandLogo2 from "../../assets/images/logo2.png";
+
 const token = storage.getUserToken();
 
 const UserNavbar = () => {
@@ -16,6 +15,7 @@ const UserNavbar = () => {
   const location = useLocation();
 
   /* ================= LOAD CART + WISHLIST ================= */
+  
   useEffect(() => {
   if (token) {
     dispatch(fetchCart());
@@ -24,7 +24,8 @@ const UserNavbar = () => {
 }, [dispatch, token]);
 
 
-  /* ================= AUTO CLOSE OFFCANVAS ON ROUTE CHANGE (🔥 FIX) ================= */
+
+  /* ================= AUTO CLOSE OFFCANVAS ON ROUTE CHANGE ( FIX) ================= */
   useEffect(() => {
     const menu = document.getElementById("mobileMenu");
     if (!menu) return;

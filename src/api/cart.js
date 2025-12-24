@@ -7,7 +7,7 @@ export const addToCart = ({ variant_id, quantity }) =>
 // Get all cart items
 export const getCartItems = async () => {
   const res = await apiClient.get("/api/cart/");
-  return res.data;
+//  return res.data; 
 };
 
 

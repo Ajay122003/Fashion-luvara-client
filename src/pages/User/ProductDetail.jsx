@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+
+import publicClient from "../../api/publicClient";
 import apiClient from "../../api/client";
+
 import { fetchCart } from "../../features/cart/cartSlice";
 import { toggleWishlist, getWishlistStatus } from "../../api/wishlist";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
+
+import storage from "../../utils/storage";
+import {
+  toggleGuestWishlist,
+  isGuestWishlisted,
+} from "../../utils/guestWishlist";
+
 import sizechart from "../../assets/images/sizechart.jpeg";
 import RelatedProducts from "./RelatedProducts";
 
@@ -17,7 +27,6 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [mainImage, setMainImage] = useState(null);
 
-  //  VARIANT STATE
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -28,7 +37,7 @@ const ProductDetail = () => {
   useEffect(() => {
     const loadProduct = async () => {
       try {
-        const res = await apiClient.get(`/api/products/${id}/`);
+        const res = await publicClient.get(`/api/products/${id}/`);
         setProduct(res.data);
         if (res.data.images?.length) {
           setMainImage(res.data.images[0].image_url);
@@ -37,6 +46,7 @@ const ProductDetail = () => {
         setLoading(false);
       }
     };
+
     setLoading(true);
     loadProduct();
   }, [id]);
@@ -44,13 +54,23 @@ const ProductDetail = () => {
   /* ================= WISHLIST STATUS ================= */
   useEffect(() => {
     const loadWishlistStatus = async () => {
+      const token = storage.getUserToken();
+
+      // 👤 Guest user
+      if (!token) {
+        setIsWishlisted(isGuestWishlisted(Number(id)));
+        return;
+      }
+
+      // 🔐 Logged in user
       try {
         const res = await getWishlistStatus(id);
-        setIsWishlisted(res.data.is_added);
+        setIsWishlisted(res.is_added);
       } catch {
         setIsWishlisted(false);
       }
     };
+
     loadWishlistStatus();
   }, [id]);
 
@@ -113,14 +133,24 @@ const ProductDetail = () => {
     navigate("/checkout");
   };
 
-  /* ================= WISHLIST ================= */
+  /* ================= WISHLIST TOGGLE ================= */
   const handleWishlistToggle = async () => {
-    setIsWishlisted((p) => !p);
+    const token = storage.getUserToken();
+
+    // 👤 Guest user
+    if (!token) {
+      const added = toggleGuestWishlist(product.id);
+      setIsWishlisted(added);
+      return;
+    }
+
+    // 🔐 Logged in user
     try {
-      await toggleWishlist(product.id);
+      const res = await toggleWishlist(product.id);
+      setIsWishlisted(res.is_added);
       dispatch(fetchWishlist());
     } catch {
-      setIsWishlisted((p) => !p);
+      // ignore
     }
   };
 
@@ -134,7 +164,7 @@ const ProductDetail = () => {
     <div className="container py-3 py-md-5 product-detail-page">
       <div className="row g-4">
 
-        {/* ================= IMAGE SECTION ================= */}
+        {/* IMAGE SECTION */}
         <div className="col-12 col-md-6">
           <div className="position-relative border rounded p-2">
             <button
@@ -156,7 +186,6 @@ const ProductDetail = () => {
             />
           </div>
 
-          {/* THUMBNAILS */}
           <div className="d-flex gap-2 mt-3 overflow-auto">
             {product.images?.map((img) => (
               <img
@@ -177,7 +206,7 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* ================= DETAILS ================= */}
+        {/* DETAILS */}
         <div className="col-12 col-md-6">
           <h4 className="fw-bold">{product.name}</h4>
 
@@ -232,7 +261,6 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* STOCK */}
           {selectedVariant && (
             <p className="small mt-2">
               {selectedVariant.stock > 0 ? (
@@ -245,7 +273,6 @@ const ProductDetail = () => {
             </p>
           )}
 
-          {/* DESKTOP BUTTONS */}
           <div className="d-none d-md-flex gap-3 mt-4">
             <button
               onClick={handleAddToCart}
@@ -263,26 +290,19 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* ================= RELATED PRODUCTS ================= */}
       <RelatedProducts productId={product.id} />
 
-      {/* ================= MOBILE STICKY BAR ================= */}
+      {/* MOBILE BAR */}
       <div className="d-md-none position-fixed bottom-0 start-0 w-100 bg-white p-2 shadow d-flex gap-2">
-        <button
-          onClick={handleAddToCart}
-          className="btn btn-outline-dark w-50"
-        >
+        <button onClick={handleAddToCart} className="btn btn-outline-dark w-50">
           Add to Cart
         </button>
-        <button
-          onClick={handleBuyNow}
-          className="btn btn-dark w-50"
-        >
+        <button onClick={handleBuyNow} className="btn btn-dark w-50">
           Buy it now
         </button>
       </div>
 
-      {/* ================= CART SUCCESS MODAL ================= */}
+      {/* CART MODAL */}
       <div className="modal fade" id="cartSuccessModal">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content text-center p-4">
@@ -300,45 +320,16 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* ================= SIZE CHART MODAL ================= */}
-      <div className="modal fade" id="sizeChartModal" tabIndex="-1">
-        <div className="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
-          <div className="modal-content sizechart-modal">
-            <div className="modal-header border-0">
-              <h5 className="modal-title fw-semibold">Size Guide</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-              />
-            </div>
-
-            <div className="modal-body">
-              <div className="sizechart-wrapper">
-                <img
-                  src={sizechart}
-                  alt="Size chart"
-                  className="sizechart-img"
-                />
-              </div>
-              <p className="text-muted small text-center mt-3 mb-0">
-                Measurements are approximate. Slight variations may occur.
-              </p>
+      {/* SIZE CHART */}
+      <div className="modal fade" id="sizeChartModal">
+        <div className="modal-dialog modal-dialog-centered modal-lg">
+          <div className="modal-content">
+            <div className="modal-body text-center">
+              <img src={sizechart} alt="Size chart" className="img-fluid" />
             </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        .product-detail-page {
-          padding-bottom: 90px;
-        }
-        @media (min-width: 768px) {
-          .product-detail-page {
-            padding-bottom: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };
