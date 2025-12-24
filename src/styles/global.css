@@ -120,5 +120,45 @@ body {
 
 
 
+/* ================= LIGHT THEME ================= */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #111111;
 
+  --card-bg: #f8f9fa;
+  --border-color: #e0e0e0;
+
+  --primary-color: #111827;
+  --secondary-color: #6b7280;
+
+  --nav-bg: #ffffff;
+  --sidebar-bg: #f9fafb;
+
+  --button-bg: #111827;
+  --button-text: #ffffff;
+}
+
+/* ================= DARK THEME ================= */
+[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --text-color: #e5e7eb;
+
+  --card-bg: #1e293b;
+  --border-color: #334155;
+
+  --primary-color: #e5e7eb;
+  --secondary-color: #9ca3af;
+
+  --nav-bg: #020617;
+  --sidebar-bg: #020617;
+
+  --button-bg: #e5e7eb;
+  --button-text: #020617;
+}
+
+/* ================= GLOBAL APPLY ================= */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
 

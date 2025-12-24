@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { sendOtpLogin } from "../../api/auth";
 import { useNavigate, Link } from "react-router-dom";
+import "../../styles/login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,8 +10,7 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const [cooldown, setCooldown] = useState(0); // seconds
+  const [cooldown, setCooldown] = useState(0);
 
   /* ================= COOLDOWN TIMER ================= */
   useEffect(() => {
@@ -39,8 +39,6 @@ const Login = () => {
 
       setMessage("OTP has been sent to your email.");
       setMessageType("success");
-
-      // 🔥 Start cooldown (match backend: 60 sec)
       setCooldown(60);
 
       setTimeout(() => {
@@ -48,14 +46,16 @@ const Login = () => {
       }, 1200);
     } catch (err) {
       const data = err.response?.data;
+      const status = err.response?.status;
 
-      if (err.response?.status === 429) {
-        setMessage(
-          data?.detail ||
-          "Too many OTP requests. Please wait before trying again."
-        );
-      } else if (data?.non_field_errors?.[0] === "User not found") {
-        setMessage("Your email is not registered. Please sign up.");
+      if (
+        status === 404 ||
+        data?.detail === "User not found" ||
+        data?.non_field_errors?.[0] === "User not found"
+      ) {
+        setMessage("Your email is not registered. Please sign up first.");
+      } else if (status === 429) {
+        setMessage("Too many OTP requests. Please wait and try again.");
       } else {
         setMessage("Unable to send OTP. Please try again.");
       }
@@ -67,37 +67,45 @@ const Login = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center py-5"
-      style={{ minHeight: "100vh", background: "#f8f8f8" }}>
-
-      <div className="login-card bg-white p-4 p-md-5 shadow rounded-4">
-
-        <h2 className="text-center fw-bold mb-1">
+    <div className="login-wrapper">
+      <div className="login-card">
+        <h2 className="login-title">
           Welcome back to <span>LUVARA</span>
         </h2>
 
-        <p className="text-center text-muted mb-4">
+        <p className="login-subtitle">
           Login using your email to receive OTP
         </p>
 
+        {/* ALERT MESSAGE */}
         {message && (
-          <div className={`alert ${
-            messageType === "success" ? "alert-success" : "alert-danger"
-          }`}>
+          <div className={`login-alert ${messageType}`}>
             {message}
+            {message.includes("sign up") && (
+              <>
+                {" "}
+                <Link to="/register" className="fw-semibold">
+                  Sign up
+                </Link>
+              </>
+            )}
           </div>
         )}
 
-        <label className="form-label fw-semibold">Email Address</label>
-        <input
-          type="email"
-          className="form-control mb-3"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        {/* FLOATING EMAIL INPUT */}
+        <div className="floating-input">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <label>Email address</label>
+        </div>
 
+        {/* SUBMIT BUTTON */}
         <button
-          className="btn btn-dark w-100"
+          className="login-btn"
           onClick={handleSendOTP}
           disabled={loading || cooldown > 0}
         >
@@ -108,9 +116,8 @@ const Login = () => {
             : "Send OTP"}
         </button>
 
-        <p className="text-center mt-3">
-          Don't have an account?{" "}
-          <Link to="/register">Sign up</Link>
+        <p className="login-footer">
+          Don’t have an account? <Link to="/register">Sign up</Link>
         </p>
       </div>
     </div>

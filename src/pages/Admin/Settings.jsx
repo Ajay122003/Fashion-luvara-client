@@ -24,6 +24,7 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  /* ================= LOAD SETTINGS ================= */
   const loadSettings = async () => {
     try {
       const data = await fetchSiteSettings();
@@ -43,6 +44,7 @@ const Settings = () => {
     loadSettings();
   }, []);
 
+  /* ================= HANDLERS ================= */
   const handleToggle = (e) => {
     setSettings({ ...settings, [e.target.name]: e.target.checked });
   };
@@ -51,17 +53,20 @@ const Settings = () => {
     setSettings({ ...settings, [e.target.name]: Number(e.target.value) });
   };
 
+  /* ================= SAVE SETTINGS (COMMON) ================= */
   const saveSettings = async () => {
     setSaving(true);
     try {
       await updateSiteSettings(settings);
       alert("Settings updated successfully!");
+    } catch {
+      alert("Failed to save settings");
     } finally {
       setSaving(false);
     }
   };
 
-  /* ACCOUNT */
+  /* ================= ACCOUNT ================= */
   const [newEmail, setNewEmail] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
 
@@ -88,11 +93,9 @@ const Settings = () => {
     alert("Password updated");
   };
 
+  /* ================= SECTION HEADER ================= */
   const SectionHeader = ({ icon, title, section }) => (
-    <div
-      className="admin-header"
-      onClick={() => toggleSection(section)}
-    >
+    <div className="admin-header" onClick={() => toggleSection(section)}>
       <div className="d-flex align-items-center gap-2">
         <i className={`bi ${icon}`}></i>
         <span>{title}</span>
@@ -109,13 +112,14 @@ const Settings = () => {
     <div className="container py-3" style={{ maxWidth: 900 }}>
       <h3 className="fw-bold mb-4">Admin Settings</h3>
 
-      {/* STORE */}
+      {/* ================= STORE SETTINGS ================= */}
       <div className="admin-card">
         <SectionHeader
           icon="bi-shop"
           title="Store Settings"
           section="store"
         />
+
         {openSection === "store" && (
           <div className="admin-body">
             {loading ? (
@@ -148,7 +152,7 @@ const Settings = () => {
                   </label>
                 </div>
 
-                <div className="form-check form-switch">
+                <div className="form-check form-switch mb-4">
                   <input
                     className="form-check-input"
                     type="checkbox"
@@ -160,19 +164,29 @@ const Settings = () => {
                     Allow Product Returns
                   </label>
                 </div>
+
+                {/* 🔥 SAVE STORE SETTINGS */}
+                <button
+                  className="btn btn-dark"
+                  disabled={saving}
+                  onClick={saveSettings}
+                >
+                  {saving ? "Saving..." : "Save Store Settings"}
+                </button>
               </>
             )}
           </div>
         )}
       </div>
 
-      {/* SHIPPING */}
+      {/* ================= SHIPPING SETTINGS ================= */}
       <div className="admin-card">
         <SectionHeader
           icon="bi-truck"
           title="Shipping Settings"
           section="shipping"
         />
+
         {openSection === "shipping" && (
           <div className="admin-body">
             <div className="mb-3">
@@ -204,19 +218,20 @@ const Settings = () => {
               disabled={saving}
               onClick={saveSettings}
             >
-              {saving ? "Saving..." : "Save Settings"}
+              {saving ? "Saving..." : "Save Shipping Settings"}
             </button>
           </div>
         )}
       </div>
 
-      {/* ACCOUNT */}
+      {/* ================= ACCOUNT SETTINGS ================= */}
       <div className="admin-card">
         <SectionHeader
           icon="bi-person-circle"
           title="Account Settings"
           section="account"
         />
+
         {openSection === "account" && (
           <div className="admin-body">
             <div className="mb-3">
@@ -280,7 +295,7 @@ const Settings = () => {
         )}
       </div>
 
-      {/* STYLES */}
+      {/* ================= STYLES ================= */}
       <style>{`
         .admin-card {
           background: #fff;

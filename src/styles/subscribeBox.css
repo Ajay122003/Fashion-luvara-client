@@ -1,0 +1,80 @@
+/* ===== SECTION ===== */
+.subscribe-section {
+  padding: 60px 0;
+  background: var(--bg-color);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ===== ICON ===== */
+.subscribe-icon {
+  margin-bottom: 12px;
+  color: var(--primary);
+  animation: bounce 1.3s infinite alternate;
+}
+
+/* ===== TITLE ===== */
+.subscribe-title {
+  color: var(--secondary);
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+}
+
+/* ===== INPUT ===== */
+.subscribe-input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-color);
+  outline: none;
+}
+
+.subscribe-input::placeholder {
+  color: var(--secondary);
+}
+
+/* ===== BUTTON ===== */
+.subscribe-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.subscribe-btn:hover {
+  opacity: 0.9;
+}
+
+/* ===== SUCCESS MESSAGE ===== */
+.subscribe-success {
+  margin-top: 16px;
+  color: #22c55e;
+  animation: fadeIn 0.4s ease;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -56,13 +56,11 @@ const ProductDetail = () => {
     const loadWishlistStatus = async () => {
       const token = storage.getUserToken();
 
-      // 👤 Guest user
       if (!token) {
         setIsWishlisted(isGuestWishlisted(Number(id)));
         return;
       }
 
-      // 🔐 Logged in user
       try {
         const res = await getWishlistStatus(id);
         setIsWishlisted(res.is_added);
@@ -74,30 +72,69 @@ const ProductDetail = () => {
     loadWishlistStatus();
   }, [id]);
 
+  /* ================= DERIVED DATA ================= */
+  if (!product && !loading) return null;
+
+  const sizes = product
+    ? [...new Set(product.variants.map((v) => v.size))]
+    : [];
+
+  const colors = product
+    ? [
+        ...new Set(
+          product.variants
+            .map((v) => v.color)
+            .filter(Boolean) // 🔥 remove null / ""
+        ),
+      ]
+    : [];
+
+  const hasColors = colors.length > 0;
+
   /* ================= VARIANT MATCH ================= */
   useEffect(() => {
-    if (!product || !selectedSize || !selectedColor) {
+    if (!product || !selectedSize) {
       setSelectedVariant(null);
       return;
     }
 
-    const v = product.variants.find(
-      (x) => x.size === selectedSize && x.color === selectedColor
+    const variant = product.variants.find((v) => {
+      if (hasColors) {
+        return (
+          v.size === selectedSize &&
+          v.color === selectedColor
+        );
+      }
+      // 🔥 size-only product
+      return v.size === selectedSize;
+    });
+
+    setSelectedVariant(variant || null);
+  }, [selectedSize, selectedColor, product, hasColors]);
+
+  /* ================= HELPERS ================= */
+  const isSizeAvailable = (size) =>
+    product.variants.some(
+      (v) => v.size === size && v.stock > 0
     );
-    setSelectedVariant(v || null);
-  }, [selectedSize, selectedColor, product]);
+
+  const isColorAvailable = (color) => {
+    if (!selectedSize) return false;
+
+    return product.variants.some(
+      (v) =>
+        v.size === selectedSize &&
+        v.color === color &&
+        v.stock > 0
+    );
+  };
+
+  const isOutOfStock =
+    selectedVariant && selectedVariant.stock === 0;
 
   /* ================= ADD TO CART ================= */
   const handleAddToCart = async () => {
-    if (!selectedVariant) {
-      alert("Select size and color");
-      return;
-    }
-
-    if (selectedVariant.stock === 0) {
-      alert("Selected variant is out of stock");
-      return;
-    }
+    if (!selectedVariant || isOutOfStock) return;
 
     await apiClient.post("/api/cart/add/", {
       variant_id: selectedVariant.id,
@@ -114,15 +151,7 @@ const ProductDetail = () => {
 
   /* ================= BUY NOW ================= */
   const handleBuyNow = async () => {
-    if (!selectedVariant) {
-      alert("Select size and color");
-      return;
-    }
-
-    if (selectedVariant.stock === 0) {
-      alert("Selected variant is out of stock");
-      return;
-    }
+    if (!selectedVariant || isOutOfStock) return;
 
     await apiClient.post("/api/cart/add/", {
       variant_id: selectedVariant.id,
@@ -137,28 +166,23 @@ const ProductDetail = () => {
   const handleWishlistToggle = async () => {
     const token = storage.getUserToken();
 
-    // 👤 Guest user
     if (!token) {
       const added = toggleGuestWishlist(product.id);
       setIsWishlisted(added);
       return;
     }
 
-    // 🔐 Logged in user
     try {
       const res = await toggleWishlist(product.id);
       setIsWishlisted(res.is_added);
       dispatch(fetchWishlist());
-    } catch {
-      // ignore
-    }
+    } catch {}
   };
 
-  if (loading) return <p className="text-center py-5">Loading…</p>;
-  if (!product) return <p className="text-center py-5">Not found</p>;
-
-  const sizes = [...new Set(product.variants.map((v) => v.size))];
-  const colors = [...new Set(product.variants.map((v) => v.color))];
+  if (loading)
+    return <p className="text-center py-5">Loading…</p>;
+  if (!product)
+    return <p className="text-center py-5">Not found</p>;
 
   return (
     <div className="container py-3 py-md-5 product-detail-page">
@@ -173,7 +197,9 @@ const ProductDetail = () => {
             >
               <i
                 className={`bi ${
-                  isWishlisted ? "bi-heart-fill text-danger" : "bi-heart"
+                  isWishlisted
+                    ? "bi-heart-fill text-danger"
+                    : "bi-heart"
                 } fs-4`}
               />
             </button>
@@ -193,7 +219,9 @@ const ProductDetail = () => {
                 src={img.image_url}
                 onClick={() => setMainImage(img.image_url)}
                 className={`border rounded ${
-                  mainImage === img.image_url ? "border-dark" : ""
+                  mainImage === img.image_url
+                    ? "border-dark"
+                    : ""
                 }`}
                 style={{
                   width: 70,
@@ -225,50 +253,78 @@ const ProductDetail = () => {
           <div className="my-3">
             <small className="fw-semibold">Size</small>
             <div className="d-flex flex-wrap gap-2 mt-2">
-              {sizes.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSelectedSize(s)}
-                  className={`btn btn-sm ${
-                    selectedSize === s
-                      ? "btn-dark"
-                      : "btn-outline-dark"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+              {sizes.map((s) => {
+                const disabled = !isSizeAvailable(s);
+
+                return (
+                  <button
+                    key={s}
+                    disabled={disabled}
+                    onClick={() =>
+                      !disabled && setSelectedSize(s)
+                    }
+                    className={`btn btn-sm ${
+                      selectedSize === s
+                        ? "btn-dark"
+                        : "btn-outline-dark"
+                    } ${disabled ? "opacity-50" : ""}`}
+                    style={{
+                      cursor: disabled
+                        ? "not-allowed"
+                        : "pointer",
+                    }}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* COLOR */}
-          <div className="my-3">
-            <small className="fw-semibold">Color</small>
-            <div className="d-flex flex-wrap gap-2 mt-2">
-              {colors.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setSelectedColor(c)}
-                  className={`btn btn-sm ${
-                    selectedColor === c
-                      ? "btn-dark"
-                      : "btn-outline-dark"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
+          {/* COLOR (ONLY IF EXISTS) */}
+          {hasColors && (
+            <div className="my-3">
+              <small className="fw-semibold">Color</small>
+              <div className="d-flex flex-wrap gap-2 mt-2">
+                {colors.map((c) => {
+                  const disabled = !isColorAvailable(c);
+
+                  return (
+                    <button
+                      key={c}
+                      disabled={disabled}
+                      onClick={() =>
+                        !disabled && setSelectedColor(c)
+                      }
+                      className={`btn btn-sm ${
+                        selectedColor === c
+                          ? "btn-dark"
+                          : "btn-outline-dark"
+                      } ${disabled ? "opacity-50" : ""}`}
+                      style={{
+                        cursor: disabled
+                          ? "not-allowed"
+                          : "pointer",
+                      }}
+                    >
+                      {c}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {selectedVariant && (
-            <p className="small mt-2">
+            <p className="small fw-semibold mt-2">
               {selectedVariant.stock > 0 ? (
                 <span className="text-success">
                   In stock ({selectedVariant.stock})
                 </span>
               ) : (
-                <span className="text-danger">Out of stock</span>
+                <span className="text-danger">
+                  Out of stock
+                </span>
               )}
             </p>
           )}
@@ -276,12 +332,14 @@ const ProductDetail = () => {
           <div className="d-none d-md-flex gap-3 mt-4">
             <button
               onClick={handleAddToCart}
+              disabled={!selectedVariant || isOutOfStock}
               className="btn btn-outline-dark btn-lg w-50"
             >
               Add to Cart
             </button>
             <button
               onClick={handleBuyNow}
+              disabled={!selectedVariant || isOutOfStock}
               className="btn btn-dark btn-lg w-50"
             >
               Buy it now
@@ -294,44 +352,25 @@ const ProductDetail = () => {
 
       {/* MOBILE BAR */}
       <div className="d-md-none position-fixed bottom-0 start-0 w-100 bg-white p-2 shadow d-flex gap-2">
-        <button onClick={handleAddToCart} className="btn btn-outline-dark w-50">
+        <button
+          onClick={handleAddToCart}
+          disabled={!selectedVariant || isOutOfStock}
+          className="btn btn-outline-dark w-50"
+        >
           Add to Cart
         </button>
-        <button onClick={handleBuyNow} className="btn btn-dark w-50">
+        <button
+          onClick={handleBuyNow}
+          disabled={!selectedVariant || isOutOfStock}
+          className="btn btn-dark w-50"
+        >
           Buy it now
         </button>
-      </div>
-
-      {/* CART MODAL */}
-      <div className="modal fade" id="cartSuccessModal">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content text-center p-4">
-            <i className="bi bi-check-circle-fill text-success fs-1"></i>
-            <h5 className="mt-3">Added to cart</h5>
-            <div className="d-flex justify-content-center gap-3 mt-3">
-              <button className="btn btn-outline-dark" data-bs-dismiss="modal">
-                Shop More
-              </button>
-              <Link to="/cart" className="btn btn-dark">
-                Go to Cart
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SIZE CHART */}
-      <div className="modal fade" id="sizeChartModal">
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content">
-            <div className="modal-body text-center">
-              <img src={sizechart} alt="Size chart" className="img-fluid" />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
 };
 
 export default ProductDetail;
+
+

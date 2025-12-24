@@ -1,0 +1,35 @@
+/* ===== LIGHT ===== */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #111111;
+
+  --card-bg: #f8f9fa;
+  --border-color: #e5e7eb;
+
+  --primary: #111827;
+  --secondary: #6b7280;
+
+  --nav-bg: #ffffff;
+  --sidebar-bg: #f9fafb;
+
+  --button-bg: #D4AF37;
+  --button-text: #0A0A0A;
+}
+
+/* ===== DARK ===== */
+[data-theme="dark"] {
+  --bg-color: #FFFFFF;
+  --text-color: #e5e7eb;
+
+  --card-bg: #1e293b;
+  --border-color: #334155;
+
+  --primary: #e5e7eb;
+  --secondary: #9ca3af;
+
+  --nav-bg: #020617;
+  --sidebar-bg: #020617;
+
+  --button-bg: #0A0A0A;
+  --button-text: #D4AF37;
+}

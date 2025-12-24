@@ -1,0 +1,87 @@
+/* ===== PAGE WRAPPER ===== */
+.otp-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+}
+
+/* ===== CARD ===== */
+.otp-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 32px;
+  border-radius: 16px;
+  background: var(--card-bg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  animation: fadeIn 0.6s ease;
+}
+
+/* ===== TEXT ===== */
+.otp-title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-color);
+}
+
+.otp-subtitle {
+  text-align: center;
+  color: var(--secondary);
+  margin-bottom: 24px;
+}
+
+/* ===== OTP INPUT ===== */
+.otp-input-wrapper input {
+  width: 100%;
+  text-align: center;
+  font-size: 26px;
+  letter-spacing: 10px;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-color);
+  outline: none;
+  margin-bottom: 24px;
+}
+
+/* ===== BUTTON ===== */
+.otp-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.otp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 767px) {
+  .otp-card {
+    background: transparent;
+    box-shadow: none;
+    padding: 20px;
+  }
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

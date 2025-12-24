@@ -13,11 +13,7 @@ const ProductForm = ({
   /* ================= IMAGE UPLOAD ================= */
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-
-    // 🔥 append images (multiple select support)
     setNewImages((prev) => [...prev, ...files]);
-
-    // reset input so same file can be selected again
     e.target.value = null;
   };
 
@@ -33,7 +29,11 @@ const ProductForm = ({
       ...product,
       variants: [
         ...product.variants,
-        { size: "", color: "", stock: 0 },
+        {
+          size: "",
+          color: "", // 🔥 OPTIONAL
+          stock: 0,
+        },
       ],
     });
   };
@@ -105,11 +105,11 @@ const ProductForm = ({
           <input
             type="number"
             className="form-control"
-            value={product.sale_price}
+            value={product.sale_price || ""}
             onChange={(e) =>
               setProduct({
                 ...product,
-                sale_price: Number(e.target.value),
+                sale_price: Number(e.target.value) || "",
               })
             }
           />
@@ -161,14 +161,17 @@ const ProductForm = ({
 
       {/* ================= VARIANTS ================= */}
       <div className="mb-3">
-        <label className="fw-bold">Size • Color • Stock</label>
+        <label className="fw-bold">
+          Variants (Size • Color optional • Stock)
+        </label>
 
         {product.variants.map((v, i) => (
           <div key={i} className="row g-2 mb-2 align-items-center">
+            {/* SIZE (REQUIRED) */}
             <div className="col-md-3">
               <input
                 className="form-control"
-                placeholder="Size"
+                placeholder="Size (required)"
                 value={v.size}
                 required
                 onChange={(e) =>
@@ -177,18 +180,19 @@ const ProductForm = ({
               />
             </div>
 
+            {/* COLOR (OPTIONAL) */}
             <div className="col-md-3">
               <input
                 className="form-control"
-                placeholder="Color"
-                value={v.color}
-                required
+                placeholder="Color (optional)"
+                value={v.color || ""}
                 onChange={(e) =>
                   updateVariant(i, "color", e.target.value.trim())
                 }
               />
             </div>
 
+            {/* STOCK */}
             <div className="col-md-3">
               <input
                 type="number"
@@ -203,6 +207,7 @@ const ProductForm = ({
               />
             </div>
 
+            {/* REMOVE */}
             <div className="col-md-2">
               <button
                 type="button"
@@ -235,7 +240,6 @@ const ProductForm = ({
           onChange={handleImageUpload}
         />
 
-        {/* PREVIEW */}
         {newImages.length > 0 && (
           <div className="d-flex flex-wrap gap-2 mt-3">
             {newImages.map((img, i) => (

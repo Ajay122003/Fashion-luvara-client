@@ -19,11 +19,12 @@ import storage from "./utils/storage";
 
 const App = () => {
   const dispatch = useDispatch();
+  const theme = useSelector((state) => state.theme.mode);
 
   const user = useSelector((state) => state.auth.user);
   const token = storage.getUserToken();
 
-  // 🔒 Prevent multiple public API calls (429 FIX)
+  //  Prevent multiple public API calls (429 FIX)
   const hasLoadedPublicData = useRef(false);
 
   /* ================= LOAD PUBLIC DATA (ONCE) ================= */
@@ -68,6 +69,11 @@ const App = () => {
 
     restoreUserSession();
   }, [dispatch, token, user]);
+  
+  
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   return <AppRoutes />;
 };
