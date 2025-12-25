@@ -15,7 +15,7 @@ import {
   isGuestWishlisted,
 } from "../../utils/guestWishlist";
 
-import sizechart from "../../assets/images/sizechart.jpeg";
+import SizeChartModal from "../../components/SizeChartModal";
 import RelatedProducts from "./RelatedProducts";
 
 const ProductDetail = () => {
@@ -82,9 +82,7 @@ const ProductDetail = () => {
   const colors = product
     ? [
         ...new Set(
-          product.variants
-            .map((v) => v.color)
-            .filter(Boolean) // 🔥 remove null / ""
+          product.variants.map((v) => v.color).filter(Boolean)
         ),
       ]
     : [];
@@ -100,12 +98,8 @@ const ProductDetail = () => {
 
     const variant = product.variants.find((v) => {
       if (hasColors) {
-        return (
-          v.size === selectedSize &&
-          v.color === selectedColor
-        );
+        return v.size === selectedSize && v.color === selectedColor;
       }
-      // 🔥 size-only product
       return v.size === selectedSize;
     });
 
@@ -132,6 +126,15 @@ const ProductDetail = () => {
   const isOutOfStock =
     selectedVariant && selectedVariant.stock === 0;
 
+  const openCartSidebar = () => {
+    const el = document.getElementById("cartOffcanvas");
+    if (!el) return;
+
+    const offcanvas =
+      window.bootstrap.Offcanvas.getOrCreateInstance(el);
+    offcanvas.show();
+  };
+
   /* ================= ADD TO CART ================= */
   const handleAddToCart = async () => {
     if (!selectedVariant || isOutOfStock) return;
@@ -142,11 +145,7 @@ const ProductDetail = () => {
     });
 
     dispatch(fetchCart());
-
-    const modal = new window.bootstrap.Modal(
-      document.getElementById("cartSuccessModal")
-    );
-    modal.show();
+    openCartSidebar();
   };
 
   /* ================= BUY NOW ================= */
@@ -187,7 +186,6 @@ const ProductDetail = () => {
   return (
     <div className="container py-3 py-md-5 product-detail-page">
       <div className="row g-4">
-
         {/* IMAGE SECTION */}
         <div className="col-12 col-md-6">
           <div className="position-relative border rounded p-2">
@@ -251,7 +249,19 @@ const ProductDetail = () => {
 
           {/* SIZE */}
           <div className="my-3">
-            <small className="fw-semibold">Size</small>
+            <div className="d-flex justify-content-between align-items-center">
+              <small className="fw-semibold">Size</small>
+
+              {/* 🔥 ADDED */}
+              <button
+                className="btn btn-link p-0 small text-decoration-underline"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#sizeChartModal"
+              >
+                View Size Chart
+              </button>
+            </div>
+
             <div className="d-flex flex-wrap gap-2 mt-2">
               {sizes.map((s) => {
                 const disabled = !isSizeAvailable(s);
@@ -268,11 +278,6 @@ const ProductDetail = () => {
                         ? "btn-dark"
                         : "btn-outline-dark"
                     } ${disabled ? "opacity-50" : ""}`}
-                    style={{
-                      cursor: disabled
-                        ? "not-allowed"
-                        : "pointer",
-                    }}
                   >
                     {s}
                   </button>
@@ -281,7 +286,7 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* COLOR (ONLY IF EXISTS) */}
+          {/* COLOR */}
           {hasColors && (
             <div className="my-3">
               <small className="fw-semibold">Color</small>
@@ -301,11 +306,6 @@ const ProductDetail = () => {
                           ? "btn-dark"
                           : "btn-outline-dark"
                       } ${disabled ? "opacity-50" : ""}`}
-                      style={{
-                        cursor: disabled
-                          ? "not-allowed"
-                          : "pointer",
-                      }}
                     >
                       {c}
                     </button>
@@ -367,10 +367,11 @@ const ProductDetail = () => {
           Buy it now
         </button>
       </div>
+
+      {/* 🔥 ADDED MODAL */}
+      <SizeChartModal />
     </div>
   );
 };
 
 export default ProductDetail;
-
-

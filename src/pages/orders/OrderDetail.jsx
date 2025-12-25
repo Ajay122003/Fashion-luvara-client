@@ -11,6 +11,7 @@ const OrderDetail = () => {
 
   useEffect(() => {
     loadOrder();
+    // eslint-disable-next-line
   }, []);
 
   const loadOrder = async () => {
@@ -48,40 +49,78 @@ const OrderDetail = () => {
       </div>
 
       {/* ADDRESS */}
-      <div className="card shadow-sm mb-3">
-        <div className="card-body">
-          <h6>Delivery Address</h6>
-          <p className="mb-0">
-            <strong>{order.address.name}</strong> – {order.address.phone}
-          </p>
-          <small className="text-muted">
-            {order.address.full_address}, {order.address.city} –{" "}
-            {order.address.pincode}
-          </small>
+      {order.address && (
+        <div className="card shadow-sm mb-3">
+          <div className="card-body">
+            <h6>Delivery Address</h6>
+            <p className="mb-0">
+              <strong>{order.address.name}</strong> –{" "}
+              {order.address.phone}
+            </p>
+            <small className="text-muted">
+              {order.address.full_address},{" "}
+              {order.address.city} –{" "}
+              {order.address.pincode}
+            </small>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* SHIPPING DETAILS */}
+      {(order.courier_name || order.tracking_id) && (
+        <div className="card shadow-sm mb-3">
+          <div className="card-body">
+            <h6>Shipping Details</h6>
+
+            {order.courier_name && (
+              <p className="mb-1">
+                <strong>Courier:</strong>{" "}
+                {order.courier_name}
+              </p>
+            )}
+
+            {order.tracking_id && (
+              <p className="mb-0">
+                <strong>Tracking ID:</strong>{" "}
+                {order.tracking_id}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ITEMS */}
       <div className="card shadow-sm mb-3">
         <div className="card-body">
-          <h6 className="mb-3">Items</h6>
+          <h6 className="mb-3">Ordered Items</h6>
 
-          {order.items.map((item) => (
-            <div
-              key={item.id}
-              className="d-flex justify-content-between align-items-center border-bottom py-2"
-            >
-              <div>
-                <strong>{item.product.name}</strong>
-                <p className="small mb-0">
-                  Qty: {item.quantity}
+          {order.items?.map((item, index) => {
+            const unitPrice = Number(item.price || 0);
+            const qty = Number(item.quantity || 1);
+            const total = unitPrice * qty;
+
+            return (
+              <div
+                key={item.id || index}
+                className="border-bottom py-3"
+              >
+                <p className="fw-bold mb-1">
+                  {item.product || "Product"}
+                </p>
+
+                <p className="small mb-1 text-muted">
+                  Qty: {qty}
                   {item.size && <> | Size: {item.size}</>}
+                  {item.color && <> | Color: {item.color}</>}
+                </p>
+
+                <p className="mb-0">
+                  ₹{unitPrice.toFixed(2)} × {qty} =
+                  <strong> ₹{total.toFixed(2)}</strong>
                 </p>
               </div>
-
-              <span className="fw-bold">₹{item.total_price}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -89,8 +128,8 @@ const OrderDetail = () => {
       <div className="card shadow-sm">
         <div className="card-body">
           <div className="d-flex justify-content-between">
-            <span>Payment</span>
-            <strong>{order.payment_method}</strong>
+            <span>Payment Status</span>
+            <strong>{order.payment_status}</strong>
           </div>
 
           <hr />
@@ -114,3 +153,4 @@ const OrderDetail = () => {
 };
 
 export default OrderDetail;
+

@@ -4,12 +4,14 @@ import { toast } from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import storage from "../../utils/storage";
 
+
+import "../../styles/register.css";
+
 const Register = () => {
   const navigate = useNavigate();
 
   /* ================= CLEAN OLD SESSION ================= */
   useEffect(() => {
-    // 🔥 Clear any existing admin/user tokens
     storage.clearAllTokens();
   }, []);
 
@@ -30,7 +32,6 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    /* ---------- BASIC VALIDATION ---------- */
     if (!form.email || !form.username || !form.password) {
       toast.error("All fields are required");
       return;
@@ -43,23 +44,17 @@ const Register = () => {
 
     try {
       setLoading(true);
-
       await registerUser(form);
-
       toast.success("Account created! Please login.");
       navigate("/login", { replace: true });
     } catch (err) {
       const data = err.response?.data;
-
-      if (data?.email) {
-        toast.error(data.email[0]);
-      } else if (data?.username) {
-        toast.error(data.username[0]);
-      } else if (data?.password) {
-        toast.error(data.password[0]);
-      } else {
-        toast.error("Registration failed");
-      }
+      toast.error(
+        data?.email?.[0] ||
+          data?.username?.[0] ||
+          data?.password?.[0] ||
+          "Registration failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -69,59 +64,66 @@ const Register = () => {
   return (
     <div
       className="d-flex justify-content-center align-items-center py-5"
-      style={{ minHeight: "100vh", background: "#f8f8f8" }}
+      style={{
+        minHeight: "100vh",
+        background: "var(--bg)",
+        color: "var(--text)",
+      }}
     >
-      <div className="register-card bg-white p-4 p-md-5 shadow rounded-4">
+      <div className="register-card bg-transparent p-4 p-md-5">
 
-        {/* BRAND HEADING */}
-        <h2
-          className="text-center fw-bold mb-1"
-          style={{ letterSpacing: "1px" }}
-        >
-          Welcome to <span style={{ color: "#000" }}>LUVARA</span>
+        {/* BRAND */}
+        <h2 className="text-center fw-bold mb-1">
+          Welcome to <span>LUVARA</span>
         </h2>
         <p className="text-center text-muted mb-4">
-          Create your Luvara account to start shopping in style
+          Create your Luvara account
         </p>
 
         {/* FORM */}
         <form onSubmit={handleSubmit}>
-          <label className="form-label fw-semibold">Email Address</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            className="form-control mb-3 shadow-sm"
-            style={{ borderRadius: "10px" }}
-            value={form.email}
-            onChange={handleChange}
-          />
+          {/* EMAIL */}
+          <div className="floating-group mb-3">
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
+            <label>Email Address</label>
+          </div>
 
-          <label className="form-label fw-semibold">Username</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            className="form-control mb-3 shadow-sm"
-            style={{ borderRadius: "10px" }}
-            value={form.username}
-            onChange={handleChange}
-          />
+          {/* USERNAME */}
+          <div className="floating-group mb-3">
+            <input
+              type="text"
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
+            <label>Username</label>
+          </div>
 
-          <label className="form-label fw-semibold">Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="form-control mb-4 shadow-sm"
-            style={{ borderRadius: "10px" }}
-            value={form.password}
-            onChange={handleChange}
-          />
+          {/* PASSWORD */}
+          <div className="floating-group mb-4">
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
+            <label>Password</label>
+          </div>
 
           <button
-            className="btn btn-dark w-100 py-2 fw-semibold"
-            style={{ borderRadius: "10px" }}
+            className="register-btn w-100 py-2 fw-semibold"
+            style={{ borderRadius: 10 }}
             disabled={loading}
           >
             {loading ? "Creating account..." : "Create Account"}
@@ -131,37 +133,33 @@ const Register = () => {
         {/* LOGIN LINK */}
         <p className="text-center mt-3 mb-0">
           Already have an account?{" "}
-          <Link to="/login" className="text-decoration-none fw-semibold">
+          <Link
+            to="/login"
+            className="fw-semibold text-decoration-none"
+          >
             Sign in
           </Link>
         </p>
       </div>
 
-      {/* RESPONSIVE CSS */}
+      {/* PAGE CSS */}
       <style>{`
         .register-card {
           width: 100%;
+          max-width: 430px;
           animation: fadeIn .6s;
-        }
-
-        @media (min-width: 768px) {
-          .register-card {
-            max-width: 430px;
-          }
         }
 
         @media (max-width: 767px) {
           .register-card {
-            box-shadow: none !important;
-            border-radius: 0 !important;
+            box-shadow: none;
             padding-left: 20px;
             padding-right: 20px;
-            background: transparent !important;
           }
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
@@ -170,4 +168,3 @@ const Register = () => {
 };
 
 export default Register;
-

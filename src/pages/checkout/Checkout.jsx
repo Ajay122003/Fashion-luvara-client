@@ -61,7 +61,7 @@ const Checkout = () => {
 
   const loadAddresses = async () => {
     const res = await getAddresses();
-    setAddresses(res.data);
+    setAddresses(data);
 
     const defaultAddr =
       res.data.find((a) => a.is_default) || res.data[0];

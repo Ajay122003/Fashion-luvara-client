@@ -1,15 +1,15 @@
 import apiClient from "./client";
 
-// Add item to cart (variant based)
+
+// Add item to cart
 export const addToCart = ({ variant_id, quantity }) =>
   apiClient.post("/api/cart/add/", { variant_id, quantity });
 
-// Get all cart items
+// Get cart items FIXED
 export const getCartItems = async () => {
   const res = await apiClient.get("/api/cart/");
-//  return res.data; 
+  return res.data;
 };
-
 
 // Update quantity
 export const updateCartItem = (id, quantity) =>

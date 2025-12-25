@@ -20,26 +20,21 @@ const Wishlist = () => {
 
   /* ================= LOAD WISHLIST ================= */
   useEffect(() => {
-    // 🔐 Logged in user
     if (token) {
       dispatch(fetchWishlist());
     } else {
-      // 👤 Guest user
-      const ids = getGuestWishlist();
-      setGuestItems(ids);
+      setGuestItems(getGuestWishlist());
     }
   }, [dispatch, token]);
 
   /* ================= REMOVE ITEM ================= */
   const removeFromWishlist = async (productId) => {
-    // 👤 Guest
     if (!token) {
       toggleGuestWishlist(productId);
       setGuestItems(getGuestWishlist());
       return;
     }
 
-    // 🔐 Login
     await toggleWishlist(productId);
     dispatch(fetchWishlist());
   };
@@ -53,8 +48,10 @@ const Wishlist = () => {
     );
   }
 
-  /* ================= EMPTY WISHLIST ================= */
-  const isEmpty = token ? items.length === 0 : guestItems.length === 0;
+  /* ================= EMPTY ================= */
+  const isEmpty = token
+    ? items.length === 0
+    : guestItems.length === 0;
 
   if (isEmpty) {
     return (
@@ -66,7 +63,7 @@ const Wishlist = () => {
         </h4>
 
         <p className="text-muted mb-4">
-          Save items you like so you can find them easily later.
+          Save items you like so you can find them later.
         </p>
 
         <Link to="/" className="continue-shopping-btn">
@@ -121,18 +118,41 @@ const Wishlist = () => {
 
         <div className="row g-4">
           {items.map((item) => (
-            <div className="col-6 col-md-4 col-lg-3" key={item.id}>
+            <div
+              className="col-6 col-md-4 col-lg-3"
+              key={item.id}
+            >
               <div className="card shadow-sm h-100 border-0 wishlist-card">
-                <Link to={`/product/${item.product.id}`}>
-                  <div className="ratio ratio-1x1">
-                    <img
-                      src={item.product.images?.[0]?.image_url}
-                      alt={item.product.name}
-                      className="img-fluid"
-                      style={{ objectFit: "cover" }}
-                    />
-                  </div>
-                </Link>
+                {/* IMAGE + REMOVE ICON */}
+                <div className="position-relative">
+                  <Link to={`/product/${item.product.id}`}>
+                    <div className="ratio ratio-1x1">
+                      <img
+                        src={
+                          item.product.images?.[0]
+                            ?.image_url
+                        }
+                        alt={item.product.name}
+                        className="img-fluid"
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                  </Link>
+
+                  {/* REMOVE ICON */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeFromWishlist(
+                        item.product.id
+                      );
+                    }}
+                    className="wishlist-remove-btn position-absolute top-0 end-0 m-2"
+                    title="Remove from wishlist"
+                  >
+                    <i className="bi bi-heart-fill"></i>
+                  </button>
+                </div>
 
                 <div className="card-body p-2 d-flex flex-column">
                   <h6 className="small fw-semibold text-truncate">
@@ -140,20 +160,38 @@ const Wishlist = () => {
                   </h6>
 
                   <p className="small fw-bold mb-2">
-                    ₹{item.product.sale_price || item.product.price}
+                    ₹
+                    {item.product.sale_price ||
+                      item.product.price}
                   </p>
-
-                  <button
-                    onClick={() => removeFromWishlist(item.product.id)}
-                    className="btn btn-outline-danger btn-sm mt-auto"
-                  >
-                    Remove
-                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        {/* ICON BUTTON CSS */}
+        <style>{`
+          .wishlist-remove-btn {
+            border: none;
+            background: rgba(255,255,255,0.9);
+            color: #dc3545;
+            font-size: 18px;
+            padding: 6px 8px;
+            border-radius: 50%;
+            transition: all 0.25s ease;
+          }
+
+          .wishlist-remove-btn:hover {
+            background: #dc3545;
+            color: #fff;
+            transform: scale(1.15);
+          }
+
+          .wishlist-remove-btn:active {
+            transform: scale(0.95);
+          }
+        `}</style>
       </div>
     );
   }
@@ -165,7 +203,10 @@ const Wishlist = () => {
 
       <div className="row g-4">
         {guestItems.map((id) => (
-          <div className="col-6 col-md-4 col-lg-3" key={id}>
+          <div
+            className="col-6 col-md-4 col-lg-3"
+            key={id}
+          >
             <div className="card shadow-sm h-100 border-0 p-3 text-center">
               <p className="small mb-3">
                 Product ID: {id}
@@ -193,3 +234,4 @@ const Wishlist = () => {
 };
 
 export default Wishlist;
+

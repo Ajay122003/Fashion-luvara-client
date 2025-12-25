@@ -17,11 +17,18 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🔥 Shipping states
+  const [courierName, setCourierName] = useState("");
+  const [trackingId, setTrackingId] = useState("");
+
   const loadOrder = async () => {
     try {
       setLoading(true);
       const data = await fetchAdminOrderDetail(id);
       setOrder(data);
+
+      setCourierName(data.courier_name || "");
+      setTrackingId(data.tracking_id || "");
     } catch {
       alert("Failed to load order");
     } finally {
@@ -44,6 +51,20 @@ const OrderDetails = () => {
     }
   };
 
+  const saveShippingDetails = async () => {
+    try {
+      await adminUpdateOrder(id, {
+        courier_name: courierName,
+        tracking_id: trackingId,
+        status: "SHIPPED",
+      });
+      alert("Shipping details updated");
+      loadOrder();
+    } catch {
+      alert("Failed to update shipping");
+    }
+  };
+
   if (loading)
     return <p className="text-center py-5">Loading…</p>;
   if (!order) return <p>Order not found</p>;
@@ -58,13 +79,9 @@ const OrderDetails = () => {
       {/* ORDER INFO */}
       <div className="card mb-4 shadow-sm">
         <div className="card-body">
-          <h5 className="fw-bold mb-2">
-            {order.order_number}
-          </h5>
+          <h5 className="fw-bold mb-2">{order.order_number}</h5>
 
-          <p>
-            <b>User:</b> {order.user_email}
-          </p>
+          <p><b>User:</b> {order.user_email}</p>
 
           <p>
             <b>Order Status:</b>{" "}
@@ -80,7 +97,7 @@ const OrderDetails = () => {
             </span>
           </p>
 
-          {/* STATUS UPDATE */}
+          {/* STATUS + PAYMENT UPDATE */}
           <div className="row mt-3">
             <div className="col-md-6 mb-3">
               <label className="form-label fw-bold">
@@ -109,10 +126,7 @@ const OrderDetails = () => {
                 className="form-select"
                 value={order.payment_status}
                 onChange={(e) =>
-                  updateOrder(
-                    "payment_status",
-                    e.target.value
-                  )
+                  updateOrder("payment_status", e.target.value)
                 }
               >
                 <option value="PAID">PAID</option>
@@ -125,39 +139,70 @@ const OrderDetails = () => {
         </div>
       </div>
 
+      {/* SHIPPING DETAILS */}
+      <div className="card mb-4 shadow-sm">
+        <div className="card-body">
+          <h5 className="fw-bold mb-3">Shipping Details</h5>
+
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">
+                Courier Name
+              </label>
+              <input
+                className="form-control"
+                value={courierName}
+                onChange={(e) =>
+                  setCourierName(e.target.value)
+                }
+                placeholder="Eg: Delhivery"
+              />
+            </div>
+
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">
+                Tracking ID
+              </label>
+              <input
+                className="form-control"
+                value={trackingId}
+                onChange={(e) =>
+                  setTrackingId(e.target.value)
+                }
+                placeholder="AWB / Tracking number"
+              />
+            </div>
+          </div>
+
+          <button
+            className="btn btn-dark"
+            disabled={!courierName || !trackingId}
+            onClick={saveShippingDetails}
+          >
+            Save Shipping Details
+          </button>
+        </div>
+      </div>
+
       {/* ORDER TIMELINE */}
       {order.status !== "CANCELLED" && (
         <div className="card mb-4 shadow-sm">
           <div className="card-body">
-            <h5 className="fw-bold mb-3">
-              Order Timeline
-            </h5>
+            <h5 className="fw-bold mb-3">Order Timeline</h5>
 
             {STATUS_FLOW.map((step, index) => {
               const isActive = index <= currentIndex;
-
               return (
-                <div
-                  key={step}
-                  className="d-flex align-items-center mb-2"
-                >
+                <div key={step} className="d-flex mb-2">
                   <div
                     className={`rounded-circle me-3 ${
-                      isActive
-                        ? "bg-success"
-                        : "bg-secondary"
+                      isActive ? "bg-success" : "bg-secondary"
                     }`}
-                    style={{
-                      width: 14,
-                      height: 14,
-                    }}
+                    style={{ width: 14, height: 14 }}
                   ></div>
-
                   <span
                     className={
-                      isActive
-                        ? "fw-bold"
-                        : "text-muted"
+                      isActive ? "fw-bold" : "text-muted"
                     }
                   >
                     {step.replaceAll("_", " ")}
@@ -172,27 +217,21 @@ const OrderDetails = () => {
       {/* PRICE BREAKUP */}
       <div className="card mb-4 shadow-sm">
         <div className="card-body">
-          <h5 className="fw-bold mb-3">
-            Price Details
-          </h5>
+          <h5 className="fw-bold mb-3">Price Details</h5>
 
-          <div className="d-flex justify-content-between mb-1">
+          <div className="d-flex justify-content-between">
             <span>Subtotal</span>
-            <span>
-              ₹{Number(order.subtotal_amount || 0).toFixed(2)}
-            </span>
+            <span>₹{Number(order.subtotal_amount).toFixed(2)}</span>
           </div>
 
           {Number(order.discount_amount) > 0 && (
-            <div className="d-flex justify-content-between mb-1 text-success">
-              <span>Coupon Discount</span>
-              <span>
-                - ₹{Number(order.discount_amount).toFixed(2)}
-              </span>
+            <div className="d-flex justify-content-between text-success">
+              <span>Discount</span>
+              <span>- ₹{Number(order.discount_amount).toFixed(2)}</span>
             </div>
           )}
 
-          <div className="d-flex justify-content-between mb-1">
+          <div className="d-flex justify-content-between">
             <span>Shipping</span>
             <span>
               {Number(order.shipping_amount) > 0
@@ -201,20 +240,16 @@ const OrderDetails = () => {
             </span>
           </div>
 
-          <div className="d-flex justify-content-between mb-1">
+          <div className="d-flex justify-content-between">
             <span>GST</span>
-            <span>
-              ₹{Number(order.gst_amount || 0).toFixed(2)}
-            </span>
+            <span>₹{Number(order.gst_amount).toFixed(2)}</span>
           </div>
 
           <hr />
 
           <div className="d-flex justify-content-between fw-bold fs-5">
-            <span>Total Amount</span>
-            <span>
-              ₹{Number(order.total_amount || 0).toFixed(2)}
-            </span>
+            <span>Total</span>
+            <span>₹{Number(order.total_amount).toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -223,9 +258,7 @@ const OrderDetails = () => {
       {order.address_details && (
         <div className="card mb-4 shadow-sm">
           <div className="card-body">
-            <h5 className="fw-bold">
-              Customer Address
-            </h5>
+            <h5 className="fw-bold">Customer Address</h5>
             <p className="mb-1 fw-semibold">
               {order.address_details.name}
             </p>
@@ -244,39 +277,45 @@ const OrderDetails = () => {
         </div>
       )}
 
-      {/* ITEMS */}
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <h5 className="fw-bold">Order Items</h5>
-          <hr />
+      {/* ORDER ITEMS */}
+      {/* ORDER ITEMS */}
+<div className="card shadow-sm">
+  <div className="card-body">
+    <h5 className="fw-bold">Order Items</h5>
+    <hr />
 
-          {order.items.map((item, i) => (
-            <div
-              key={i}
-              className="mb-3 pb-3 border-bottom"
-            >
-              <p className="fw-bold mb-1">
-                {item.product}
-              </p>
-              <p className="mb-1">
-                Qty: <b>{item.quantity}</b>
-              </p>
-              <p className="mb-1">
-                Price: ₹{item.price}
-              </p>
-              <p className="mb-1">
-                Size: {item.size}
-              </p>
-              <p className="mb-0">
-                Color: {item.color || "-"}
-              </p>
-            </div>
-          ))}
-        </div>
+    {order.items.map((item, i) => (
+      <div key={i} className="mb-3 border-bottom pb-2">
+        {/* 🖼 IMAGE (optional) */}
+        {item.product?.image && (
+         <img
+  src={item.product?.images?.[0]?.image_url}
+  alt={item.product?.name}
+  style={{
+    width: 60,
+    height: 60,
+    objectFit: "cover",
+    borderRadius: 6,
+    marginRight: 12,
+  }}
+/>
+
+        )}
+
+        <p className="fw-bold mb-1">
+          {item.product?.name || "Product"}
+        </p>
+        <p className="mb-1">Qty: {item.quantity}</p>
+        <p className="mb-1">Ordered Price: ₹{item.price}</p>
+        <p className="mb-1">Size: {item.size}</p>
+        <p className="mb-0">Color: {item.color || "-"}</p>
       </div>
+    ))}
+  </div>
+</div>
+
     </div>
   );
 };
 
 export default OrderDetails;
-

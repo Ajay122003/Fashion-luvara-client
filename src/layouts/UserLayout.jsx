@@ -2,11 +2,12 @@ import { Outlet } from "react-router-dom";
 import UserNavbar from "../components/Navbar/UserNavbar";
 import Footer from "../components/Footer/Footer";
 import ThemeToggle from "../components/ThemeToggle";
+import CartOffcanvas from "../components/Cart/CartOffcanvas"; // 🔥 ADD THIS
 
 const UserLayout = () => {
   return (
     <>
-      {/*  CSS INSIDE JSX */}
+      {/* CSS INSIDE JSX */}
       <style>{`
         .theme-toggle-wrapper {
           position: fixed;
@@ -26,7 +27,7 @@ const UserLayout = () => {
 
       <div className="min-h-screen flex flex-col">
 
-        {/*  GLOBAL THEME TOGGLE */}
+        {/* GLOBAL THEME TOGGLE */}
         <div className="theme-toggle-wrapper">
           <ThemeToggle />
         </div>
@@ -42,6 +43,9 @@ const UserLayout = () => {
         {/* FOOTER */}
         <Footer />
       </div>
+
+      {/* 🔥 GLOBAL SIDE CART (OFFCANVAS) */}
+      <CartOffcanvas />
     </>
   );
 };
