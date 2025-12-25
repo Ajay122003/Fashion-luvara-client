@@ -2,7 +2,7 @@ import { useState } from "react";
 import { subscribeEmail } from "../../api/subscription";
 import { toast } from "react-hot-toast";
 import { HiOutlineMailOpen } from "react-icons/hi";
-import "../../styles/SubscribeBox.css";
+import "../../styles/subscribeBox.css";
 
 const SubscribeBox = () => {
   const [email, setEmail] = useState("");
