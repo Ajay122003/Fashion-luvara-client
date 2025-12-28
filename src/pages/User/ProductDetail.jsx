@@ -252,7 +252,7 @@ const ProductDetail = () => {
             <div className="d-flex justify-content-between align-items-center">
               <small className="fw-semibold">Size</small>
 
-              {/* 🔥 ADDED */}
+              {/*  ADDED */}
               <button
                 className="btn btn-link p-0 small text-decoration-underline"
                 data-bs-toggle="offcanvas"
@@ -368,7 +368,7 @@ const ProductDetail = () => {
         </button>
       </div>
 
-      {/* 🔥 ADDED MODAL */}
+      {/*  ADDED MODAL */}
       <SizeChartModal />
     </div>
   );

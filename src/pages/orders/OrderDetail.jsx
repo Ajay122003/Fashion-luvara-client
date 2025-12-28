@@ -18,7 +18,7 @@ const OrderDetail = () => {
     try {
       const res = await getOrderDetail(id);
       setOrder(res.data);
-    } catch {
+    } catch (err) {
       alert("Failed to load order details");
       navigate("/orders");
     } finally {
@@ -26,17 +26,28 @@ const OrderDetail = () => {
     }
   };
 
-  if (loading)
-    return <p className="text-center py-5">Loading order...</p>;
+  if (loading) {
+    return (
+      <p className="text-center py-5">
+        Loading order...
+      </p>
+    );
+  }
 
-  if (!order)
-    return <p className="text-center py-5">Order not found</p>;
+  if (!order) {
+    return (
+      <p className="text-center py-5">
+        Order not found
+      </p>
+    );
+  }
 
   return (
     <div className="container py-4" style={{ maxWidth: 900 }}>
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4>Order #{order.order_id || order.id}</h4>
+        <h4>Order #{order.order_number}</h4>
+
         <span
           className={`badge fs-6 ${
             order.status === "DELIVERED"
@@ -53,10 +64,12 @@ const OrderDetail = () => {
         <div className="card shadow-sm mb-3">
           <div className="card-body">
             <h6>Delivery Address</h6>
+
             <p className="mb-0">
               <strong>{order.address.name}</strong> –{" "}
               {order.address.phone}
             </p>
+
             <small className="text-muted">
               {order.address.full_address},{" "}
               {order.address.city} –{" "}
@@ -102,22 +115,45 @@ const OrderDetail = () => {
             return (
               <div
                 key={item.id || index}
-                className="border-bottom py-3"
+                className="border-bottom py-3 d-flex gap-3"
               >
-                <p className="fw-bold mb-1">
-                  {item.product || "Product"}
-                </p>
+                {/* PRODUCT IMAGE */}
+                {item.product?.images?.length > 0 && (
+  <img
+    src={item.product.images[0].image}
+    alt={item.product.name}
+    style={{
+      width: 70,
+      height: 70,
+      objectFit: "cover",
+    }}
+    className="rounded"
+  />
+)}
 
-                <p className="small mb-1 text-muted">
-                  Qty: {qty}
-                  {item.size && <> | Size: {item.size}</>}
-                  {item.color && <> | Color: {item.color}</>}
-                </p>
 
-                <p className="mb-0">
-                  ₹{unitPrice.toFixed(2)} × {qty} =
-                  <strong> ₹{total.toFixed(2)}</strong>
-                </p>
+                <div>
+                  {/* PRODUCT NAME */}
+                  <p className="fw-bold mb-1">
+                    {item.product?.name || "Product"}
+                  </p>
+
+                  {/* META */}
+                  <p className="small mb-1 text-muted">
+                    Qty: {qty}
+                    {item.size && <> | Size: {item.size}</>}
+                    {item.color && <> | Color: {item.color}</>}
+                  </p>
+
+                  {/* PRICE */}
+                  <p className="mb-0">
+                    ₹{unitPrice.toFixed(2)} × {qty} =
+                    <strong>
+                      {" "}
+                      ₹{total.toFixed(2)}
+                    </strong>
+                  </p>
+                </div>
               </div>
             );
           })}
@@ -141,7 +177,7 @@ const OrderDetail = () => {
         </div>
       </div>
 
-      {/* ACTIONS */}
+      {/* ACTION */}
       <button
         className="btn btn-outline-dark mt-4"
         onClick={() => navigate("/orders")}

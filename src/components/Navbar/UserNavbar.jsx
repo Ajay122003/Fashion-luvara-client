@@ -5,8 +5,8 @@ import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { fetchCart } from "../../features/cart/cartSlice";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
 import storage from "../../utils/storage";
-import brandLogo from "../../assets/images/logo.png";
-import brandLogo2 from "../../assets/images/logo2.png";
+import brandLogo from "../../assets/images/logo3.jpeg";
+import brandLogo2 from "../../assets/images/logo4.jpeg";
 
 const token = storage.getUserToken();
 
@@ -156,7 +156,7 @@ const UserNavbar = () => {
         
           <div className="collapse navbar-collapse">
             <div className=" d-none d-lg-block me-4">
-              <img src={brandLogo} height="85" width="110" alt="logo" />
+              <img src={brandLogo} height="110" width="110" alt="logo" />
             </div>
 
             <ul className="navbar-nav gap-4 small">
