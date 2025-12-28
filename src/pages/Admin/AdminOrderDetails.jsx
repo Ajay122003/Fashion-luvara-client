@@ -285,34 +285,36 @@ const OrderDetails = () => {
     <hr />
 
     {order.items.map((item, i) => (
-      <div key={i} className="mb-3 border-bottom pb-2">
-        {/* 🖼 IMAGE (optional) */}
-        {item.product?.image && (
-         <img
-  src={item.product?.images?.[0]?.image_url}
-  alt={item.product?.name}
-  style={{
-    width: 60,
-    height: 60,
-    objectFit: "cover",
-    borderRadius: 6,
-    marginRight: 12,
-  }}
-/>
-
+      <div key={i} className="mb-3 border-bottom pb-2 d-flex">
+        {/* 🖼 PRODUCT IMAGE */}
+        {item.product?.images?.length > 0 && (
+          <img
+            src={item.product.images[0].image_url}
+            alt={item.product?.name}
+            style={{
+              width: 60,
+              height: 60,
+              objectFit: "cover",
+              borderRadius: 6,
+              marginRight: 12,
+            }}
+          />
         )}
 
-        <p className="fw-bold mb-1">
-          {item.product?.name || "Product"}
-        </p>
-        <p className="mb-1">Qty: {item.quantity}</p>
-        <p className="mb-1">Ordered Price: ₹{item.price}</p>
-        <p className="mb-1">Size: {item.size}</p>
-        <p className="mb-0">Color: {item.color || "-"}</p>
+        <div>
+          <p className="fw-bold mb-1">
+            {item.product?.name || "Product"}
+          </p>
+          <p className="mb-1">Qty: {item.quantity}</p>
+          <p className="mb-1">Ordered Price: ₹{item.price}</p>
+          <p className="mb-1">Size: {item.size || "-"}</p>
+          <p className="mb-0">Color: {item.color || "-"}</p>
+        </div>
       </div>
     ))}
   </div>
 </div>
+
 
     </div>
   );
