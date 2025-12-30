@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import publicClient from "../../api/publicClient";
 import { fetchCollections } from "../../api/collections";
+import { getCategories } from "../../api/category";
 import { Link } from "react-router-dom";
 import Products from "./Products";
 import banner from "../../assets/images/banner1.jpg";
@@ -10,16 +11,19 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
 
   const loadData = async () => {
-    try {
-      const colRes = await fetchCollections();
-      const catRes = await publicClient.get("/api/categories/");
+  try {
+    const colRes = await fetchCollections();
+    const catRes = await getCategories();
 
-      setCollections(colRes.data);
-      setCategories(catRes.data);
-    } catch (error) {
-      console.log("Home API error:", error);
-    }
-  };
+    setCollections(colRes?.data ?? colRes ?? []);
+    setCategories(catRes?.data ?? catRes ?? []);
+  } catch (error) {
+    console.log("Home API error:", error);
+    setCollections([]);
+    setCategories([]);
+  }
+};
+
 
   useEffect(() => {
     loadData();

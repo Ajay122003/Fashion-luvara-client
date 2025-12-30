@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { fetchCart } from "../../features/cart/cartSlice";
@@ -7,12 +7,17 @@ import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
 import storage from "../../utils/storage";
 import brandLogo from "../../assets/images/logo3.jpeg";
 import brandLogo2 from "../../assets/images/logo4.jpeg";
+import SearchModal from "../Search/SearchModal";
 
 const token = storage.getUserToken();
+
+
 
 const UserNavbar = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchText, setSearchText] = useState("");
 
   /* ================= LOAD CART + WISHLIST ================= */
   
@@ -84,29 +89,31 @@ const UserNavbar = () => {
     setMobileColOpen(false);
   };
 
+  /* ================= SEARCH BAR ================= */
+
+  const handleSearchSubmit = (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    if (!searchText.trim()) return;
+
+    setShowSearch(false);
+    navigate(`/search?q=${searchText}`);
+    setSearchText("");
+  }
+};
+
+
   return (
     <>
-      {/* ================= SEARCH BAR ================= */}
-      <div
-        className="position-fixed top-0 start-0 w-100 bg-white shadow-sm p-3"
-        style={{
-          zIndex: 2000,
-          transform: showSearch ? "translateY(0)" : "translateY(-100%)",
-          transition: "transform .4s ease",
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <i
-            className="bi bi-x-lg fs-4"
-            role="button"
-            onClick={() => setShowSearch(false)}
-          />
-          <input
-            className="form-control border-0 border-bottom rounded-0 shadow-none"
-            placeholder="Search products…"
-          />
-        </div>
-      </div>
+
+     {/* ================= SEARCH BAR ================= */}
+    <SearchModal
+      show={showSearch}
+      onClose={() => setShowSearch(false)}
+    />
+     
+     
 
       {/* ================= NAVBAR ================= */}
       <nav className="navbar navbar-expand-lg bg-white py-3 shadow-sm sticky-top">

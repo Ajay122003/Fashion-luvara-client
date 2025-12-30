@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { sendOtpLogin } from "../../api/auth";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/login.css";
+import Home from "../User/Home";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -119,6 +120,7 @@ const Login = () => {
         <p className="login-footer">
           Don’t have an account? <Link to="/register">Sign up</Link>
         </p>
+
       </div>
     </div>
   );

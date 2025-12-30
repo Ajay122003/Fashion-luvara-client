@@ -1,4 +1,5 @@
 import apiClient from "./client";
+import publicClient from "./publicClient";
 
 export const registerUser = (data) => 
   apiClient.post("/api/auth/register/", data);
@@ -24,3 +25,7 @@ export const updateProfile = (data) =>
 export const logoutUser = (refresh) =>
   apiClient.post("/api/auth/logout/", { refresh });
 
+
+export const globalSearch = (query) => {
+  return publicClient.get(`/api/auth/search/?q=${query}`);
+};
