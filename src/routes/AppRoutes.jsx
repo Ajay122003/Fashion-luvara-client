@@ -58,6 +58,8 @@ import AddCoupon from "../pages/Admin/AddCoupon";
 import EditCoupon from "../pages/Admin/EditCoupon";
 
 import Settings from "../pages/Admin/Settings";
+import AdminForgotPassword from "../pages/Admin/AdminForgotPassword";
+import AdminResetPassword from "../pages/Admin/AdminResetPassword";
 
 const AppRoutes = () => {
   return (
@@ -145,6 +147,8 @@ const AppRoutes = () => {
 
       {/* =========================== ADMIN LOGIN ============================ */}
       <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/forgot-password" element={<AdminForgotPassword />}/>
+        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
 
       {/* =========================== ADMIN PROTECTED ROUTES ============================ */}
       <Route

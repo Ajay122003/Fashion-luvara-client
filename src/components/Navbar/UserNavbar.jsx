@@ -163,7 +163,7 @@ const UserNavbar = () => {
         
           <div className="collapse navbar-collapse">
             <div className=" d-none d-lg-block me-4">
-              <img src={brandLogo} height="110" width="110" alt="logo" />
+              <img src={brandLogo} height="115" width="115" alt="logo" />
             </div>
 
             <ul className="navbar-nav gap-4 small">

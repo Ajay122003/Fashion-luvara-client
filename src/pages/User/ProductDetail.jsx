@@ -244,6 +244,15 @@ const ProductDetail = () => {
               </span>
             )}
           </h5>
+          
+
+           {/*  SKU ADDED */}
+          {product.sku && (
+            <p className="text-muted small mb-1">
+              {" "}
+              <span className="fw-semibold">{product.sku}</span>
+            </p>
+          )}
 
           <p className="text-muted small">{product.description}</p>
 

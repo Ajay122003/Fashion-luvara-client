@@ -22,6 +22,26 @@ export const adminLoginVerifyOTP = async (email, otp) => {
   return res.data;
 };
 
+/* -----------------------------------------------
+   ADMIN FORGOT PASSWORD (OTP BASED)
+------------------------------------------------ */
+export const adminForgotPassword = async (email) => {
+  const res = await adminClient.post(
+    "/api/admin-panel/forgot-password/",
+    { email }
+  );
+  return res.data;
+};
+
+export const adminResetPassword = async (data) => {
+  // data = { email, otp, new_password }
+  const res = await adminClient.post(
+    "/api/admin-panel/reset-password/",
+    data
+  );
+  return res.data;
+};
+
 
 /* -----------------------------------------------
    USERS / SUBSCRIPTIONS

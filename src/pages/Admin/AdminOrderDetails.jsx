@@ -17,7 +17,6 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 Shipping states
   const [courierName, setCourierName] = useState("");
   const [trackingId, setTrackingId] = useState("");
 
@@ -26,7 +25,6 @@ const OrderDetails = () => {
       setLoading(true);
       const data = await fetchAdminOrderDetail(id);
       setOrder(data);
-
       setCourierName(data.courier_name || "");
       setTrackingId(data.tracking_id || "");
     } catch {
@@ -44,7 +42,6 @@ const OrderDetails = () => {
   const updateOrder = async (key, value) => {
     try {
       await adminUpdateOrder(id, { [key]: value });
-      alert("Order updated successfully");
       loadOrder();
     } catch {
       alert("Update failed");
@@ -58,7 +55,6 @@ const OrderDetails = () => {
         tracking_id: trackingId,
         status: "SHIPPED",
       });
-      alert("Shipping details updated");
       loadOrder();
     } catch {
       alert("Failed to update shipping");
@@ -72,252 +68,276 @@ const OrderDetails = () => {
   const currentIndex = STATUS_FLOW.indexOf(order.status);
 
   return (
-    <div className="container py-3">
-      <h3 className="fw-bold mb-3">Order Details</h3>
-      <hr />
+    <div className="container-fluid py-3">
 
-      {/* ORDER INFO */}
-      <div className="card mb-4 shadow-sm">
-        <div className="card-body">
-          <h5 className="fw-bold mb-2">{order.order_number}</h5>
+      {/* ================= HEADER ================= */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3 className="fw-bold mb-1">{order.order_number}</h3>
+          <small className="text-muted">
+            Placed on {new Date(order.created_at).toLocaleString()}
+          </small>
+        </div>
 
-          <p><b>User:</b> {order.user_email}</p>
-
-          <p>
-            <b>Order Status:</b>{" "}
-            <span className="badge bg-secondary">
-              {order.status}
-            </span>
-          </p>
-
-          <p>
-            <b>Payment Status:</b>{" "}
-            <span className="badge bg-info">
-              {order.payment_status}
-            </span>
-          </p>
-
-          {/* STATUS + PAYMENT UPDATE */}
-          <div className="row mt-3">
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                Update Order Status
-              </label>
-              <select
-                className="form-select"
-                value={order.status}
-                onChange={(e) =>
-                  updateOrder("status", e.target.value)
-                }
-              >
-                <option value="PENDING">Pending</option>
-                <option value="PROCESSING">Processing</option>
-                <option value="SHIPPED">Shipped</option>
-                <option value="DELIVERED">Delivered</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-            </div>
-
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                Update Payment Status
-              </label>
-              <select
-                className="form-select"
-                value={order.payment_status}
-                onChange={(e) =>
-                  updateOrder("payment_status", e.target.value)
-                }
-              >
-                <option value="PAID">PAID</option>
-                <option value="PENDING">PENDING</option>
-                <option value="FAILED">FAILED</option>
-                <option value="COD">COD</option>
-              </select>
-            </div>
-          </div>
+        <div className="text-end">
+          <span className="badge bg-dark me-2">
+            {order.status}
+          </span>
+          <span
+            className={`badge ${
+              order.payment_status === "PAID"
+                ? "bg-success"
+                : order.payment_status === "COD"
+                ? "bg-info"
+                : "bg-warning"
+            }`}
+          >
+            {order.payment_status}
+          </span>
         </div>
       </div>
 
-      {/* SHIPPING DETAILS */}
-      <div className="card mb-4 shadow-sm">
-        <div className="card-body">
-          <h5 className="fw-bold mb-3">Shipping Details</h5>
+      <div className="row">
 
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                Courier Name
-              </label>
+        {/* ================= LEFT COLUMN ================= */}
+        <div className="col-lg-8">
+
+          {/* ORDER STATUS & PAYMENT */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <h5 className="fw-bold mb-3">Order Management</h5>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label fw-semibold">
+                    Order Status
+                  </label>
+                  <select
+                    className="form-select"
+                    value={order.status}
+                    onChange={(e) =>
+                      updateOrder("status", e.target.value)
+                    }
+                  >
+                    <option value="PENDING">Pending</option>
+                    <option value="PROCESSING">Processing</option>
+                    <option value="SHIPPED">Shipped</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label className="form-label fw-semibold">
+                    Payment Status
+                  </label>
+                  <select
+                    className="form-select"
+                    value={order.payment_status}
+                    onChange={(e) =>
+                      updateOrder("payment_status", e.target.value)
+                    }
+                  >
+                    <option value="PAID">PAID</option>
+                    <option value="PENDING">PENDING</option>
+                    <option value="FAILED">FAILED</option>
+                    <option value="COD">COD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ORDER TIMELINE */}
+          {order.status !== "CANCELLED" && (
+            <div className="card shadow-sm mb-4">
+              <div className="card-body">
+                <h5 className="fw-bold mb-3">Order Timeline</h5>
+
+                <div className="d-flex justify-content-between">
+                  {STATUS_FLOW.map((step, index) => (
+                    <div
+                      key={step}
+                      className="text-center flex-fill"
+                    >
+                      <div
+                        className={`mx-auto mb-2 rounded-circle ${
+                          index <= currentIndex
+                            ? "bg-success"
+                            : "bg-secondary"
+                        }`}
+                        style={{ width: 14, height: 14 }}
+                      ></div>
+                      <small
+                        className={
+                          index <= currentIndex
+                            ? "fw-bold"
+                            : "text-muted"
+                        }
+                      >
+                        {step.replace("_", " ")}
+                      </small>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ORDER ITEMS */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <h5 className="fw-bold mb-3">Order Items</h5>
+
+              {order.items.map((item, i) => (
+                <div
+                  key={i}
+                  className="d-flex align-items-start border-bottom pb-3 mb-3"
+                >
+                  {item.product?.images?.length > 0 && (
+                    <img
+                      src={item.product.images[0].image_url}
+                      alt=""
+                      width="64"
+                      height="64"
+                      className="rounded me-3"
+                      style={{ objectFit: "cover" }}
+                    />
+                  )}
+
+                  <div className="flex-grow-1">
+                    <p className="fw-bold mb-1">
+                      {item.product?.name}
+                    </p>
+                    <small className="text-muted">
+                      Size: {item.size || "-"} | Color:{" "}
+                      {item.color || "-"}
+                    </small>
+                    <div className="d-flex justify-content-between mt-1">
+                      <span>Qty: {item.quantity}</span>
+                      <span className="fw-semibold">
+                        ₹{item.price}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ================= RIGHT COLUMN ================= */}
+        <div className="col-lg-4">
+
+          {/* SHIPPING DETAILS */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <h5 className="fw-bold mb-3">Shipping</h5>
+
               <input
-                className="form-control"
+                className="form-control mb-2"
+                placeholder="Courier Name"
                 value={courierName}
                 onChange={(e) =>
                   setCourierName(e.target.value)
                 }
-                placeholder="Eg: Delhivery"
               />
-            </div>
 
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                Tracking ID
-              </label>
               <input
-                className="form-control"
+                className="form-control mb-3"
+                placeholder="Tracking ID"
                 value={trackingId}
                 onChange={(e) =>
                   setTrackingId(e.target.value)
                 }
-                placeholder="AWB / Tracking number"
+              />
+
+              <button
+                className="btn btn-dark w-100"
+                disabled={!courierName || !trackingId}
+                onClick={saveShippingDetails}
+              >
+                Save Shipping Details
+              </button>
+            </div>
+          </div>
+
+          {/* PRICE DETAILS */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <h5 className="fw-bold mb-3">Price Summary</h5>
+
+              <PriceRow label="Subtotal" value={order.subtotal_amount} />
+              {Number(order.discount_amount) > 0 && (
+                <PriceRow
+                  label="Discount"
+                  value={`- ${order.discount_amount}`}
+                  green
+                />
+              )}
+              <PriceRow
+                label="Shipping"
+                value={
+                  order.shipping_amount > 0
+                    ? order.shipping_amount
+                    : "Free"
+                }
+              />
+              <PriceRow label="GST" value={order.gst_amount} />
+
+              <hr />
+              <PriceRow
+                label="Total"
+                value={order.total_amount}
+                bold
               />
             </div>
           </div>
 
-          <button
-            className="btn btn-dark"
-            disabled={!courierName || !trackingId}
-            onClick={saveShippingDetails}
-          >
-            Save Shipping Details
-          </button>
-        </div>
-      </div>
-
-      {/* ORDER TIMELINE */}
-      {order.status !== "CANCELLED" && (
-        <div className="card mb-4 shadow-sm">
-          <div className="card-body">
-            <h5 className="fw-bold mb-3">Order Timeline</h5>
-
-            {STATUS_FLOW.map((step, index) => {
-              const isActive = index <= currentIndex;
-              return (
-                <div key={step} className="d-flex mb-2">
-                  <div
-                    className={`rounded-circle me-3 ${
-                      isActive ? "bg-success" : "bg-secondary"
-                    }`}
-                    style={{ width: 14, height: 14 }}
-                  ></div>
-                  <span
-                    className={
-                      isActive ? "fw-bold" : "text-muted"
-                    }
-                  >
-                    {step.replaceAll("_", " ")}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* PRICE BREAKUP */}
-      <div className="card mb-4 shadow-sm">
-        <div className="card-body">
-          <h5 className="fw-bold mb-3">Price Details</h5>
-
-          <div className="d-flex justify-content-between">
-            <span>Subtotal</span>
-            <span>₹{Number(order.subtotal_amount).toFixed(2)}</span>
-          </div>
-
-          {Number(order.discount_amount) > 0 && (
-            <div className="d-flex justify-content-between text-success">
-              <span>Discount</span>
-              <span>- ₹{Number(order.discount_amount).toFixed(2)}</span>
+          {/* ADDRESS */}
+          {order.address_details && (
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h5 className="fw-bold mb-2">
+                  Customer Address
+                </h5>
+                <p className="mb-1 fw-semibold">
+                  {order.address_details.name}
+                </p>
+                <small className="text-muted">
+                  {order.address_details.phone}
+                </small>
+                <p className="mt-2 mb-0">
+                  {order.address_details.full_address},{" "}
+                  {order.address_details.city}
+                </p>
+                <p className="mb-0">
+                  {order.address_details.state} –{" "}
+                  {order.address_details.pincode}
+                </p>
+              </div>
             </div>
           )}
-
-          <div className="d-flex justify-content-between">
-            <span>Shipping</span>
-            <span>
-              {Number(order.shipping_amount) > 0
-                ? `₹${Number(order.shipping_amount).toFixed(2)}`
-                : "Free"}
-            </span>
-          </div>
-
-          <div className="d-flex justify-content-between">
-            <span>GST</span>
-            <span>₹{Number(order.gst_amount).toFixed(2)}</span>
-          </div>
-
-          <hr />
-
-          <div className="d-flex justify-content-between fw-bold fs-5">
-            <span>Total</span>
-            <span>₹{Number(order.total_amount).toFixed(2)}</span>
-          </div>
         </div>
       </div>
-
-      {/* ADDRESS */}
-      {order.address_details && (
-        <div className="card mb-4 shadow-sm">
-          <div className="card-body">
-            <h5 className="fw-bold">Customer Address</h5>
-            <p className="mb-1 fw-semibold">
-              {order.address_details.name}
-            </p>
-            <p className="mb-1">
-              {order.address_details.phone}
-            </p>
-            <p className="mb-0">
-              {order.address_details.full_address},{" "}
-              {order.address_details.city}
-            </p>
-            <p className="mb-0">
-              {order.address_details.state} –{" "}
-              {order.address_details.pincode}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* ORDER ITEMS */}
-      {/* ORDER ITEMS */}
-<div className="card shadow-sm">
-  <div className="card-body">
-    <h5 className="fw-bold">Order Items</h5>
-    <hr />
-
-    {order.items.map((item, i) => (
-      <div key={i} className="mb-3 border-bottom pb-2 d-flex">
-        {/* 🖼 PRODUCT IMAGE */}
-        {item.product?.images?.length > 0 && (
-          <img
-            src={item.product.images[0].image_url}
-            alt={item.product?.name}
-            style={{
-              width: 60,
-              height: 60,
-              objectFit: "cover",
-              borderRadius: 6,
-              marginRight: 12,
-            }}
-          />
-        )}
-
-        <div>
-          <p className="fw-bold mb-1">
-            {item.product?.name || "Product"}
-          </p>
-          <p className="mb-1">Qty: {item.quantity}</p>
-          <p className="mb-1">Ordered Price: ₹{item.price}</p>
-          <p className="mb-1">Size: {item.size || "-"}</p>
-          <p className="mb-0">Color: {item.color || "-"}</p>
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
-
-
     </div>
   );
 };
 
 export default OrderDetails;
+
+/* ================= PRICE ROW ================= */
+
+const PriceRow = ({ label, value, bold, green }) => (
+  <div className="d-flex justify-content-between mb-1">
+    <span>{label}</span>
+    <span
+      className={`${bold ? "fw-bold" : ""} ${
+        green ? "text-success" : ""
+      }`}
+    >
+      ₹{value}
+    </span>
+  </div>
+);
+

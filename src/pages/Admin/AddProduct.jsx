@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { createAdminProduct, fetchAdminCategories, fetchAdminCollections,} from "../../api/admin";
+import {
+  createAdminProduct,
+  fetchAdminCategories,
+  fetchAdminCollections,
+} from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
 
@@ -8,6 +12,7 @@ const AddProduct = () => {
 
   const [product, setProduct] = useState({
     name: "",
+    sku: "",               // ✅ ADD SKU
     description: "",
     price: "",
     sale_price: "",
@@ -29,6 +34,11 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!product.sku.trim()) {
+      alert("Product Number (SKU) is required");
+      return;
+    }
+
     if (product.variants.length === 0) {
       alert("Add at least one variant");
       return;
@@ -36,7 +46,9 @@ const AddProduct = () => {
 
     const form = new FormData();
 
+    // BASIC FIELDS
     form.append("name", product.name);
+    form.append("sku", product.sku);          // ✅ SEND SKU
     form.append("description", product.description);
     form.append("price", product.price);
     form.append("category", product.category);
@@ -46,10 +58,15 @@ const AddProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
-    //VARIANTS (size + color + stock)
+    // COLLECTIONS (ManyToMany)
+    product.collections.forEach((id) => {
+      form.append("collections", id);
+    });
+
+    // VARIANTS (size + color + stock)
     product.variants.forEach((v, i) => {
       form.append(`variants[${i}][size]`, v.size);
-      form.append(`variants[${i}][color]`, v.color);
+      form.append(`variants[${i}][color]`, v.color || "");
       form.append(`variants[${i}][stock]`, v.stock);
     });
 
@@ -64,7 +81,12 @@ const AddProduct = () => {
       navigate("/admin/products");
     } catch (err) {
       console.error(err.response?.data);
-      alert("Failed to add product");
+
+      if (err.response?.data?.sku) {
+        alert("Product Number (SKU) already exists");
+      } else {
+        alert("Failed to add product");
+      }
     }
   };
 

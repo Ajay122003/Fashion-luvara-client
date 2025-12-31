@@ -15,13 +15,14 @@ const EditProduct = () => {
 
   const [product, setProduct] = useState({
     name: "",
+    sku: "",
     description: "",
     price: "",
     sale_price: "",
     category: "",
     collections: [],
     is_active: true,
-    variants: [], // { size, color, stock }
+    variants: [],
   });
 
   const [categories, setCategories] = useState([]);
@@ -32,6 +33,7 @@ const EditProduct = () => {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line
   }, []);
 
   const loadData = async () => {
@@ -48,6 +50,7 @@ const EditProduct = () => {
 
       setProduct({
         name: prodRes.data.name || "",
+        sku: prodRes.data.sku || "",
         description: prodRes.data.description || "",
         price: prodRes.data.price || "",
         sale_price: prodRes.data.sale_price || "",
@@ -82,6 +85,11 @@ const EditProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!product.sku.trim()) {
+      alert("SKU is required");
+      return;
+    }
+
     if (product.variants.length === 0) {
       alert("Add at least one variant");
       return;
@@ -90,6 +98,7 @@ const EditProduct = () => {
     const form = new FormData();
 
     form.append("name", product.name);
+    form.append("sku", product.sku);
     form.append("description", product.description);
     form.append("price", product.price);
     form.append("category", product.category);
@@ -99,7 +108,10 @@ const EditProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
-    // ✅ VARIANTS (size + color + stock)
+    product.collections.forEach((cid) =>
+      form.append("collections", cid)
+    );
+
     form.append(
       "variants",
       JSON.stringify(
@@ -111,12 +123,6 @@ const EditProduct = () => {
       )
     );
 
-    // ✅ COLLECTIONS
-    product.collections.forEach((cid) =>
-      form.append("collections", cid)
-    );
-
-    // ✅ NEW IMAGES
     newImages.forEach((img) =>
       form.append("images", img)
     );
@@ -135,10 +141,11 @@ const EditProduct = () => {
     <div className="container py-4">
       <h3 className="fw-bold mb-3">Edit Product</h3>
 
-      {/* EXISTING IMAGES */}
+      {/* ================= EXISTING IMAGES ================= */}
       {existingImages.length > 0 && (
         <div className="mb-4">
           <label className="fw-bold">Existing Images</label>
+
           <div className="d-flex flex-wrap gap-3 mt-2">
             {existingImages.map((img) => (
               <div key={img.id} className="position-relative">
@@ -149,6 +156,9 @@ const EditProduct = () => {
                   height="90"
                   className="rounded border"
                   style={{ objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.src = "/placeholder.png";
+                  }}
                 />
 
                 <button
@@ -164,7 +174,7 @@ const EditProduct = () => {
         </div>
       )}
 
-      {/* PRODUCT FORM */}
+      {/* ================= PRODUCT FORM ================= */}
       <ProductForm
         handleSubmit={handleSubmit}
         product={product}

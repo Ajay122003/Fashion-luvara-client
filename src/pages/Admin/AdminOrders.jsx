@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import { fetchAdminOrders } from "../../api/admin";
 import { Link } from "react-router-dom";
 
+const STATUS_LIST = [
+  { key: "", label: "All", color: "dark" },
+  { key: "PENDING", label: "Pending", color: "warning" },
+  { key: "SHIPPED", label: "Shipped", color: "info" },
+  { key: "DELIVERED", label: "Delivered", color: "success" },
+  { key: "CANCELLED", label: "Cancelled", color: "danger" },
+];
+
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("");
@@ -12,7 +20,7 @@ const Orders = () => {
       setLoading(true);
       const data = await fetchAdminOrders(filter);
       setOrders(data);
-    } catch (err) {
+    } catch {
       alert("Failed to load orders");
     } finally {
       setLoading(false);
@@ -23,52 +31,71 @@ const Orders = () => {
     loadOrders();
   }, [filter]);
 
-  return (
-    <div className="container-fluid">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-        <h3 className="fw-bold m-0">Orders</h3>
+  // ---------- STATUS COUNTS ----------
+  const getCount = (status) => {
+    if (!status) return orders.length;
+    return orders.filter((o) => o.status === status).length;
+  };
 
-        {/* STATUS FILTER */}
-        <select
-          className="form-select w-auto"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="">All Orders</option>
-          <option value="PENDING">Pending</option>
-          <option value="SHIPPED">Shipped</option>
-          <option value="DELIVERED">Delivered</option>
-          <option value="CANCELLED">Cancelled</option>
-        </select>
+  return (
+    <div className="container-fluid py-3">
+
+      {/* ================= HEADER ================= */}
+      <div className="mb-3">
+        <h3 className="fw-bold mb-1">Orders</h3>
+        <small className="text-muted">
+          Manage and track customer orders
+        </small>
       </div>
 
-      {/* LOADING */}
+      {/* ================= STATUS FILTER WITH COUNT ================= */}
+      <div className="d-flex flex-wrap gap-2 mb-4">
+        {STATUS_LIST.map((s) => (
+          <button
+            key={s.key}
+            onClick={() => setFilter(s.key)}
+            className={`btn btn-sm ${
+              filter === s.key
+                ? `btn-${s.color}`
+                : "btn-outline-secondary"
+            }`}
+          >
+            {s.label}{" "}
+            <span className="badge bg-light text-dark ms-1">
+              {getCount(s.key)}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* ================= LOADING ================= */}
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center">Loading orders…</p>
       ) : (
         <>
-          {/* DESKTOP TABLE */}
+          {/* ================= DESKTOP TABLE ================= */}
           <div className="table-responsive d-none d-md-block">
-            <table className="table table-hover align-middle">
+            <table className="table table-hover align-middle border">
               <thead className="table-light">
                 <tr>
                   <th>#</th>
-                  <th>Order No.</th>
+                  <th>Order No</th>
                   <th>User</th>
                   <th>Total</th>
                   <th>Payment</th>
                   <th>Status</th>
                   <th>Date</th>
-                  <th>Details</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((o, i) => (
                   <tr key={o.id}>
                     <td>{i + 1}</td>
-                    <td className="fw-bold">{o.order_number}</td>
+                    <td className="fw-semibold">{o.order_number}</td>
                     <td>{o.user_email}</td>
-                    <td>₹{o.total_amount}</td>
+                    <td className="fw-bold">₹{o.total_amount}</td>
+
                     <td>
                       <span
                         className={`badge ${
@@ -84,15 +111,29 @@ const Orders = () => {
                     </td>
 
                     <td>
-                      <span className="badge bg-dark">{o.status}</span>
+                      <span
+                        className={`badge ${
+                          o.status === "DELIVERED"
+                            ? "bg-success"
+                            : o.status === "PENDING"
+                            ? "bg-warning"
+                            : o.status === "SHIPPED"
+                            ? "bg-info"
+                            : "bg-secondary"
+                        }`}
+                      >
+                        {o.status}
+                      </span>
                     </td>
 
-                    <td>{new Date(o.created_at).toLocaleDateString()}</td>
-
                     <td>
+                      {new Date(o.created_at).toLocaleDateString()}
+                    </td>
+
+                    <td className="text-end">
                       <Link
                         to={`/admin/orders/${o.id}`}
-                        className="btn btn-sm btn-primary"
+                        className="btn btn-sm btn-outline-primary"
                       >
                         View
                       </Link>
@@ -103,27 +144,41 @@ const Orders = () => {
             </table>
           </div>
 
-          {/* MOBILE CARD VIEW */}
+          {/* ================= MOBILE CARD VIEW ================= */}
           <div className="d-md-none">
             {orders.map((o) => (
               <div key={o.id} className="card shadow-sm mb-3">
                 <div className="card-body">
-                  <h6 className="fw-bold mb-1">{o.order_number}</h6>
+                  <div className="d-flex justify-content-between">
+                    <h6 className="fw-bold">{o.order_number}</h6>
+                    <span
+                      className={`badge ${
+                        o.status === "DELIVERED"
+                          ? "bg-success"
+                          : o.status === "PENDING"
+                          ? "bg-warning"
+                          : o.status === "SHIPPED"
+                          ? "bg-info"
+                          : "bg-secondary"
+                      }`}
+                    >
+                      {o.status}
+                    </span>
+                  </div>
 
                   <p className="mb-1">
                     <b>User:</b> {o.user_email}
                   </p>
+
                   <p className="mb-1">
                     <b>Total:</b> ₹{o.total_amount}
                   </p>
 
                   <p className="mb-1">
-                    <b>Payment:</b> {o.payment_status}
-                  </p>
-
-                  <p className="mb-1">
-                    <b>Status:</b>{" "}
-                    <span className="badge bg-dark">{o.status}</span>
+                    <b>Payment:</b>{" "}
+                    <span className="fw-semibold">
+                      {o.payment_status}
+                    </span>
                   </p>
 
                   <p className="mb-2">
@@ -148,3 +203,4 @@ const Orders = () => {
 };
 
 export default Orders;
+

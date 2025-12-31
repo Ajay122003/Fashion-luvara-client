@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { adminLogin, adminVerifyOTP } from "../../features/admin/adminSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const AdminLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { loading, error, step, pendingEmail } = useSelector(
     (state) => state.admin
   );
@@ -14,11 +15,13 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
 
+  /* ================= STEP 1 → LOGIN + SEND OTP ================= */
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     dispatch(adminLogin({ email, password }));
   };
 
+  /* ================= STEP 2 → VERIFY OTP ================= */
   const handleOtpSubmit = (e) => {
     e.preventDefault();
     const finalEmail = pendingEmail || email;
@@ -55,14 +58,18 @@ const AdminLogin = () => {
 
         {/* ERROR MESSAGE */}
         {error && (
-          <div className="alert alert-danger py-2">{String(error)}</div>
+          <div className="alert alert-danger py-2">
+            {String(error)}
+          </div>
         )}
 
-        {/* STEP 1 → LOGIN FORM */}
+        {/* ================= STEP 1 → LOGIN ================= */}
         {step === 1 && (
           <form onSubmit={handleLoginSubmit}>
             <div className="mb-3">
-              <label className="form-label fw-semibold">Admin Email</label>
+              <label className="form-label fw-semibold">
+                Admin Email
+              </label>
               <input
                 type="email"
                 className="form-control shadow-sm"
@@ -76,7 +83,9 @@ const AdminLogin = () => {
             </div>
 
             <div className="mb-3">
-              <label className="form-label fw-semibold">Password</label>
+              <label className="form-label fw-semibold">
+                Password
+              </label>
               <input
                 type="password"
                 className="form-control shadow-sm"
@@ -86,6 +95,17 @@ const AdminLogin = () => {
                 required
                 style={{ borderRadius: "10px" }}
               />
+            </div>
+
+            {/* 🔐 FORGOT PASSWORD */}
+            <div className="d-flex justify-content-end mb-3">
+              <Link
+                to="/admin/forgot-password"
+                className="text-decoration-none small"
+                style={{ color: "#555" }}
+              >
+                Forgot password?
+              </Link>
             </div>
 
             <button
@@ -99,14 +119,16 @@ const AdminLogin = () => {
           </form>
         )}
 
-        {/* STEP 2 → OTP VERIFY */}
+        {/* ================= STEP 2 → OTP VERIFY ================= */}
         {step === 2 && (
           <form onSubmit={handleOtpSubmit} className="mt-3">
             <div className="alert alert-info small">
               OTP sent to <b>{pendingEmail}</b>
             </div>
 
-            <label className="form-label fw-semibold">Enter OTP</label>
+            <label className="form-label fw-semibold">
+              Enter OTP
+            </label>
             <input
               type="text"
               maxLength={6}
@@ -134,11 +156,17 @@ const AdminLogin = () => {
         )}
       </div>
 
-      {/* ANIMATION */}
+      {/* SIMPLE FADE ANIMATION */}
       <style>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
     </div>
@@ -146,3 +174,4 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+

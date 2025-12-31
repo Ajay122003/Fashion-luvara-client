@@ -4,6 +4,8 @@ import {
   fetchLowStockProducts,
 } from "../../api/admin";
 
+/* ================= DASHBOARD ================= */
+
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [lowStock, setLowStock] = useState([]);
@@ -27,148 +29,126 @@ const Dashboard = () => {
       const data = await fetchLowStockProducts();
       setLowStock(data.results || []);
     } catch {
-      alert("Failed to load low-stock products");
+      alert("Failed to load low stock products");
     }
   };
 
-  if (!stats)
+  if (!stats) {
     return (
       <p className="text-center py-5 fw-semibold">
         Loading Dashboard…
       </p>
     );
+  }
 
   return (
     <div className="container-fluid py-4">
 
       {/* ================= HEADER ================= */}
       <div className="mb-4">
-        <h3 className="fw-semibold mb-1">Admin Dashboard</h3>
+        <h3 className="fw-bold mb-1">Admin Dashboard</h3>
         <small className="text-muted">
-          Overview of store performance
+          Business overview & performance
         </small>
       </div>
 
       {/* ================= KPI CARDS ================= */}
       <div className="row g-3 mb-4">
-        <StatCard icon="people" title="Users" value={stats.total_users} color="primary" />
-        <StatCard icon="bag-check" title="Orders" value={stats.total_orders} color="success" />
-        <StatCard icon="currency-rupee" title="Revenue" value={`₹${stats.total_revenue}`} color="dark" />
-        <StatCard icon="calendar-check" title="Today's Orders" value={stats.todays_orders} color="warning" />
-        <StatCard icon="graph-up" title="Today's Revenue" value={`₹${stats.todays_revenue}`} color="info" />
-        <StatCard icon="clock-history" title="Pending Orders" value={stats.pending_orders} color="secondary" />
-        <StatCard icon="truck" title="Delivered Orders" value={stats.delivered_orders} color="success" />
-        <StatCard icon="envelope" title="Subscribers" value={stats.total_subscribers} color="primary" />
+        <StatCard title="Users" value={stats.total_users} icon="people" color="#4e73df" />
+        <StatCard title="Orders" value={stats.total_orders} icon="bag-check" color="#1cc88a" />
+        <StatCard title="Revenue" value={`₹${stats.total_revenue}`} icon="currency-rupee" color="#36b9cc" />
+        <StatCard title="Today Orders" value={stats.todays_orders} icon="calendar-check" color="#f6c23e" />
+        <StatCard title="Today Revenue" value={`₹${stats.todays_revenue}`} icon="graph-up" color="#20c997" />
+        <StatCard title="Pending" value={stats.pending_orders} icon="clock-history" color="#fd7e14" />
+        <StatCard title="Delivered" value={stats.delivered_orders} icon="truck" color="#198754" />
+        <StatCard title="Subscribers" value={stats.total_subscribers} icon="envelope" color="#6f42c1" />
       </div>
 
       {/* ================= BEST SELLERS ================= */}
-      <div className="card shadow-sm border-0 mb-4">
-        <div className="card-header bg-white border-bottom">
-          <h5 className="mb-0 fw-semibold">Best Selling Products</h5>
-        </div>
-
+      <div className="card border-0 shadow-sm mb-4">
         <div className="card-body">
+          <SectionHeader title="Best Selling Products" />
+
           {stats.best_selling_products.length === 0 ? (
-            <p className="text-muted mb-0">No sales yet.</p>
+            <p className="text-muted mb-0">No sales yet</p>
           ) : (
-            <div className="table-responsive">
-              <table className="table align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>Product</th>
-                    <th>Image</th>
-                    <th>Sold</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.best_selling_products.map((item) => (
-                    <tr key={item.variant__product_id}>
-                      <td className="fw-medium">
+            <table className="table table-hover align-middle mb-0">
+              <tbody>
+                {stats.best_selling_products.map((item) => (
+                  <tr key={item.variant__product_id}>
+                    <td className="d-flex align-items-center gap-3">
+                      <img
+                        src={item.image || "/placeholder.png"}
+                        alt=""
+                        width="48"
+                        height="48"
+                        className="rounded"
+                        style={{ objectFit: "cover" }}
+                      />
+                      <span className="fw-semibold">
                         {item.variant__product__name}
-                      </td>
-                      <td>
-                        <img
-                          src={item.image || "/placeholder.png"}
-                          alt=""
-                          width="56"
-                          height="56"
-                          className="rounded border"
-                          style={{ objectFit: "cover" }}
-                        />
-                      </td>
-                      <td className="fw-bold">{item.total_sold}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      </span>
+                    </td>
+                    <td className="text-end fw-bold">
+                      {item.total_sold} sold
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
 
       {/* ================= LOW STOCK ================= */}
-      <div className="card shadow-sm border-0 mb-5">
-        <div className="card-header bg-white border-bottom">
-          <h5 className="mb-0 fw-semibold">
-            Low Stock Products
-            <span className="text-muted fw-normal ms-2">
-              (Below {stats.low_stock_threshold})
-            </span>
-          </h5>
-        </div>
-
+      <div className="card border-0 shadow-sm">
         <div className="card-body">
+          <SectionHeader
+            title="Low Stock Products"
+            subtitle={`Below ${stats.low_stock_threshold}`}
+          />
+
           {lowStock.length === 0 ? (
             <p className="text-muted mb-0">
-              All products have healthy stock.
+              All products have healthy stock
             </p>
           ) : (
-            <div className="table-responsive">
-              <table className="table align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>Product</th>
-                    <th>Image</th>
-                    <th>Variant Stock</th>
+            <table className="table table-hover align-middle mb-0">
+              <tbody>
+                {lowStock.map((p) => (
+                  <tr key={p.id}>
+                    <td className="d-flex align-items-center gap-3">
+                      <img
+                        src={
+                          p.images?.length
+                            ? p.images[0].image_url
+                            : "/placeholder.png"
+                        }
+                        width="46"
+                        height="46"
+                        className="rounded"
+                        style={{ objectFit: "cover" }}
+                      />
+                      <span className="fw-semibold">{p.name}</span>
+                    </td>
+                    <td>
+                      {p.variants.map((v) => (
+                        <span
+                          key={v.id}
+                          className={`badge rounded-pill me-2 ${
+                            v.stock <= stats.low_stock_threshold
+                              ? "bg-danger"
+                              : "bg-warning text-dark"
+                          }`}
+                        >
+                          {v.size}: {v.stock}
+                        </span>
+                      ))}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {lowStock.map((p) => (
-                    <tr key={p.id}>
-                      <td className="fw-medium">{p.name}</td>
-                      <td>
-                        <img
-                          src={
-                            p.images?.length
-                              ? p.images[0].image_url
-                              : "/placeholder.png"
-                          }
-                          alt=""
-                          width="52"
-                          height="52"
-                          className="rounded border"
-                          style={{ objectFit: "cover" }}
-                        />
-                      </td>
-                      <td>
-                        {p.variants.map((v) => (
-                          <span
-                            key={v.id}
-                            className={`badge me-1 ${
-                              v.stock <= stats.low_stock_threshold
-                                ? "bg-danger"
-                                : "bg-secondary"
-                            }`}
-                          >
-                            {v.size} : {v.stock}
-                          </span>
-                        ))}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
@@ -179,26 +159,39 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-/* ================= KPI CARD ================= */
+/* ================= STAT CARD ================= */
 
-const StatCard = ({ icon, title, value, color }) => {
+const StatCard = ({ title, value, icon, color }) => {
   return (
-    <div className="col-6 col-md-4 col-xl-3">
-      <div className={`card shadow-sm h-100 border-start border-4 border-${color}`}>
-        <div className="card-body d-flex align-items-center gap-3">
-          <div
-            className={`rounded-circle bg-${color}-subtle d-flex align-items-center justify-content-center`}
-            style={{ width: 48, height: 48 }}
-          >
-            <i className={`bi bi-${icon} fs-4 text-${color}`}></i>
-          </div>
-
+    <div className="col-6 col-sm-6 col-lg-3">
+      <div
+        className="card border-0 shadow-sm h-100 text-white"
+        style={{
+          background: `linear-gradient(135deg, ${color}, #00000040)`,
+        }}
+      >
+        <div className="card-body d-flex justify-content-between align-items-center">
           <div>
-            <small className="text-muted">{title}</small>
-            <h5 className="fw-bold mb-0">{value}</h5>
+            <small className="opacity-75">{title}</small>
+            <h4 className="fw-bold mb-0">{value}</h4>
           </div>
+          <i className={`bi bi-${icon} fs-1 opacity-50`}></i>
         </div>
       </div>
     </div>
   );
 };
+
+/* ================= SECTION HEADER ================= */
+
+const SectionHeader = ({ title, subtitle }) => {
+  return (
+    <div className="mb-3">
+      <h5 className="fw-bold mb-0">{title}</h5>
+      {subtitle && (
+        <small className="text-muted">{subtitle}</small>
+      )}
+    </div>
+  );
+};
+

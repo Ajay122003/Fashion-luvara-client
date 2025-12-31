@@ -31,7 +31,7 @@ const ProductForm = ({
         ...product.variants,
         {
           size: "",
-          color: "", // 🔥 OPTIONAL
+          color: "",
           stock: 0,
         },
       ],
@@ -67,6 +67,26 @@ const ProductForm = ({
             setProduct({ ...product, name: e.target.value })
           }
         />
+      </div>
+
+      {/* ================= SKU ================= */}
+      <div className="mb-3">
+        <label className="fw-bold">Product Number (SKU)</label>
+        <input
+          className="form-control"
+          placeholder="LV-TSH-001"
+          value={product.sku}
+          required
+          onChange={(e) =>
+            setProduct({
+              ...product,
+              sku: e.target.value.toUpperCase(),
+            })
+          }
+        />
+        <small className="text-muted">
+          Unique product code (example: LV-TSH-001)
+        </small>
       </div>
 
       {/* ================= DESCRIPTION ================= */}
@@ -167,11 +187,10 @@ const ProductForm = ({
 
         {product.variants.map((v, i) => (
           <div key={i} className="row g-2 mb-2 align-items-center">
-            {/* SIZE (REQUIRED) */}
             <div className="col-md-3">
               <input
                 className="form-control"
-                placeholder="Size (required)"
+                placeholder="Size"
                 value={v.size}
                 required
                 onChange={(e) =>
@@ -180,7 +199,6 @@ const ProductForm = ({
               />
             </div>
 
-            {/* COLOR (OPTIONAL) */}
             <div className="col-md-3">
               <input
                 className="form-control"
@@ -192,22 +210,20 @@ const ProductForm = ({
               />
             </div>
 
-            {/* STOCK */}
             <div className="col-md-3">
               <input
                 type="number"
                 className="form-control"
                 placeholder="Stock"
-                value={v.stock}
                 min="0"
                 required
+                value={v.stock}
                 onChange={(e) =>
                   updateVariant(i, "stock", Number(e.target.value))
                 }
               />
             </div>
 
-            {/* REMOVE */}
             <div className="col-md-2">
               <button
                 type="button"
@@ -286,5 +302,6 @@ const ProductForm = ({
 };
 
 export default ProductForm;
+
 
 

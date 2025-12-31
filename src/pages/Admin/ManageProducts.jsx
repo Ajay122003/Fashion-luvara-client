@@ -27,9 +27,11 @@ const ManageProducts = () => {
     load();
   }, []);
 
-  /* ---------------- SEARCH ---------------- */
+  /* ---------------- SEARCH (NAME + SKU) ---------------- */
   const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(searchText.toLowerCase())
+    `${p.name} ${p.sku || ""}`
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
   );
 
   /* ---------------- DELETE ---------------- */
@@ -57,9 +59,9 @@ const ManageProducts = () => {
     }
   };
 
-  /* ---------------- VARIANT STOCK RENDER ---------------- */
+  /* ---------------- VARIANT STOCK ---------------- */
   const renderVariantStock = (variants = []) => {
-    if (!variants || variants.length === 0) {
+    if (!variants.length) {
       return <span className="text-muted">—</span>;
     }
 
@@ -74,19 +76,21 @@ const ManageProducts = () => {
                 : "bg-danger-subtle text-danger"
             }`}
           >
-            {v.size} / {v.color} : {v.stock}
+            {v.size}
+            {v.color ? ` / ${v.color}` : ""} : {v.stock}
           </span>
         ))}
       </div>
     );
   };
 
-  if (loading)
+  if (loading) {
     return (
       <p className="text-center py-5 fw-semibold">
         Loading Products…
       </p>
     );
+  }
 
   return (
     <div className="container-fluid py-4">
@@ -105,7 +109,7 @@ const ManageProducts = () => {
         <input
           type="text"
           className="form-control"
-          placeholder="Search product..."
+          placeholder="Search by name or SKU..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
@@ -119,9 +123,10 @@ const ManageProducts = () => {
               <tr>
                 <th>#</th>
                 <th>Name</th>
+                <th>SKU</th>
                 <th>Price</th>
                 <th>Sale</th>
-                <th>Stock (Size / Color)</th>
+                <th>Stock</th>
                 <th>Status</th>
                 <th className="text-end">Actions</th>
               </tr>
@@ -130,7 +135,7 @@ const ManageProducts = () => {
             <tbody>
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4 text-muted">
+                  <td colSpan="8" className="text-center py-4 text-muted">
                     No products found
                   </td>
                 </tr>
@@ -141,11 +146,15 @@ const ManageProducts = () => {
 
                     <td className="fw-medium">{p.name}</td>
 
+                    <td>
+                      <span className="badge bg-light text-dark border">
+                        {p.sku || "—"}
+                      </span>
+                    </td>
+
                     <td>₹{p.price}</td>
 
-                    <td>
-                      {p.sale_price ? `₹${p.sale_price}` : "—"}
-                    </td>
+                    <td>{p.sale_price ? `₹${p.sale_price}` : "—"}</td>
 
                     <td>{renderVariantStock(p.variants)}</td>
 
@@ -186,66 +195,64 @@ const ManageProducts = () => {
 
       {/* ================= MOBILE CARDS ================= */}
       <div className="d-md-none">
-        {filteredProducts.length === 0 ? (
-          <div className="text-center text-muted py-4">
-            No products found
-          </div>
-        ) : (
-          filteredProducts.map((p) => (
-            <div
-              key={p.id}
-              className="card shadow-sm border-0 mb-3"
-            >
-              <div className="card-body">
-                <h6 className="fw-semibold mb-1">{p.name}</h6>
+        {filteredProducts.map((p) => (
+          <div key={p.id} className="card shadow-sm border-0 mb-3">
+            <div className="card-body">
+              <h6 className="fw-semibold mb-1">{p.name}</h6>
 
-                <div className="mb-1">
-                  <strong>Price:</strong> ₹{p.price}
-                </div>
+              <div className="mb-1">
+                {" "}
+                <span className="badge bg-light text-dark border">
+                  {p.sku || "—"}
+                </span>
+              </div>
 
-                <div className="mb-1">
-                  <strong>Sale:</strong>{" "}
-                  {p.sale_price ? `₹${p.sale_price}` : "—"}
-                </div>
+              <div className="mb-1">
+                <strong>Price:</strong> ₹{p.price}
+              </div>
 
-                <div className="mb-2">
-                  <strong>Stock:</strong>
-                  <div className="mt-1">
-                    {renderVariantStock(p.variants)}
-                  </div>
-                </div>
+              <div className="mb-1">
+                <strong>Sale:</strong>{" "}
+                {p.sale_price ? `₹${p.sale_price}` : "—"}
+              </div>
 
-                <div className="mb-2">
-                  {p.is_active ? (
-                    <span className="badge bg-success-subtle text-success">
-                      Active
-                    </span>
-                  ) : (
-                    <span className="badge bg-secondary-subtle text-secondary">
-                      Disabled
-                    </span>
-                  )}
-                </div>
-
-                <div className="d-flex justify-content-end gap-2">
-                  <Link
-                    to={`/admin/products/${p.id}/edit`}
-                    className="btn btn-sm btn-outline-primary"
-                  >
-                    <i className="bi bi-pencil"></i>
-                  </Link>
-
-                  <button
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => openDeleteModal(p)}
-                  >
-                    <i className="bi bi-trash"></i>
-                  </button>
+              <div className="mb-2">
+                <strong>Stock:</strong>
+                <div className="mt-1">
+                  {renderVariantStock(p.variants)}
                 </div>
               </div>
+
+              <div className="mb-2">
+                {p.is_active ? (
+                  <span className="badge bg-success-subtle text-success">
+                    Active
+                  </span>
+                ) : (
+                  <span className="badge bg-secondary-subtle text-secondary">
+                    Disabled
+                  </span>
+                )}
+              </div>
+
+              <div className="d-flex justify-content-end gap-2">
+                <Link
+                  to={`/admin/products/${p.id}/edit`}
+                  className="btn btn-sm btn-outline-primary"
+                >
+                  <i className="bi bi-pencil"></i>
+                </Link>
+
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => openDeleteModal(p)}
+                >
+                  <i className="bi bi-trash"></i>
+                </button>
+              </div>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
 
       {/* ================= DELETE MODAL ================= */}
