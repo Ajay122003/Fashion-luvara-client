@@ -60,6 +60,9 @@ import EditCoupon from "../pages/Admin/EditCoupon";
 import Settings from "../pages/Admin/Settings";
 import AdminForgotPassword from "../pages/Admin/AdminForgotPassword";
 import AdminResetPassword from "../pages/Admin/AdminResetPassword";
+import ManageOffers from "../pages/Admin/ManageOffers";
+import AddOffer from "../pages/Admin/AddOffer";
+import EditOffer from "../pages/Admin/EditOffer";
 
 const AppRoutes = () => {
   return (
@@ -140,6 +143,8 @@ const AppRoutes = () => {
         />
       </Route>
 
+      
+
       {/* =========================== AUTH ROUTES ============================ */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -188,6 +193,10 @@ const AppRoutes = () => {
         <Route path="coupons" element={<Coupons />} />
         <Route path="coupons/add" element={<AddCoupon />} />
         <Route path="coupons/:id/edit" element={<EditCoupon />} />
+         
+         <Route path="/admin/offers" element={<ManageOffers />} />
+<Route path="/admin/offers/add" element={<AddOffer />} />
+<Route path="/admin/offers/edit/:id" element={<EditOffer />} />
 
         {/* Settings */}
         <Route path="settings" element={<Settings />} />

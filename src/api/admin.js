@@ -305,3 +305,52 @@ export const fetchSingleCoupon = async (id) => {
   );
   return res.data;
 };
+
+
+
+
+/* -----------------------------------------------
+   OFFERS (ADMIN)
+------------------------------------------------ */
+
+// Fetch all offers
+export const fetchAdminOffers = async () => {
+  const res = await adminClient.get("/api/admin-panel/offers/");
+  return res.data;
+};
+
+// Fetch single offer
+export const fetchSingleAdminOffer = async (id) => {
+  const res = await adminClient.get(
+    `/api/admin-panel/offers/${id}/`
+  );
+  return res.data;
+};
+
+// Create offer (multipart: image)
+export const createAdminOffer = async (formData) => {
+  const res = await adminClient.post(
+    "/api/admin-panel/offers/",
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+  return res.data;
+};
+
+// Update offer
+export const updateAdminOffer = async (id, formData) => {
+  const res = await adminClient.put(
+    `/api/admin-panel/offers/${id}/`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+  return res.data;
+};
+
+// Delete offer
+export const deleteAdminOffer = async (id) => {
+  const res = await adminClient.delete(
+    `/api/admin-panel/offers/${id}/`
+  );
+  return res.data;
+};

@@ -25,7 +25,6 @@ const AdminLayout = () => {
       <AdminNavbar onMenuClick={() => setShowSidebar(true)} />
 
       <div className="d-flex flex-grow-1">
-
         {/* ================= DESKTOP SIDEBAR ================= */}
         <aside className="admin-sidebar d-none d-md-flex flex-column">
           <div className="px-3 py-3 border-bottom fw-bold">
@@ -51,6 +50,12 @@ const AdminLayout = () => {
             <NavLink to="/admin/collections" className={menuItemClass}>
               <i className="bi bi-collection" />
               Collections
+            </NavLink>
+
+            {/* ✅ OFFERS */}
+            <NavLink to="/admin/offers" className={menuItemClass}>
+              <i className="bi bi-percent" />
+              Offers
             </NavLink>
 
             <NavLink to="/admin/coupons" className={menuItemClass}>
@@ -88,12 +93,11 @@ const AdminLayout = () => {
 
         {/* ================= MOBILE SIDEBAR ================= */}
         <div
-  className={`offcanvas offcanvas-start admin-offcanvas ${
-    showSidebar ? "show" : ""
-  }`}
-  style={{ visibility: showSidebar ? "visible" : "hidden" }}
->
-
+          className={`offcanvas offcanvas-start admin-offcanvas ${
+            showSidebar ? "show" : ""
+          }`}
+          style={{ visibility: showSidebar ? "visible" : "hidden" }}
+        >
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title">Admin Menu</h5>
             <button
@@ -137,6 +141,16 @@ const AdminLayout = () => {
             >
               <i className="bi bi-collection" />
               Collections
+            </NavLink>
+
+            {/* ✅ OFFERS (MOBILE FIX) */}
+            <NavLink
+              to="/admin/offers"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-percent" />
+              Offers
             </NavLink>
 
             <NavLink
@@ -223,35 +237,33 @@ const AdminLayout = () => {
             font-size: 1.1rem;
           }
 
-          /* ================= MOBILE OFFCANVAS DARK ================= */
+          /* MOBILE OFFCANVAS */
+          .admin-offcanvas {
+            background: #111827 !important;
+            color: #e5e7eb;
+          }
 
-.admin-offcanvas {
-  background: #111827 !important;
-  color: #e5e7eb;
-}
+          .admin-offcanvas .offcanvas-title {
+            color: #ffffff;
+          }
 
-.admin-offcanvas .offcanvas-title {
-  color: #ffffff;
-}
+          .admin-offcanvas .sidebar-link {
+            color: #d1d5db !important;
+          }
 
-.admin-offcanvas .sidebar-link {
-  color: #d1d5db !important;
-}
+          .admin-offcanvas .sidebar-link:hover {
+            background: #1f2937;
+            color: #ffffff !important;
+          }
 
-.admin-offcanvas .sidebar-link:hover {
-  background: #1f2937;
-  color: #ffffff !important;
-}
+          .admin-offcanvas .sidebar-link.active {
+            background: #2563eb;
+            color: #ffffff !important;
+          }
 
-.admin-offcanvas .sidebar-link.active {
-  background: #2563eb;
-  color: #ffffff !important;
-}
-
-.admin-offcanvas .btn-close {
-  filter: invert(1); /* close button white */
-}
-
+          .admin-offcanvas .btn-close {
+            filter: invert(1);
+          }
         `}
       </style>
     </div>
