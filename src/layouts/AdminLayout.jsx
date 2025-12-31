@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import AdminNavbar from "../components/Navbar/AdminNavbar";
 import { useDispatch } from "react-redux";
+import AdminNavbar from "../components/Navbar/AdminNavbar";
 import { adminLogout } from "../features/admin/adminSlice";
 
 const AdminLayout = () => {
@@ -14,147 +14,246 @@ const AdminLayout = () => {
     navigate("/admin/login");
   };
 
+  const menuItemClass = ({ isActive }) =>
+    `d-flex align-items-center gap-2 px-3 py-2 rounded sidebar-link ${
+      isActive ? "active" : ""
+    }`;
+
   return (
-    <div className="admin-layout d-flex flex-column" style={{ minHeight: "100vh" }}>
-      {/* TOP NAVBAR */}
+    <div className="admin-layout d-flex flex-column min-vh-100">
+      {/* ================= TOP NAVBAR ================= */}
       <AdminNavbar onMenuClick={() => setShowSidebar(true)} />
 
       <div className="d-flex flex-grow-1">
 
-        {/* ======================= DESKTOP SIDEBAR ======================= */}
-        <aside
-          className="bg-light border-end d-none d-md-block"
-          style={{ width: "240px" }}
-        >
-          <div className="list-group list-group-flush">
+        {/* ================= DESKTOP SIDEBAR ================= */}
+        <aside className="admin-sidebar d-none d-md-flex flex-column">
+          <div className="px-3 py-3 border-bottom fw-bold">
+            Admin Panel
+          </div>
 
-            <NavLink to="/admin/dashboard" className="list-group-item list-group-item-action">
+          <nav className="flex-grow-1 px-2 py-3">
+            <NavLink to="/admin/dashboard" className={menuItemClass}>
+              <i className="bi bi-speedometer2" />
               Dashboard
             </NavLink>
 
-            <NavLink to="/admin/products" className="list-group-item list-group-item-action">
+            <NavLink to="/admin/products" className={menuItemClass}>
+              <i className="bi bi-box-seam" />
               Products
             </NavLink>
 
-            <NavLink to="/admin/categories" className="list-group-item list-group-item-action">
+            <NavLink to="/admin/categories" className={menuItemClass}>
+              <i className="bi bi-tags" />
               Categories
             </NavLink>
-             <NavLink to="/admin/collections" className="list-group-item list-group-item-action">
+
+            <NavLink to="/admin/collections" className={menuItemClass}>
+              <i className="bi bi-collection" />
               Collections
             </NavLink>
 
-            <NavLink to="/admin/coupons" className="list-group-item list-group-item-action">
+            <NavLink to="/admin/coupons" className={menuItemClass}>
+              <i className="bi bi-ticket-perforated" />
               Coupons
             </NavLink>
 
-            <NavLink to="/admin/orders" className="list-group-item list-group-item-action">
+            <NavLink to="/admin/orders" className={menuItemClass}>
+              <i className="bi bi-receipt" />
               Orders
             </NavLink>
-            <NavLink to="/admin/users" className="list-group-item list-group-item-action">
-            Users & Subscribers
-            </NavLink>
-            <NavLink to="/admin/settings" className="list-group-item list-group-item-action">
-              Settings
+
+            <NavLink to="/admin/users" className={menuItemClass}>
+              <i className="bi bi-people" />
+              Users & Subscribers
             </NavLink>
 
-            {/* LOGOUT */}
+            <NavLink to="/admin/settings" className={menuItemClass}>
+              <i className="bi bi-gear" />
+              Settings
+            </NavLink>
+          </nav>
+
+          {/* LOGOUT */}
+          <div className="p-3 border-top">
             <button
-              className="list-group-item list-group-item-action text-danger fw-bold"
+              className="btn btn-outline-danger w-100"
               onClick={handleLogout}
             >
-              Logout ⟶
+              <i className="bi bi-box-arrow-right me-2" />
+              Logout
             </button>
           </div>
         </aside>
 
-        {/* ======================= MOBILE SIDEBAR (OFFCANVAS) ======================= */}
+        {/* ================= MOBILE SIDEBAR ================= */}
         <div
-          className={`offcanvas offcanvas-start ${showSidebar ? "show" : ""}`}
-          style={{ visibility: showSidebar ? "visible" : "hidden" }}
-        >
-          <div className="offcanvas-header">
+  className={`offcanvas offcanvas-start admin-offcanvas ${
+    showSidebar ? "show" : ""
+  }`}
+  style={{ visibility: showSidebar ? "visible" : "hidden" }}
+>
+
+          <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title">Admin Menu</h5>
-            <button className="btn-close" onClick={() => setShowSidebar(false)}></button>
+            <button
+              className="btn-close"
+              onClick={() => setShowSidebar(false)}
+            />
           </div>
 
-          <div className="offcanvas-body">
-            <div className="list-group">
+          <div className="offcanvas-body text-dark px-2">
+            <NavLink
+              to="/admin/dashboard"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-speedometer2" />
+              Dashboard
+            </NavLink>
 
-              <NavLink
-                to="/admin/dashboard"
-                className="list-group-item list-group-item-action"
-                onClick={() => setShowSidebar(false)}
-              >
-                Dashboard
-              </NavLink>
+            <NavLink
+              to="/admin/products"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-box-seam" />
+              Products
+            </NavLink>
 
-              <NavLink
-                to="/admin/products"
-                className="list-group-item list-group-item-action"
-                onClick={() => setShowSidebar(false)}
-              >
-                Products
-              </NavLink>
+            <NavLink
+              to="/admin/categories"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-tags" />
+              Categories
+            </NavLink>
 
-              <NavLink
-                to="/admin/categories"
-                className="list-group-item list-group-item-action"
-                onClick={() => setShowSidebar(false)}
-              >
-                Categories
-              </NavLink>
-              <NavLink to="/admin/collections"
-               className="list-group-item list-group-item-action"
-                onClick={() => setShowSidebar(false)}>
+            <NavLink
+              to="/admin/collections"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-collection" />
               Collections
             </NavLink>
-              <NavLink
-                to="/admin/coupons"
-                className="list-group-item list-group-item-action"
-                onClick={() => setShowSidebar(false)}
-              >
-                Coupons
-              </NavLink>
 
-              <NavLink
-                to="/admin/orders"
-                className="list-group-item list-group-item-action"
-                onClick={() => setShowSidebar(false)}
-              >
-                Orders
-              </NavLink>
-              <NavLink to="/admin/users" className="list-group-item list-group-item-action"
-              onClick={() => setShowSidebar(false)}>
-               Users & Subscribers
-               </NavLink>
+            <NavLink
+              to="/admin/coupons"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-ticket-perforated" />
+              Coupons
+            </NavLink>
 
-              <NavLink
-                to="/admin/settings"
-                className="list-group-item list-group-item-action"
-                onClick={() => setShowSidebar(false)}
-              >
-                Settings
-              </NavLink>
+            <NavLink
+              to="/admin/orders"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-receipt" />
+              Orders
+            </NavLink>
 
-              {/* LOGOUT */}
-              <button
-                className="list-group-item list-group-item-action text-danger fw-bold"
-                onClick={() => {
-                  handleLogout();
-                  setShowSidebar(false);
-                }}
-              >
-                Logout <i class="bi bi-arrow-right"></i>
-              </button>
-            </div>
+            <NavLink
+              to="/admin/users"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-people" />
+              Users & Subscribers
+            </NavLink>
+
+            <NavLink
+              to="/admin/settings"
+              className={menuItemClass}
+              onClick={() => setShowSidebar(false)}
+            >
+              <i className="bi bi-gear" />
+              Settings
+            </NavLink>
+
+            <button
+              className="btn btn-outline-danger w-100 mt-3"
+              onClick={() => {
+                handleLogout();
+                setShowSidebar(false);
+              }}
+            >
+              <i className="bi bi-box-arrow-right me-2" />
+              Logout
+            </button>
           </div>
         </div>
 
-        {/* ======================= MAIN CONTENT ======================= */}
-        <main className="flex-grow-1 p-3 bg-white">
+        {/* ================= MAIN CONTENT ================= */}
+        <main className="flex-grow-1 p-3 bg-light">
           <Outlet />
         </main>
       </div>
+
+      {/* ================= STYLES ================= */}
+      <style>
+        {`
+          .admin-sidebar {
+            width: 240px;
+            background: #111827;
+            color: #e5e7eb;
+          }
+
+          .sidebar-link {
+            color: #d1d5db;
+            text-decoration: none;
+            margin-bottom: 6px;
+          }
+
+          .sidebar-link:hover {
+            background: #1f2937;
+            color: #fff;
+          }
+
+          .sidebar-link.active {
+            background: #2563eb;
+            color: #fff;
+          }
+
+          .sidebar-link i {
+            font-size: 1.1rem;
+          }
+
+          /* ================= MOBILE OFFCANVAS DARK ================= */
+
+.admin-offcanvas {
+  background: #111827 !important;
+  color: #e5e7eb;
+}
+
+.admin-offcanvas .offcanvas-title {
+  color: #ffffff;
+}
+
+.admin-offcanvas .sidebar-link {
+  color: #d1d5db !important;
+}
+
+.admin-offcanvas .sidebar-link:hover {
+  background: #1f2937;
+  color: #ffffff !important;
+}
+
+.admin-offcanvas .sidebar-link.active {
+  background: #2563eb;
+  color: #ffffff !important;
+}
+
+.admin-offcanvas .btn-close {
+  filter: invert(1); /* close button white */
+}
+
+        `}
+      </style>
     </div>
   );
 };
