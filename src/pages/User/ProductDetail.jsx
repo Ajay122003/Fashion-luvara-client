@@ -18,6 +18,22 @@ import {
 import SizeChartModal from "../../components/SizeChartModal";
 import RelatedProducts from "./RelatedProducts";
 
+const getRemainingTime = (endDate) => {
+  if (!endDate) return null;
+
+  const diff = new Date(endDate) - new Date();
+  if (diff <= 0) return null;
+
+  const sec = Math.floor(diff / 1000);
+  const d = Math.floor(sec / 86400);
+  const h = Math.floor((sec % 86400) / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+
+  return `${d}d ${h}h ${m}m ${s}s`;
+};
+
+
 const ProductDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -32,6 +48,7 @@ const ProductDetail = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
 
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [, forceTick] = useState(0);
 
   /* ================= LOAD PRODUCT ================= */
   useEffect(() => {
@@ -50,6 +67,17 @@ const ProductDetail = () => {
     setLoading(true);
     loadProduct();
   }, [id]);
+
+  useEffect(() => {
+  if (!product?.offer_end_date) return;
+
+  const timer = setInterval(() => {
+    forceTick((t) => t + 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [product]);
+
 
   /* ================= WISHLIST STATUS ================= */
   useEffect(() => {
@@ -236,14 +264,40 @@ const ProductDetail = () => {
         <div className="col-12 col-md-6">
           <h4 className="fw-bold">{product.name}</h4>
 
-          <h5 className="fw-bold my-2">
-            ₹{product.sale_price || product.price}
-            {product.sale_price && (
-              <span className="text-muted text-decoration-line-through ms-2 small">
-                ₹{product.price}
-              </span>
-            )}
-          </h5>
+          {product.offer &&
+ product.offer_is_active &&
+ getRemainingTime(product.offer_end_date) && (
+  <>
+    <span className="badge bg-danger mb-1">
+      {product.offer_title}
+    </span>
+
+    <p className="text-danger small fw-semibold mb-2">
+      ⏱ Offer ends in{" "}
+      {getRemainingTime(product.offer_end_date)}
+    </p>
+  </>
+)}
+
+
+
+<h5 className="fw-bold my-2">
+  ₹{Math.round(product.effective_price)}
+
+  {product.effective_price < product.price && (
+    <span className="text-muted text-decoration-line-through ms-2 small">
+      ₹{product.price}
+    </span>
+  )}
+</h5>
+
+{product.effective_price < product.price && (
+  <p className="text-success small fw-semibold mb-1">
+    You save ₹{Math.round(product.price - product.effective_price)}
+  </p>
+)}
+
+
           
 
            {/*  SKU ADDED */}

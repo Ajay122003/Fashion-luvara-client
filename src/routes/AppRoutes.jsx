@@ -63,6 +63,7 @@ import AdminResetPassword from "../pages/Admin/AdminResetPassword";
 import ManageOffers from "../pages/Admin/ManageOffers";
 import AddOffer from "../pages/Admin/AddOffer";
 import EditOffer from "../pages/Admin/EditOffer";
+import OfferDetail from "../pages/User/OfferDetail";
 
 const AppRoutes = () => {
   return (
@@ -81,6 +82,7 @@ const AppRoutes = () => {
 
         <Route path="collections" element={<Collections />} />
         <Route path="collections/:slug" element={<CollectionProducts />} />
+        <Route path="/offers/:slug" element={<OfferDetail />} />
 
         {/* PROTECTED USER ROUTES */}
         <Route

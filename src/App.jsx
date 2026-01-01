@@ -15,6 +15,8 @@ import { setCollections } from "./features/collections/collectionSlice";
 import { setUser, logout, initAuth } from "./features/auth/authSlice";
 
 // Utils
+import { loadOffers } from "./features/offers/offerSlice";
+
 import storage from "./utils/storage";
 
 const App = () => {
@@ -74,6 +76,12 @@ const App = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  /* ================= LOAD ADMIN OFFERS (ONCE) ================= */
+// useEffect(() => {
+//   dispatch(loadOffers());
+// }, [dispatch]);
+
 
   return <AppRoutes />;
 };

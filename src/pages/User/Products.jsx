@@ -13,7 +13,9 @@ const Products = () => {
     setLoading(true);
 
     try {
-      const data = await fetchProducts(Object.fromEntries([...params]));
+      const data = await fetchProducts(
+        Object.fromEntries([...params])
+      );
 
       setProducts(data.results || []);
       setPagination({
@@ -40,7 +42,6 @@ const Products = () => {
 
   return (
     <div className="container py-4">
-
       <h3 className="fw-bold mb-4">All Products</h3>
 
       {/* FILTER BAR */}
@@ -48,11 +49,17 @@ const Products = () => {
         <div className="col-4 col-md-4">
           <select
             className="form-select"
-            onChange={(e) => updateFilter("sort", e.target.value)}
+            onChange={(e) =>
+              updateFilter("sort", e.target.value)
+            }
           >
             <option value="">Sort</option>
-            <option value="price_low">Low to High</option>
-            <option value="price_high">High to Low</option>
+            <option value="price_low">
+              Low to High
+            </option>
+            <option value="price_high">
+              High to Low
+            </option>
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
           </select>
@@ -63,56 +70,98 @@ const Products = () => {
             type="text"
             className="form-control"
             placeholder="Search for products..."
-            onChange={(e) => updateFilter("search", e.target.value)}
+            onChange={(e) =>
+              updateFilter("search", e.target.value)
+            }
           />
         </div>
       </div>
 
       {/* LOADING */}
-      {loading && <p className="text-center py-5">Loading...</p>}
+      {loading && (
+        <p className="text-center py-5">
+          Loading...
+        </p>
+      )}
 
       {/* PRODUCT GRID */}
       <div className="row g-3 g-md-4">
-        {products.map((product) => (
-          <div key={product.id} className="col-6 col-md-4 col-lg-3">
-            <Link
-              to={`/product/${product.id}`}
-              className="text-decoration-none text-dark"
+        {products.map((product) => {
+          const hasOffer =
+            product.effective_price < product.price;
+
+          const discountPercent = hasOffer
+            ? Math.round(
+                ((product.price -
+                  product.effective_price) /
+                  product.price) *
+                  100
+              )
+            : 0;
+
+          return (
+            <div
+              key={product.id}
+              className="col-6 col-md-4 col-lg-3"
             >
-              <div className="card border-0 shadow-sm product-card">
-
-                {/* Responsive Image Wrapper */}
-                <div className="product-image-wrapper w-100 rounded-top">
-                  <img
-                    src={product.images?.[0]?.image_url}
-                    alt={product.name}
-                    className="w-100 "
-                    style={{
-                      objectFit: "cover",
-                      transition: "transform .3s",
-                    }}
-                  />
-                </div>
-
-                <div className="card-body">
-                  <h6 className="fw-semibold text-truncate">{product.name}</h6>
-
-                  <p className="mb-0">
-                    <span className="fw-bold">
-                      ₹{product.sale_price || product.price}
-                    </span>
-
-                    {product.sale_price && (
-                      <span className="text-muted text-decoration-line-through ms-2 small">
-                        ₹{product.price}
+              <Link
+                to={`/product/${product.id}`}
+                className="text-decoration-none text-dark"
+              >
+                <div className="card border-0 shadow-sm product-card">
+                  {/* IMAGE + OFFER BADGE */}
+                  <div className="product-image-wrapper w-100 rounded-top position-relative">
+                    {hasOffer && (
+                      <span
+                        className="badge bg-danger position-absolute"
+                        style={{
+                          top: "8px",
+                          left: "8px",
+                          fontSize: "0.75rem",
+                          padding: "6px 8px",
+                          zIndex: 2,
+                        }}
+                      >
+                        {discountPercent}% OFF
                       </span>
                     )}
-                  </p>
+
+                    <img
+                      src={
+                        product.images?.[0]?.image_url
+                      }
+                      alt={product.name}
+                      className="w-100"
+                      style={{
+                        objectFit: "cover",
+                        transition: "transform .3s",
+                      }}
+                    />
+                  </div>
+
+                  {/* CARD BODY */}
+                  <div className="card-body">
+                    <h6 className="fw-semibold text-truncate">
+                      {product.name}
+                    </h6>
+
+                    <p className="mb-0">
+                      <span className="fw-bold">
+                        ₹{product.effective_price}
+                      </span>
+
+                      {hasOffer && (
+                        <span className="text-muted text-decoration-line-through ms-2 small">
+                          ₹{product.price}
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </div>
-        ))}
+              </Link>
+            </div>
+          );
+        })}
       </div>
 
       {/* PAGINATION */}
@@ -121,7 +170,9 @@ const Products = () => {
           <button
             className="btn btn-outline-dark"
             onClick={() => {
-              const url = new URL(pagination.previous);
+              const url = new URL(
+                pagination.previous
+              );
               setParams(url.searchParams);
             }}
           >
@@ -133,7 +184,9 @@ const Products = () => {
           <button
             className="btn btn-dark"
             onClick={() => {
-              const url = new URL(pagination.next);
+              const url = new URL(
+                pagination.next
+              );
               setParams(url.searchParams);
             }}
           >
@@ -144,27 +197,23 @@ const Products = () => {
 
       {/* RESPONSIVE CSS */}
       <style>{`
-        /* Default mobile height */
         .product-image-wrapper {
           height: 180px;
           overflow: hidden;
         }
 
-        /* Tablet >= 768px */
         @media (min-width: 768px) {
           .product-image-wrapper {
             height: 220px !important;
           }
         }
 
-        /* Desktop >= 992px */
         @media (min-width: 992px) {
           .product-image-wrapper {
             height: 260px !important;
           }
         }
 
-        /* Hover Zoom effect */
         .product-card:hover img {
           transform: scale(1.06);
         }

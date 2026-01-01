@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   fetchAdminCategories,
   fetchAdminCollections,
+  fetchAdminOffers,
   updateAdminProduct,
   deleteProductImage,
 } from "../../api/admin";
@@ -13,6 +14,7 @@ const EditProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  /* ================= PRODUCT STATE ================= */
   const [product, setProduct] = useState({
     name: "",
     sku: "",
@@ -21,13 +23,17 @@ const EditProduct = () => {
     sale_price: "",
     category: "",
     collections: [],
+    offer: null, // 🔥 important
     is_active: true,
     variants: [],
   });
 
+  /* ================= MASTER DATA ================= */
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [offers, setOffers] = useState([]);
 
+  /* ================= IMAGES ================= */
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
 
@@ -38,16 +44,21 @@ const EditProduct = () => {
 
   const loadData = async () => {
     try {
+      /* -------- PRODUCT -------- */
       const prodRes = await adminClient.get(
         `/api/admin-panel/products/${id}/`
       );
 
+      /* -------- MASTER DATA -------- */
       const cats = await fetchAdminCategories();
       const cols = await fetchAdminCollections();
+      const offerRes = await fetchAdminOffers();
 
       setCategories(cats);
       setCollections(cols);
+      setOffers(offerRes.results || offerRes);
 
+      /* -------- SET PRODUCT -------- */
       setProduct({
         name: prodRes.data.name || "",
         sku: prodRes.data.sku || "",
@@ -56,6 +67,7 @@ const EditProduct = () => {
         sale_price: prodRes.data.sale_price || "",
         category: prodRes.data.category || "",
         collections: prodRes.data.collections || [],
+        offer: prodRes.data.offer ?? null, // 🔥 normalize
         is_active: prodRes.data.is_active,
         variants: prodRes.data.variants || [],
       });
@@ -108,6 +120,14 @@ const EditProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
+    /* 🔥🔥🔥 OFFER FIX (THIS IS THE KEY PART) 🔥🔥🔥 */
+    if (product.offer !== null) {
+      form.append("offer", product.offer);
+    } else {
+      // This removes offer from product
+      form.append("offer", "");
+    }
+
     product.collections.forEach((cid) =>
       form.append("collections", cid)
     );
@@ -156,11 +176,7 @@ const EditProduct = () => {
                   height="90"
                   className="rounded border"
                   style={{ objectFit: "cover" }}
-                  onError={(e) => {
-                    e.target.src = "/placeholder.png";
-                  }}
                 />
-
                 <button
                   type="button"
                   className="btn btn-sm btn-danger position-absolute top-0 end-0"
@@ -181,6 +197,7 @@ const EditProduct = () => {
         setProduct={setProduct}
         categories={categories}
         collections={collections}
+        offers={offers}
         newImages={newImages}
         setNewImages={setNewImages}
         buttonText="Update Product"

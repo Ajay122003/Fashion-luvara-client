@@ -10,7 +10,9 @@ const CategoryProducts = () => {
 
   const loadCategory = async () => {
     try {
-      const res = await publicClient.get(`/api/categories/slug/${slug}/`);
+      const res = await publicClient.get(
+        `/api/categories/slug/${slug}/`
+      );
       setCategory(res.data);
     } catch (err) {
       console.error("Category not found", err);
@@ -27,24 +29,29 @@ const CategoryProducts = () => {
     return (
       <div className="container py-5 text-center">
         <div className="spinner-border text-dark"></div>
-        <p className="mt-3 fw-semibold">Loading products...</p>
+        <p className="mt-3 fw-semibold">
+          Loading products...
+        </p>
       </div>
     );
 
   if (!category)
     return (
       <div className="container py-5 text-center">
-        <h4 className="fw-bold">Category Not Found</h4>
+        <h4 className="fw-bold">
+          Category Not Found
+        </h4>
         <p>This category does not exist.</p>
       </div>
     );
 
   return (
     <div className="container py-4">
-
       {/* CATEGORY TITLE + COUNT */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="fw-bold mb-0">{category.name}</h3>
+        <h3 className="fw-bold mb-0">
+          {category.name}
+        </h3>
 
         <span className="text-muted fw-semibold">
           {category.products?.length || 0} Products
@@ -58,44 +65,78 @@ const CategoryProducts = () => {
             No products available in this category.
           </p>
         ) : (
-          category.products.map((product) => (
-            <div className="col-6 col-md-4 col-lg-3" key={product.id}>
-              <Link
-                to={`/product/${product.id}`}
-                className="text-decoration-none text-dark"
+          category.products.map((product) => {
+            const hasOffer =
+              product.effective_price < product.price;
+
+            const discountPercent = hasOffer
+              ? Math.round(
+                  ((product.price -
+                    product.effective_price) /
+                    product.price) *
+                    100
+                )
+              : 0;
+
+            return (
+              <div
+                className="col-6 col-md-4 col-lg-3"
+                key={product.id}
               >
-                <div className="card product-card shadow-sm h-100 border-0">
+                <Link
+                  to={`/product/${product.id}`}
+                  className="text-decoration-none text-dark"
+                >
+                  <div className="card product-card shadow-sm h-100 border-0">
+                    {/* IMAGE + OFFER BADGE */}
+                    <div className="product-img-wrapper position-relative">
+                      {hasOffer && (
+                        <span
+                          className="badge bg-danger position-absolute"
+                          style={{
+                            top: "8px",
+                            left: "8px",
+                            fontSize: "0.75rem",
+                            padding: "6px 8px",
+                            zIndex: 2,
+                          }}
+                        >
+                          {discountPercent}% OFF
+                        </span>
+                      )}
 
-                  {/* IMAGE */}
-                  <div className="product-img-wrapper">
-                    <img
-                      src={product.images?.[0]?.image_url}
-                      alt={product.name}
-                      className="product-img"
-                    />
-                  </div>
+                      <img
+                        src={
+                          product.images?.[0]
+                            ?.image_url
+                        }
+                        alt={product.name}
+                        className="product-img"
+                      />
+                    </div>
 
-                  {/* BODY */}
-                  <div className="card-body px-2">
-                    <h6 className="fw-semibold mb-1 text-truncate">
-                      {product.name}
-                    </h6>
+                    {/* BODY */}
+                    <div className="card-body px-2">
+                      <h6 className="fw-semibold mb-1 text-truncate">
+                        {product.name}
+                      </h6>
 
-                    {/* PRICING */}
-                    <p className="mb-0 fw-bold">
-                      ₹{product.sale_price || product.price}
-                    </p>
-
-                    {product.sale_price && (
-                      <p className="text-muted small text-decoration-line-through mb-0">
-                        ₹{product.price}
+                      {/* PRICE */}
+                      <p className="mb-0 fw-bold">
+                        ₹{product.effective_price}
                       </p>
-                    )}
+
+                      {hasOffer && (
+                        <p className="text-muted small text-decoration-line-through mb-0">
+                          ₹{product.price}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </div>
-          ))
+                </Link>
+              </div>
+            );
+          })
         )}
       </div>
 
@@ -139,3 +180,4 @@ const CategoryProducts = () => {
 };
 
 export default CategoryProducts;
+

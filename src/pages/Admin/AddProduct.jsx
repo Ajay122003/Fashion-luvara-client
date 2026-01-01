@@ -3,6 +3,7 @@ import {
   createAdminProduct,
   fetchAdminCategories,
   fetchAdminCollections,
+  fetchAdminOffers,          // 🔥 OFFER API
 } from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
@@ -10,27 +11,41 @@ import ProductForm from "../../components/Admin/ProductForm";
 const AddProduct = () => {
   const navigate = useNavigate();
 
+  /* ================= PRODUCT STATE ================= */
   const [product, setProduct] = useState({
     name: "",
-    sku: "",               // ✅ ADD SKU
+    sku: "",
     description: "",
     price: "",
     sale_price: "",
     category: "",
     collections: [],
+    offer: null,            // 🔥 OFFER ID
     is_active: true,
-    variants: [], // { size, color, stock }
+    variants: [],
   });
 
+  /* ================= MASTER DATA ================= */
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [offers, setOffers] = useState([]);   // 🔥 OFFERS
+
+  /* ================= IMAGES ================= */
   const [newImages, setNewImages] = useState([]);
 
+  /* ================= LOAD INITIAL DATA ================= */
   useEffect(() => {
-    fetchAdminCategories().then(setCategories);
-    fetchAdminCollections().then(setCollections);
-  }, []);
+  fetchAdminCategories().then(setCategories);
+  fetchAdminCollections().then(setCollections);
 
+  // 🔥 FETCH OFFERS (FIXED)
+  fetchAdminOffers().then((data) => {
+    setOffers(data.results || data);
+  });
+}, []);
+
+
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -46,9 +61,9 @@ const AddProduct = () => {
 
     const form = new FormData();
 
-    // BASIC FIELDS
+    /* ===== BASIC ===== */
     form.append("name", product.name);
-    form.append("sku", product.sku);          // ✅ SEND SKU
+    form.append("sku", product.sku);
     form.append("description", product.description);
     form.append("price", product.price);
     form.append("category", product.category);
@@ -58,19 +73,24 @@ const AddProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
-    // COLLECTIONS (ManyToMany)
+    /* ===== OFFER ===== */
+    if (product.offer) {
+      form.append("offer", product.offer);
+    }
+
+    /* ===== COLLECTIONS (M2M) ===== */
     product.collections.forEach((id) => {
       form.append("collections", id);
     });
 
-    // VARIANTS (size + color + stock)
+    /* ===== VARIANTS ===== */
     product.variants.forEach((v, i) => {
       form.append(`variants[${i}][size]`, v.size);
       form.append(`variants[${i}][color]`, v.color || "");
       form.append(`variants[${i}][stock]`, v.stock);
     });
 
-    // IMAGES
+    /* ===== IMAGES ===== */
     newImages.forEach((img) => {
       form.append("images", img);
     });
@@ -97,6 +117,7 @@ const AddProduct = () => {
       setProduct={setProduct}
       categories={categories}
       collections={collections}
+      offers={offers}                 //  PASS OFFERS
       newImages={newImages}
       setNewImages={setNewImages}
       buttonText="Add Product"

@@ -5,6 +5,7 @@ const ProductForm = ({
   product,
   setProduct,
   categories = [],
+  offers = [],
   collections = [],
   newImages = [],
   setNewImages,
@@ -214,6 +215,43 @@ const ProductForm = ({
           </div>
         </div>
       </div>
+
+
+      {/* ================= OFFER ================= */}
+<div className="mt-3">
+  <label className="form-label fw-semibold">
+    Offer (Optional)
+  </label>
+
+  <select
+    className="form-select"
+    value={product.offer ?? ""}
+    onChange={(e) =>
+      setProduct({
+        ...product,
+        offer: e.target.value
+          ? Number(e.target.value)
+          : null,
+      })
+    }
+  >
+    <option value="">No Offer</option>
+
+    {offers.map((o) => (
+      <option key={o.id} value={o.id}>
+        {o.title} –{" "}
+        {o.discount_type === "PERCENT"
+          ? `${o.discount_value}%`
+          : `₹${o.discount_value}`} OFF
+      </option>
+    ))}
+  </select>
+
+  <small className="text-muted">
+    Final price will be calculated automatically
+  </small>
+</div>
+
 
       {/* ================= VARIANTS ================= */}
       <div className="card shadow-sm mb-4">

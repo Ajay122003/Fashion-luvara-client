@@ -29,9 +29,22 @@ const AddOffer = () => {
     e.preventDefault();
 
     const fd = new FormData();
-    Object.keys(form).forEach((key) => {
-      fd.append(key, form[key]);
-    });
+
+    fd.append("title", form.title);
+    fd.append("description", form.description);
+    fd.append("discount_type", form.discount_type);
+    fd.append("discount_value", form.discount_value);
+    fd.append("is_active", form.is_active);
+
+    // ✅ LOCAL TIME → UTC FIX
+    fd.append(
+      "start_date",
+      new Date(form.start_date).toISOString()
+    );
+    fd.append(
+      "end_date",
+      new Date(form.end_date).toISOString()
+    );
 
     if (image) fd.append("image", image);
 
@@ -45,7 +58,6 @@ const AddOffer = () => {
       <h3>Add Offer</h3>
 
       <form onSubmit={handleSubmit}>
-        {/* TITLE */}
         <input
           className="form-control mb-2"
           name="title"
@@ -55,7 +67,6 @@ const AddOffer = () => {
           required
         />
 
-        {/* DESCRIPTION */}
         <textarea
           className="form-control mb-2"
           name="description"
@@ -64,7 +75,6 @@ const AddOffer = () => {
           onChange={handleChange}
         />
 
-        {/* DISCOUNT TYPE */}
         <select
           className="form-control mb-2"
           name="discount_type"
@@ -75,22 +85,16 @@ const AddOffer = () => {
           <option value="FLAT">Flat Amount (₹)</option>
         </select>
 
-        {/* DISCOUNT VALUE */}
         <input
           type="number"
           className="form-control mb-2"
           name="discount_value"
-          placeholder={
-            form.discount_type === "PERCENT"
-              ? "Discount %"
-              : "Discount Amount"
-          }
+          placeholder="Discount value"
           value={form.discount_value}
           onChange={handleChange}
           required
         />
 
-        {/* START / END DATE */}
         <input
           type="datetime-local"
           className="form-control mb-2"
@@ -107,14 +111,12 @@ const AddOffer = () => {
           required
         />
 
-        {/* IMAGE */}
         <input
           type="file"
           className="form-control mb-3"
           onChange={(e) => setImage(e.target.files[0])}
         />
 
-        {/* STATUS */}
         <div className="form-check mb-3">
           <input
             type="checkbox"
@@ -123,7 +125,9 @@ const AddOffer = () => {
             checked={form.is_active}
             onChange={handleChange}
           />
-          <label className="form-check-label">Active</label>
+          <label className="form-check-label">
+            Active
+          </label>
         </div>
 
         <button className="btn btn-success">
@@ -135,4 +139,3 @@ const AddOffer = () => {
 };
 
 export default AddOffer;
-

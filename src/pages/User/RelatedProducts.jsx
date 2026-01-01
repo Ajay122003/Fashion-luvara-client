@@ -20,62 +20,86 @@ const RelatedProducts = ({ productId }) => {
       <h5 className="fw-semibold mb-3">You may also like</h5>
 
       <div className="row g-3 g-md-4">
-        {products.map((p) => (
-          <div
-            className="col-6 col-sm-6 col-md-4 col-lg-3"
-            key={p.id}
-          >
-            <Link
-              to={`/product/${p.id}`}
-              onClick={() =>
-                window.scrollTo({ top: 0, behavior: "smooth" })
-              }
-              className="text-decoration-none text-dark"
+        {products.map((p) => {
+          const hasOffer =
+            p.effective_price !== undefined &&
+            p.effective_price < p.price;
+
+          const discountPercent = hasOffer
+            ? Math.round(
+                ((p.price - p.effective_price) / p.price) * 100
+              )
+            : null;
+
+          return (
+            <div
+              className="col-6 col-sm-6 col-md-4 col-lg-3"
+              key={p.id}
             >
-              <div className="card related-card h-100 border-0">
+              <Link
+                to={`/product/${p.id}`}
+                onClick={() =>
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                }
+                className="text-decoration-none text-dark"
+              >
+                <div className="card related-card h-100 border-0 position-relative">
 
-                {/* IMAGE */}
-                <div className="related-img-wrapper">
-                  <img
-                    src={p.images?.[0]?.image_url}
-                    alt={p.name}
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* BODY */}
-                <div className="card-body px-2 pb-3">
-                  <h6 className="fw-semibold text-truncate mb-1">
-                    {p.name}
-                  </h6>
-
-                  <p className="mb-0 fw-bold">
-                    ₹{p.sale_price || p.price}
-                  </p>
-
-                  {p.sale_price && (
-                    <small className="text-muted text-decoration-line-through">
-                      ₹{p.price}
-                    </small>
+                  {/*  OFFER BADGE */}
+                  {hasOffer && (
+                    <span
+                      className="badge bg-danger position-absolute"
+                      style={{
+                        top: "8px",
+                        left: "8px",
+                        fontSize: "0.7rem",
+                        padding: "6px 8px",
+                        zIndex: 2,
+                      }}
+                    >
+                      {discountPercent}% OFF
+                    </span>
                   )}
+
+                  {/* IMAGE */}
+                  <div className="related-img-wrapper">
+                    <img
+                      src={p.images?.[0]?.image_url}
+                      alt={p.name}
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* BODY */}
+                  <div className="card-body px-2 pb-3">
+                    <h6 className="fw-semibold text-truncate mb-1">
+                      {p.name}
+                    </h6>
+
+                    <p className="mb-0 fw-bold text-danger">
+                      ₹{hasOffer ? p.effective_price : p.price}
+                    </p>
+
+                    {hasOffer && (
+                      <small className="text-muted text-decoration-line-through">
+                        ₹{p.price}
+                      </small>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </div>
-        ))}
+              </Link>
+            </div>
+          );
+        })}
       </div>
 
       {/* ================= CSS ================= */}
       <style>{`
         .related-card {
-          
           transition: transform .25s ease, box-shadow .25s ease;
           background: #fff;
         }
 
-        
-
-        /* IMAGE BOX */
         .related-img-wrapper {
           width: 100%;
           aspect-ratio: 3 / 4;
@@ -94,7 +118,6 @@ const RelatedProducts = ({ productId }) => {
           transform: scale(1.08);
         }
 
-        /* MOBILE TUNING */
         @media (max-width: 576px) {
           .related-card {
             border-radius: 14px;
@@ -110,3 +133,4 @@ const RelatedProducts = ({ productId }) => {
 };
 
 export default RelatedProducts;
+
