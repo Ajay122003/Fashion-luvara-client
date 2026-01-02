@@ -137,7 +137,7 @@ const OfferDetail = () => {
       zIndex: 2,
     }}
   >
-    ₹{offer.discount_value} OFF
+    ₹{Math.round(offer.discount_value)} OFF
   </span>
 )}
 
@@ -161,7 +161,7 @@ const OfferDetail = () => {
                   {/* PRICE */}
                   <div>
                     <span className="fw-bold text-danger">
-                      ₹{p.effective_price}
+                      ₹{Math.round(p.effective_price)}
                     </span>
 
                     {p.effective_price < p.price && (
@@ -174,7 +174,7 @@ const OfferDetail = () => {
                   {/* YOU SAVE */}
                   {p.effective_price < p.price && (
                     <p className="text-success small fw-semibold mb-0">
-                      You save ₹{p.price - p.effective_price}
+                      You save ₹{Math.round(p.price - p.effective_price)}
                     </p>
                   )}
                 </div>

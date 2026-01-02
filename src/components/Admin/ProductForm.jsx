@@ -30,7 +30,7 @@ const ProductForm = ({
       ...product,
       variants: [
         ...product.variants,
-        { size: "", color: "", stock: 0 },
+        { size: "", color: "", stock: "" },
       ],
     });
   };
@@ -53,7 +53,6 @@ const ProductForm = ({
       className="container-fluid"
       style={{ maxWidth: 960 }}
     >
-
       {/* ================= BASIC INFO ================= */}
       <div className="card shadow-sm mb-4">
         <div className="card-body">
@@ -119,7 +118,7 @@ const ProductForm = ({
           <h5 className="fw-bold mb-3">Pricing</h5>
 
           <div className="row g-3">
-            <div className=" col-6 col-md-6">
+            <div className="col-6">
               <label className="form-label fw-semibold">
                 Price
               </label>
@@ -131,13 +130,13 @@ const ProductForm = ({
                 onChange={(e) =>
                   setProduct({
                     ...product,
-                    price: Number(e.target.value),
+                    price: e.target.value, // ✅ STRING
                   })
                 }
               />
             </div>
 
-            <div className="col-6 col-md-6">
+            <div className="col-6">
               <label className="form-label fw-semibold">
                 Sale Price
               </label>
@@ -148,8 +147,8 @@ const ProductForm = ({
                 onChange={(e) =>
                   setProduct({
                     ...product,
-                    sale_price:
-                      Number(e.target.value) || "",
+                    sale_price: e.target.value || "",
+                    offer: e.target.value ? null : product.offer,
                   })
                 }
               />
@@ -216,42 +215,42 @@ const ProductForm = ({
         </div>
       </div>
 
-
       {/* ================= OFFER ================= */}
-<div className="mt-3">
-  <label className="form-label fw-semibold">
-    Offer (Optional)
-  </label>
+      <div className="card shadow-sm mb-4">
+        <div className="card-body">
+          <label className="form-label fw-semibold">
+            Offer (Optional)
+          </label>
 
-  <select
-    className="form-select"
-    value={product.offer ?? ""}
-    onChange={(e) =>
-      setProduct({
-        ...product,
-        offer: e.target.value
-          ? Number(e.target.value)
-          : null,
-      })
-    }
-  >
-    <option value="">No Offer</option>
+          <select
+            className="form-select"
+            value={product.offer ?? ""}
+            onChange={(e) =>
+              setProduct({
+                ...product,
+                offer: e.target.value
+                  ? Number(e.target.value)
+                  : null,
+                sale_price: e.target.value ? "" : product.sale_price,
+              })
+            }
+          >
+            <option value="">No Offer</option>
+            {offers.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.title} –{" "}
+                {o.discount_type === "PERCENT"
+                  ? `${o.discount_value}%`
+                  : `₹${o.discount_value}`} OFF
+              </option>
+            ))}
+          </select>
 
-    {offers.map((o) => (
-      <option key={o.id} value={o.id}>
-        {o.title} –{" "}
-        {o.discount_type === "PERCENT"
-          ? `${o.discount_value}%`
-          : `₹${o.discount_value}`} OFF
-      </option>
-    ))}
-  </select>
-
-  <small className="text-muted">
-    Final price will be calculated automatically
-  </small>
-</div>
-
+          <small className="text-muted">
+            Final price calculated automatically
+          </small>
+        </div>
+      </div>
 
       {/* ================= VARIANTS ================= */}
       <div className="card shadow-sm mb-4">
@@ -263,38 +262,30 @@ const ProductForm = ({
               key={i}
               className="row g-2 align-items-center mb-2"
             >
-              <div className=" col-4 col-md-3">
+              <div className="col-4">
                 <input
                   className="form-control"
                   placeholder="Size"
                   required
                   value={v.size}
                   onChange={(e) =>
-                    updateVariant(
-                      i,
-                      "size",
-                      e.target.value
-                    )
+                    updateVariant(i, "size", e.target.value)
                   }
                 />
               </div>
 
-              <div className="col-4 col-md-3">
+              <div className="col-4">
                 <input
                   className="form-control"
                   placeholder="Color (optional)"
                   value={v.color || ""}
                   onChange={(e) =>
-                    updateVariant(
-                      i,
-                      "color",
-                      e.target.value
-                    )
+                    updateVariant(i, "color", e.target.value)
                   }
                 />
               </div>
 
-              <div className="col-4 col-md-3">
+              <div className="col-3">
                 <input
                   type="number"
                   className="form-control"
@@ -303,22 +294,18 @@ const ProductForm = ({
                   required
                   value={v.stock}
                   onChange={(e) =>
-                    updateVariant(
-                      i,
-                      "stock",
-                      Number(e.target.value)
-                    )
+                    updateVariant(i, "stock", e.target.value)
                   }
                 />
               </div>
 
-              <div className="col-md-2">
+              <div className="col-1">
                 <button
                   type="button"
-                  className="btn btn-outline-danger w-100"
+                  className="btn btn-outline-danger"
                   onClick={() => removeVariant(i)}
                 >
-                  Remove
+                  ×
                 </button>
               </div>
             </div>
@@ -407,6 +394,3 @@ const ProductForm = ({
 };
 
 export default ProductForm;
-
-
-

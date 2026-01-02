@@ -147,7 +147,7 @@ const Products = () => {
 
                     <p className="mb-0">
                       <span className="fw-bold">
-                        ₹{product.effective_price}
+                        ₹{Math.round(product.effective_price)}
                       </span>
 
                       {hasOffer && (

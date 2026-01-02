@@ -3,7 +3,7 @@ import {
   createAdminProduct,
   fetchAdminCategories,
   fetchAdminCollections,
-  fetchAdminOffers,          // 🔥 OFFER API
+  fetchAdminOffers,
 } from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
@@ -20,7 +20,7 @@ const AddProduct = () => {
     sale_price: "",
     category: "",
     collections: [],
-    offer: null,            // 🔥 OFFER ID
+    offer: null,
     is_active: true,
     variants: [],
   });
@@ -28,22 +28,20 @@ const AddProduct = () => {
   /* ================= MASTER DATA ================= */
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
-  const [offers, setOffers] = useState([]);   // 🔥 OFFERS
+  const [offers, setOffers] = useState([]);
 
   /* ================= IMAGES ================= */
   const [newImages, setNewImages] = useState([]);
 
   /* ================= LOAD INITIAL DATA ================= */
   useEffect(() => {
-  fetchAdminCategories().then(setCategories);
-  fetchAdminCollections().then(setCollections);
+    fetchAdminCategories().then(setCategories);
+    fetchAdminCollections().then(setCollections);
 
-  // 🔥 FETCH OFFERS (FIXED)
-  fetchAdminOffers().then((data) => {
-    setOffers(data.results || data);
-  });
-}, []);
-
+    fetchAdminOffers().then((data) => {
+      setOffers(data.results || data);
+    });
+  }, []);
 
   /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
@@ -78,17 +76,22 @@ const AddProduct = () => {
       form.append("offer", product.offer);
     }
 
-    /* ===== COLLECTIONS (M2M) ===== */
+    /* ===== COLLECTIONS ===== */
     product.collections.forEach((id) => {
       form.append("collections", id);
     });
 
-    /* ===== VARIANTS ===== */
-    product.variants.forEach((v, i) => {
-      form.append(`variants[${i}][size]`, v.size);
-      form.append(`variants[${i}][color]`, v.color || "");
-      form.append(`variants[${i}][stock]`, v.stock);
-    });
+    /* ===== VARIANTS (🔥 FIXED – JSON FORMAT) ===== */
+    form.append(
+      "variants",
+      JSON.stringify(
+        product.variants.map((v) => ({
+          size: v.size,
+          color: v.color || "",
+          stock: Number(v.stock),
+        }))
+      )
+    );
 
     /* ===== IMAGES ===== */
     newImages.forEach((img) => {
@@ -104,6 +107,8 @@ const AddProduct = () => {
 
       if (err.response?.data?.sku) {
         alert("Product Number (SKU) already exists");
+      } else if (err.response?.data?.variants) {
+        alert("Invalid variants data");
       } else {
         alert("Failed to add product");
       }
@@ -117,7 +122,7 @@ const AddProduct = () => {
       setProduct={setProduct}
       categories={categories}
       collections={collections}
-      offers={offers}                 //  PASS OFFERS
+      offers={offers}
       newImages={newImages}
       setNewImages={setNewImages}
       buttonText="Add Product"

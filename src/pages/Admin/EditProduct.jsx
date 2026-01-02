@@ -23,7 +23,7 @@ const EditProduct = () => {
     sale_price: "",
     category: "",
     collections: [],
-    offer: null, // 🔥 important
+    offer: null,
     is_active: true,
     variants: [],
   });
@@ -37,6 +37,7 @@ const EditProduct = () => {
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
 
+  /* ================= LOAD DATA ================= */
   useEffect(() => {
     loadData();
     // eslint-disable-next-line
@@ -67,9 +68,14 @@ const EditProduct = () => {
         sale_price: prodRes.data.sale_price || "",
         category: prodRes.data.category || "",
         collections: prodRes.data.collections || [],
-        offer: prodRes.data.offer ?? null, // 🔥 normalize
-        is_active: prodRes.data.is_active,
-        variants: prodRes.data.variants || [],
+        offer: prodRes.data.offer ?? null,
+        is_active: prodRes.data.is_active ?? true,
+        variants:
+          (prodRes.data.variants || []).map((v) => ({
+            size: v.size || "",
+            color: v.color || "",
+            stock: v.stock ?? "",
+          })),
       });
 
       setExistingImages(prodRes.data.images || []);
@@ -79,7 +85,7 @@ const EditProduct = () => {
     }
   };
 
-  /* ---------------- REMOVE EXISTING IMAGE ---------------- */
+  /* ================= REMOVE EXISTING IMAGE ================= */
   const removeExistingImage = async (imageId) => {
     if (!window.confirm("Delete this image permanently?")) return;
 
@@ -93,12 +99,12 @@ const EditProduct = () => {
     }
   };
 
-  /* ---------------- SUBMIT ---------------- */
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!product.sku.trim()) {
-      alert("SKU is required");
+      alert("Product SKU is required");
       return;
     }
 
@@ -109,6 +115,7 @@ const EditProduct = () => {
 
     const form = new FormData();
 
+    /* ===== BASIC ===== */
     form.append("name", product.name);
     form.append("sku", product.sku);
     form.append("description", product.description);
@@ -120,32 +127,35 @@ const EditProduct = () => {
       form.append("sale_price", product.sale_price);
     }
 
-    /* 🔥🔥🔥 OFFER FIX (THIS IS THE KEY PART) 🔥🔥🔥 */
+    /* ===== OFFER (ADD / REMOVE) ===== */
     if (product.offer !== null) {
       form.append("offer", product.offer);
     } else {
-      // This removes offer from product
+      // remove offer
       form.append("offer", "");
     }
 
+    /* ===== COLLECTIONS ===== */
     product.collections.forEach((cid) =>
       form.append("collections", cid)
     );
 
+    /* ===== VARIANTS (JSON – SAME AS ADD) ===== */
     form.append(
       "variants",
       JSON.stringify(
         product.variants.map((v) => ({
           size: v.size,
-          color: v.color,
-          stock: v.stock,
+          color: v.color || "",
+          stock: Number(v.stock),
         }))
       )
     );
 
-    newImages.forEach((img) =>
-      form.append("images", img)
-    );
+    /* ===== NEW IMAGES ===== */
+    newImages.forEach((img) => {
+      form.append("images", img);
+    });
 
     try {
       await updateAdminProduct(id, form);
