@@ -10,13 +10,13 @@ const OrderSuccess = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If user refreshes or comes without order data
+    // ❌ Direct access / refresh safety
     if (!state) {
-      navigate("/");
+      navigate("/", { replace: true });
       return;
     }
 
-    // 🔥 CLEAR CART (Frontend + Backend)
+    // 🔥 CLEAR CART (Backend + Redux)
     const clearUserCart = async () => {
       try {
         await apiClient.delete("/api/cart/clear/");
@@ -45,7 +45,7 @@ const OrderSuccess = () => {
         <strong>{state.order_number}</strong>
       </p>
 
-      {/* PRICE BREAKDOWN */}
+      {/* ================= ORDER SUMMARY ================= */}
       <div
         className="card mx-auto shadow-sm"
         style={{ maxWidth: 420 }}
@@ -57,7 +57,9 @@ const OrderSuccess = () => {
 
           <div className="d-flex justify-content-between mb-1">
             <span>Subtotal</span>
-            <span>₹{state.subtotal.toFixed(2)}</span>
+            <span>
+              ₹{Number(state.subtotal).toFixed(2)}
+            </span>
           </div>
 
           {state.discount > 0 && (
@@ -70,7 +72,9 @@ const OrderSuccess = () => {
                   </small>
                 )}
               </span>
-              <span>- ₹{state.discount.toFixed(2)}</span>
+              <span>
+                - ₹{Number(state.discount).toFixed(2)}
+              </span>
             </div>
           )}
 
@@ -78,26 +82,30 @@ const OrderSuccess = () => {
             <span>Shipping</span>
             <span>
               {state.shipping > 0
-                ? `₹${state.shipping.toFixed(2)}`
+                ? `₹${Number(state.shipping).toFixed(2)}`
                 : "Free"}
             </span>
           </div>
 
           <div className="d-flex justify-content-between mb-1">
             <span>GST</span>
-            <span>₹{state.gst_amount.toFixed(2)}</span>
+            <span>
+              ₹{Number(state.gst_amount).toFixed(2)}
+            </span>
           </div>
 
           <hr />
 
           <div className="d-flex justify-content-between fw-bold fs-5">
             <span>Total Paid</span>
-            <span>₹{state.total_amount.toFixed(2)}</span>
+            <span>
+              ₹{Number(state.total_amount).toFixed(2)}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* ACTIONS */}
+      {/* ================= ACTIONS ================= */}
       <div className="d-flex justify-content-center gap-3 mt-4">
         <Link to="/orders" className="btn btn-outline-dark">
           My Orders

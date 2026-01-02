@@ -2,6 +2,34 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getOrderDetail } from "../../api/order";
 
+/* ================= STATUS FLOW ================= */
+const STATUS_FLOW = [
+  "PENDING",
+  "PROCESSING",
+  "PACKED",
+  "SHIPPED",
+  "OUT_FOR_DELIVERY",
+  "DELIVERED",
+];
+
+/* ================= STATUS COLOR ================= */
+const getStatusClass = (status) => {
+  switch (status) {
+    case "DELIVERED":
+      return "bg-success";
+    case "CANCELLED":
+      return "bg-danger";
+    case "SHIPPED":
+    case "OUT_FOR_DELIVERY":
+      return "bg-primary";
+    case "PROCESSING":
+    case "PACKED":
+      return "bg-info text-dark";
+    default:
+      return "bg-warning text-dark";
+  }
+};
+
 const OrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -18,7 +46,7 @@ const OrderDetail = () => {
     try {
       const res = await getOrderDetail(id);
       setOrder(res.data);
-    } catch (err) {
+    } catch {
       alert("Failed to load order details");
       navigate("/orders");
     } finally {
@@ -28,8 +56,8 @@ const OrderDetail = () => {
 
   if (loading) {
     return (
-      <p className="text-center py-5">
-        Loading order...
+      <p className="text-center py-5 fw-semibold">
+        Loading order…
       </p>
     );
   }
@@ -42,28 +70,73 @@ const OrderDetail = () => {
     );
   }
 
+  const currentIndex = STATUS_FLOW.indexOf(order.status);
+
   return (
     <div className="container py-4" style={{ maxWidth: 900 }}>
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4>Order #{order.order_number}</h4>
+
+      {/* ================= HEADER ================= */}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+        <h4 className="fw-bold mb-0">
+          Order #{order.order_number}
+        </h4>
 
         <span
-          className={`badge fs-6 ${
-            order.status === "DELIVERED"
-              ? "bg-success"
-              : "bg-warning text-dark"
-          }`}
+          className={`badge fs-6 align-self-start ${getStatusClass(order.status)}`}
         >
           {order.status}
         </span>
       </div>
 
-      {/* ADDRESS */}
+      {/* ================= ORDER TIMELINE ================= */}
+      {order.status !== "CANCELLED" && (
+        <div className="card shadow-sm mb-3">
+          <div className="card-body">
+            <h6 className="fw-semibold mb-3">
+              Order Status
+            </h6>
+
+            <div
+              className="d-flex gap-3 overflow-auto"
+              style={{ scrollbarWidth: "thin" }}
+            >
+              {STATUS_FLOW.map((step, index) => (
+                <div
+                  key={step}
+                  className="text-center"
+                  style={{ minWidth: 80 }}
+                >
+                  <div
+                    className={`mx-auto mb-2 rounded-circle ${
+                      index <= currentIndex
+                        ? "bg-success"
+                        : "bg-secondary"
+                    }`}
+                    style={{ width: 14, height: 14 }}
+                  />
+                  <small
+                    className={
+                      index <= currentIndex
+                        ? "fw-bold"
+                        : "text-muted"
+                    }
+                  >
+                    {step.replaceAll("_", " ")}
+                  </small>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= ADDRESS ================= */}
       {order.address && (
         <div className="card shadow-sm mb-3">
           <div className="card-body">
-            <h6>Delivery Address</h6>
+            <h6 className="fw-semibold mb-2">
+              Delivery Address
+            </h6>
 
             <p className="mb-0">
               <strong>{order.address.name}</strong> –{" "}
@@ -79,11 +152,13 @@ const OrderDetail = () => {
         </div>
       )}
 
-      {/* SHIPPING DETAILS */}
+      {/* ================= SHIPPING ================= */}
       {(order.courier_name || order.tracking_id) && (
         <div className="card shadow-sm mb-3">
           <div className="card-body">
-            <h6>Shipping Details</h6>
+            <h6 className="fw-semibold mb-2">
+              Shipping Details
+            </h6>
 
             {order.courier_name && (
               <p className="mb-1">
@@ -102,54 +177,52 @@ const OrderDetail = () => {
         </div>
       )}
 
-      {/* ITEMS */}
+      {/* ================= ITEMS ================= */}
       <div className="card shadow-sm mb-3">
         <div className="card-body">
-          <h6 className="mb-3">Ordered Items</h6>
+          <h6 className="mb-3 fw-semibold">
+            Ordered Items
+          </h6>
 
           {order.items?.map((item, index) => {
-            const unitPrice = Number(item.price || 0);
+            const unitPrice = Number(item.unit_price || 0);
             const qty = Number(item.quantity || 1);
-            const total = unitPrice * qty;
+            const total =
+              Number(item.total_price) ||
+              unitPrice * qty;
 
             return (
               <div
                 key={item.id || index}
-                className="border-bottom py-3 d-flex gap-3"
+                className="border-bottom py-3 d-flex flex-column flex-sm-row gap-3"
               >
-                {/* PRODUCT IMAGE */}
                 {item.product?.images?.length > 0 && (
-  <img
-    src={item.product.images[0].image}
-    alt={item.product.name}
-    style={{
-      width: 70,
-      height: 70,
-      objectFit: "cover",
-    }}
-    className="rounded"
-  />
-)}
+                  <img
+                    src={item.product.images[0].image_url}
+                    alt={item.product.name}
+                    className="rounded"
+                    style={{
+                      width: 70,
+                      height: 70,
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
 
-
-                <div>
-                  {/* PRODUCT NAME */}
+                <div className="flex-grow-1">
                   <p className="fw-bold mb-1">
-                    {item.product?.name || "Product"}
+                    {item.product?.name}
                   </p>
 
-                  {/* META */}
                   <p className="small mb-1 text-muted">
                     Qty: {qty}
                     {item.size && <> | Size: {item.size}</>}
                     {item.color && <> | Color: {item.color}</>}
                   </p>
 
-                  {/* PRICE */}
                   <p className="mb-0">
-                    ₹{unitPrice.toFixed(2)} × {qty} =
+                    ₹{unitPrice.toFixed(2)} × {qty} ={" "}
                     <strong>
-                      {" "}
                       ₹{total.toFixed(2)}
                     </strong>
                   </p>
@@ -160,7 +233,7 @@ const OrderDetail = () => {
         </div>
       </div>
 
-      {/* SUMMARY */}
+      {/* ================= SUMMARY ================= */}
       <div className="card shadow-sm">
         <div className="card-body">
           <div className="d-flex justify-content-between">
@@ -172,12 +245,13 @@ const OrderDetail = () => {
 
           <div className="d-flex justify-content-between fs-5 fw-bold">
             <span>Total</span>
-            <span>₹{order.total_amount}</span>
+            <span>
+              ₹{Number(order.total_amount).toFixed(2)}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* ACTION */}
       <button
         className="btn btn-outline-dark mt-4"
         onClick={() => navigate("/orders")}
@@ -189,4 +263,3 @@ const OrderDetail = () => {
 };
 
 export default OrderDetail;
-

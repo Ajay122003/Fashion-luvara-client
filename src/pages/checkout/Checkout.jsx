@@ -50,7 +50,7 @@ const Checkout = () => {
 
   /* ================= LOAD ================= */
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (!cartItems || cartItems.length === 0) {
       navigate("/cart");
     } else {
       loadAddresses();
@@ -61,7 +61,7 @@ const Checkout = () => {
 
   const loadAddresses = async () => {
     const res = await getAddresses();
-    setAddresses(data);
+    setAddresses(data); // ✅ FIX
 
     const defaultAddr =
       res.data.find((a) => a.is_default) || res.data[0];
@@ -74,9 +74,18 @@ const Checkout = () => {
   };
 
   /* ================= PRICE ================= */
-  const subtotal = cartItems.reduce((sum, item) => {
+  const getEffectivePrice = (item) => {
+    // backend already sends final price
+    if (item.unit_price) {
+      return Number(item.unit_price);
+    }
+
     const product = item.variant.product;
-    const price = product.sale_price || product.price;
+    return product.sale_price || product.price;
+  };
+
+  const subtotal = cartItems.reduce((sum, item) => {
+    const price = getEffectivePrice(item);
     return sum + price * item.quantity;
   }, 0);
 
@@ -135,9 +144,7 @@ const Checkout = () => {
     try {
       let payload = {
         payment_method: payment,
-        billing_address: sameAsDelivery
-          ? null
-          : billingAddress,
+        billing_address: sameAsDelivery ? null : billingAddress,
         coupon_code: couponCode || null,
       };
 
@@ -266,7 +273,7 @@ const Checkout = () => {
 
             {cartItems.map((item) => {
               const product = item.variant.product;
-              const price = product.sale_price || product.price;
+              const price = getEffectivePrice(item); // ✅ FIX
 
               return (
                 <div
@@ -368,4 +375,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-

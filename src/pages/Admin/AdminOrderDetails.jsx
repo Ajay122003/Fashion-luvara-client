@@ -214,11 +214,14 @@ const OrderDetails = () => {
                       {item.color || "-"}
                     </small>
                     <div className="d-flex justify-content-between mt-1">
-                      <span>Qty: {item.quantity}</span>
-                      <span className="fw-semibold">
-                        ₹{item.price}
-                      </span>
-                    </div>
+  <span>
+    Qty: {item.quantity} × ₹{item.unit_price}
+  </span>
+  <span className="fw-semibold">
+    ₹{item.total_price}
+  </span>
+</div>
+
                   </div>
                 </div>
               ))}
