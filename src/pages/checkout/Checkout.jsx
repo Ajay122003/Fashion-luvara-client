@@ -307,7 +307,7 @@ const Checkout = () => {
 
               {couponDiscount === 0 ? (
                 <button
-                  className="coupon-btn w-100"
+                  className="checkout-btn w-100"
                   onClick={handleApplyCoupon}
                   disabled={applyingCoupon}
                 >

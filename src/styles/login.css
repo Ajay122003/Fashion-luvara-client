@@ -116,6 +116,6 @@
 }
 
 .login-footer a {
-  color: var(--primary);
+  /* color: var(--primary); */
   font-weight: 600;
 }

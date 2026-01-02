@@ -3,6 +3,27 @@ import { useDispatch, useSelector } from "react-redux";
 import { adminLogin, adminVerifyOTP } from "../../features/admin/adminSlice";
 import { useNavigate, Link } from "react-router-dom";
 
+/* ================= ERROR MESSAGE HELPER ================= */
+const getErrorMessage = (error) => {
+  if (!error) return null;
+
+  const msg = String(error).toLowerCase();
+
+  if (msg.includes("password")) {
+    return "Your password is wrong";
+  }
+
+  if (msg.includes("email")) {
+    return "Admin email not found";
+  }
+
+  if (msg.includes("otp")) {
+    return "Invalid OTP";
+  }
+
+  return "Login failed. Please try again.";
+};
+
 const AdminLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,7 +59,7 @@ const AdminLogin = () => {
       style={{
         minHeight: "100vh",
         background: "#f4f4f4",
-        animation: "fadeIn 0.8s",
+        animation: "slideUp 0.7s ease-out",
       }}
     >
       <div
@@ -58,8 +79,8 @@ const AdminLogin = () => {
 
         {/* ERROR MESSAGE */}
         {error && (
-          <div className="alert alert-danger py-2">
-            {String(error)}
+          <div className="alert alert-danger py-2 text-center">
+            {getErrorMessage(error)}
           </div>
         )}
 
@@ -97,7 +118,7 @@ const AdminLogin = () => {
               />
             </div>
 
-            {/* 🔐 FORGOT PASSWORD */}
+            {/* FORGOT PASSWORD */}
             <div className="d-flex justify-content-end mb-3">
               <Link
                 to="/admin/forgot-password"
@@ -122,7 +143,7 @@ const AdminLogin = () => {
         {/* ================= STEP 2 → OTP VERIFY ================= */}
         {step === 2 && (
           <form onSubmit={handleOtpSubmit} className="mt-3">
-            <div className="alert alert-info small">
+            <div className="alert alert-info small text-center">
               OTP sent to <b>{pendingEmail}</b>
             </div>
 
@@ -142,6 +163,7 @@ const AdminLogin = () => {
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required
+              autoFocus
             />
 
             <button
@@ -156,12 +178,12 @@ const AdminLogin = () => {
         )}
       </div>
 
-      {/* SIMPLE FADE ANIMATION */}
+      {/* ================= SLIDE UP ANIMATION ================= */}
       <style>{`
-        @keyframes fadeIn {
+        @keyframes slideUp {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(60px);
           }
           to {
             opacity: 1;
@@ -174,4 +196,5 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+
 

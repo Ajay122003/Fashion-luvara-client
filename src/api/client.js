@@ -27,13 +27,19 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
-    const currentPath = window.location.pathname;
+    const url = error.config?.url || "";
+    const path = window.location.pathname;
+
+    // ❌ Ignore logout endpoint errors
+    if (url.includes("/api/auth/logout/")) {
+      return Promise.reject(error);
+    }
 
     if (status === 401) {
       storage.clearUserToken();
 
-      // 🚫 prevent redirect loop
-      if (currentPath !== "/login") {
+      // ❌ Don't touch admin routes
+      if (!path.startsWith("/admin") && path !== "/login") {
         window.location.href = "/login";
       }
     }
@@ -41,5 +47,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export default apiClient;

@@ -170,7 +170,7 @@ const SearchModal = ({ show, onClose }) => {
         {/* ================= FOOTER (HIDDEN ON MOBILE) ================= */}
         <div className="px-4 py-2 small text-muted d-none d-md-flex justify-content-between">
           <span>Type to search</span>
-          <span>ESC to close</span>
+         
         </div>
       </div>
 
