@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Products from "./Products";
 import banner from "../../assets/images/banner1.jpg";
 import Offers from "./Offers";
+import HorizontalProductRow from "../../components/products/HorizontalProductRow";
 
 const Home = () => {
   const [collections, setCollections] = useState([]);
@@ -101,7 +102,7 @@ const Home = () => {
         </div>
 
         {/* PRODUCTS */}
-        <Products />
+        <HorizontalProductRow/>
       </div>
 
       {/* ================= STYLES ================= */}

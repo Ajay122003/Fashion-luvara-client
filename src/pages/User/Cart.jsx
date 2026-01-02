@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchCart } from "../../features/cart/cartSlice";
 import { updateCartItem, removeCartItem } from "../../api/cart";
+import "../../styles/cart.css";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -221,7 +222,7 @@ const Cart = () => {
             </div>
 
             <button
-              className="btn btn-dark w-100 mt-3"
+              className="cart-btn w-100 mt-3"
               onClick={() => navigate("/checkout")}
             >
               Proceed to Checkout
@@ -231,7 +232,7 @@ const Cart = () => {
       </div>
 
       <style>{`
-        .cart-img {
+      .cart-img {
           width: 120px;
           height: 140px;
           object-fit: cover;
@@ -246,6 +247,7 @@ const Cart = () => {
           border: none;
           font-weight: 600;
         }
+       
       `}</style>
     </div>
   );

@@ -6,7 +6,7 @@ import { createOrder } from "../../api/order";
 import { fetchPublicSettings } from "../../api/admin";
 import apiClient from "../../api/client";
 import { useNavigate } from "react-router-dom";
-
+import "../../styles/checkout.css";
 const Checkout = () => {
   const navigate = useNavigate();
   const cartItems = useSelector((s) => s.cart.items);
@@ -307,7 +307,7 @@ const Checkout = () => {
 
               {couponDiscount === 0 ? (
                 <button
-                  className="btn btn-outline-dark w-100"
+                  className="coupon-btn w-100"
                   onClick={handleApplyCoupon}
                   disabled={applyingCoupon}
                 >
@@ -361,7 +361,7 @@ const Checkout = () => {
             </div>
 
             <button
-              className="btn btn-dark w-100 mt-3"
+              className="checkout-btn w-100 mt-3"
               disabled={placing}
               onClick={handlePlaceOrder}
             >

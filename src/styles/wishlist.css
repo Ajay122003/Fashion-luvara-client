@@ -1,0 +1,19 @@
+.continue-shopping-btn{
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid;
+  background: var(--button-hovar);
+  color: var(--button-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+   border-radius: 30px;
+   text-decoration: none;
+}
+
+/* 🔥 HOVER EFFECT */
+.continue-shopping-btn:hover {
+  background: var(--button-bg);
+  color: var(--button-text);
+}

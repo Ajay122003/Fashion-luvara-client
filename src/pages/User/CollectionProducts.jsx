@@ -12,8 +12,6 @@ const CollectionProducts = () => {
     try {
       setLoading(true);
       const res = await fetchCollectionProducts(slug);
-
-      // Backend returns collection with products[]
       setCollection(res.data);
     } catch (err) {
       console.error("Failed to load collection:", err);
@@ -40,15 +38,25 @@ const CollectionProducts = () => {
       </p>
     );
 
+  const productCount = collection.products?.length || 0;
+
   return (
     <div className="container py-4">
-      <h3 className="mb-4 fw-bold">
-        {collection.name}
-      </h3>
+
+      {/* ================= HEADER ================= */}
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h3 className="fw-bold mb-0">
+          {collection.name}
+        </h3>
+
+        <span className="badge text-secondary fs-6">
+          {productCount} Product{productCount !== 1 && "s"}
+        </span>
+      </div>
 
       {/* ================= PRODUCT GRID ================= */}
       <div className="row g-4">
-        {collection.products?.length === 0 ? (
+        {productCount === 0 ? (
           <p className="text-center py-4">
             No products available.
           </p>
@@ -76,6 +84,7 @@ const CollectionProducts = () => {
                   className="text-decoration-none text-dark"
                 >
                   <div className="card product-card shadow-sm h-100 border-0">
+
                     {/* IMAGE + OFFER BADGE */}
                     <div className="product-img-wrapper position-relative">
                       {hasOffer && (
@@ -95,8 +104,7 @@ const CollectionProducts = () => {
 
                       <img
                         src={
-                          product.images?.[0]
-                            ?.image_url ||
+                          product.images?.[0]?.image_url ||
                           "/placeholder.png"
                         }
                         alt={product.name}
@@ -110,7 +118,6 @@ const CollectionProducts = () => {
                         {product.name}
                       </h6>
 
-                      {/* PRICE */}
                       <p className="mb-0 fw-bold">
                         ₹{product.effective_price}
                       </p>
@@ -129,7 +136,7 @@ const CollectionProducts = () => {
         )}
       </div>
 
-      {/* ==================== CSS ==================== */}
+      {/* ================= CSS ================= */}
       <style>{`
         .product-card {
           transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -144,7 +151,6 @@ const CollectionProducts = () => {
         .product-img-wrapper {
           height: 220px;
           background: #f8f8f8;
-          padding: 8px;
           border-radius: 12px 12px 0 0;
           display: flex;
           align-items: center;
@@ -153,9 +159,9 @@ const CollectionProducts = () => {
         }
 
         .product-img {
-          max-height: 100%;
-          max-width: 100%;
-          object-fit: contain;
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
           transition: transform 0.4s ease;
         }
 

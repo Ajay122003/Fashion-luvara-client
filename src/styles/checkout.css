@@ -1,0 +1,29 @@
+.checkout-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.coupon-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid;
+  background: var(--button-hovar);
+  color: var(--button-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+/* 🔥 HOVER EFFECT */
+.coupon-btn:hover {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
