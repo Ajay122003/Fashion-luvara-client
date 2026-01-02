@@ -1,19 +1,19 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fetchCart } from "../../features/cart/cartSlice";
-import {
-  updateCartItem,
-  removeCartItem,
-} from "../../api/cart";
+import { updateCartItem, removeCartItem } from "../../api/cart";
 
 const CartOffcanvas = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const items = useSelector((s) => s.cart.items);
+
+  const { items = [], summary = {} } = useSelector(
+    (s) => s.cart
+  );
 
   /* ================= UPDATE QTY ================= */
-  const updateQty = async (cartItemId, qty) => {
-    if (qty < 1) return;
+  const updateQty = async (cartItemId, qty, maxStock) => {
+    if (qty < 1 || qty > maxStock) return;
 
     try {
       await updateCartItem(cartItemId, qty);
@@ -33,31 +33,23 @@ const CartOffcanvas = () => {
     }
   };
 
-  /* ================= SUBTOTAL ================= */
-  const subtotal = items.reduce((sum, item) => {
-    const price =
-      item.variant.product.sale_price ||
-      item.variant.product.price;
-    return sum + price * item.quantity;
-  }, 0);
-
   return (
     <div
       className="offcanvas offcanvas-end"
       tabIndex="-1"
       id="cartOffcanvas"
     >
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <div className="offcanvas-header border-bottom">
         <h5 className="fw-bold mb-0">My Cart</h5>
         <button
           type="button"
           className="btn-close"
           data-bs-dismiss="offcanvas"
-        ></button>
+        />
       </div>
 
-      {/* BODY */}
+      {/* ================= BODY ================= */}
       <div className="offcanvas-body d-flex flex-column">
         {items.length === 0 ? (
           <p className="text-muted text-center mt-5">
@@ -65,12 +57,21 @@ const CartOffcanvas = () => {
           </p>
         ) : (
           <>
-            {/* ITEMS */}
+            {/* ================= ITEMS ================= */}
             <div className="flex-grow-1 overflow-auto">
               {items.map((item) => {
                 const product = item.variant.product;
-                const price =
-                  product.sale_price || product.price;
+
+                const original = Number(item.original_price);
+                const final = Number(item.unit_price);
+
+                // 🔥 PERCENT DISCOUNT (OFFER OR SALE)
+                const discountPercent =
+                  original > final
+                    ? Math.round(
+                        ((original - final) / original) * 100
+                      )
+                    : 0;
 
                 return (
                   <div
@@ -80,8 +81,7 @@ const CartOffcanvas = () => {
                     {/* IMAGE */}
                     <img
                       src={
-                        product.images?.[0]?.image_url ||
-                        "/placeholder.png"
+                        product.image_url || "/placeholder.png"
                       }
                       alt={product.name}
                       style={{
@@ -96,20 +96,48 @@ const CartOffcanvas = () => {
                     <div className="ms-3 flex-grow-1">
                       <p className="fw-semibold mb-1">
                         {product.name}
+
+                        {/* 🔥 OFFER NAME */}
+                        {item.offer_title && (
+                          <span className="badge bg-warning text-dark ms-2">
+                            {item.offer_title}
+                          </span>
+                        )}
                       </p>
 
                       <p className="small text-muted mb-1">
                         Size: {item.variant.size}
                       </p>
 
+                      {/* PRICE */}
+                      <p className="fw-bold small mb-1">
+                        ₹{item.unit_price}
+
+                        {/* 🔥 % DISCOUNT */}
+                        {discountPercent > 0 && (
+                          <span className="badge bg-success ms-2">
+                            {discountPercent}% OFF
+                          </span>
+                        )}
+                      </p>
+
+                      {/* ORIGINAL PRICE */}
+                      {discountPercent > 0 && (
+                        <p className="small text-muted text-decoration-line-through mb-1">
+                          ₹{item.original_price}
+                        </p>
+                      )}
+
+                      {/* QTY CONTROLS */}
                       <div className="d-flex align-items-center gap-2">
-                        {/* QTY - */}
                         <button
                           className="btn btn-sm btn-outline-dark"
+                          disabled={item.quantity === 1}
                           onClick={() =>
                             updateQty(
                               item.id,
-                              item.quantity - 1
+                              item.quantity - 1,
+                              item.variant.stock
                             )
                           }
                         >
@@ -118,67 +146,61 @@ const CartOffcanvas = () => {
 
                         <span>{item.quantity}</span>
 
-                        {/* QTY + */}
                         <button
                           className="btn btn-sm btn-outline-dark"
+                          disabled={
+                            item.quantity >=
+                            item.variant.stock
+                          }
                           onClick={() =>
                             updateQty(
                               item.id,
-                              item.quantity + 1
+                              item.quantity + 1,
+                              item.variant.stock
                             )
                           }
                         >
                           +
                         </button>
 
-                        {/* REMOVE */}
                         <button
                           className="btn btn-sm text-danger ms-auto"
-                          onClick={() =>
-                            removeItem(item.id)
-                          }
+                          onClick={() => removeItem(item.id)}
                         >
                           <i className="bi bi-trash"></i>
                         </button>
                       </div>
-
-                      <p className="fw-bold small mt-1 mb-0">
-                        ₹{price * item.quantity}
-                      </p>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* FOOTER */}
+            {/* ================= FOOTER ================= */}
             <div className="border-top pt-3">
               <div className="d-flex justify-content-between fw-bold mb-3">
                 <span>Subtotal</span>
-                <span>₹{subtotal}</span>
+                <span>₹{summary.subtotal || 0}</span>
               </div>
 
               <div className="d-flex gap-2">
                 <button
-  className="btn btn-outline-dark w-50"
-  onClick={() => {
-    const el = document.getElementById("cartOffcanvas");
-    window.bootstrap.Offcanvas.getInstance(el)?.hide();
-    navigate("/cart");
-  }}
->
-  View Cart
-</button>
+                  className="btn btn-outline-dark w-50"
+                  onClick={() => {
+                    window.bootstrap.Offcanvas.getInstance(
+                      document.getElementById("cartOffcanvas")
+                    )?.hide();
+                    navigate("/cart");
+                  }}
+                >
+                  View Cart
+                </button>
 
                 <button
                   className="btn btn-dark w-50"
                   onClick={() => {
-                    const el =
-                      document.getElementById(
-                        "cartOffcanvas"
-                      );
                     window.bootstrap.Offcanvas.getInstance(
-                      el
+                      document.getElementById("cartOffcanvas")
                     )?.hide();
                     navigate("/checkout");
                   }}

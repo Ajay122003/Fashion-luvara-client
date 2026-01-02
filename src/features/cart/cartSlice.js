@@ -8,14 +8,14 @@ export const fetchCart = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     const token = storage.getUserToken();
 
-    // 🔥 IMPORTANT: STOP API CALL IF NOT LOGGED IN
+    //  DO NOT CALL API IF NOT LOGGED IN
     if (!token) {
       return rejectWithValue("User not logged in");
     }
 
     try {
       const res = await apiClient.get("/api/cart/");
-      return res.data;
+      return res.data; // { items, summary }
     } catch (err) {
       return rejectWithValue(
         err.response?.data || "Failed to load cart"
@@ -28,6 +28,11 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: {
     items: [],
+    summary: {
+      subtotal: "0.00",
+      total_items: 0,
+      total_quantity: 0,
+    },
     status: "idle",
     error: null,
   },
@@ -35,6 +40,11 @@ const cartSlice = createSlice({
   reducers: {
     clearCart(state) {
       state.items = [];
+      state.summary = {
+        subtotal: "0.00",
+        total_items: 0,
+        total_quantity: 0,
+      };
       state.status = "idle";
       state.error = null;
     },
@@ -49,15 +59,25 @@ const cartSlice = createSlice({
       })
 
       .addCase(fetchCart.fulfilled, (state, action) => {
-        state.items = action.payload;
+        state.items = action.payload.items || [];
+        state.summary = action.payload.summary || {
+          subtotal: "0.00",
+          total_items: 0,
+          total_quantity: 0,
+        };
         state.status = "succeeded";
         state.error = null;
       })
 
       .addCase(fetchCart.rejected, (state, action) => {
-        // 🔥 Silently ignore if user not logged in
+        // 🔥 USER NOT LOGGED IN → SILENT RESET
         if (action.payload === "User not logged in") {
           state.items = [];
+          state.summary = {
+            subtotal: "0.00",
+            total_items: 0,
+            total_quantity: 0,
+          };
           state.status = "idle";
           state.error = null;
         } else {

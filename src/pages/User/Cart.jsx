@@ -8,7 +8,9 @@ const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { items, status } = useSelector((s) => s.cart);
+  const { items = [], summary = {}, status } = useSelector(
+    (s) => s.cart
+  );
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -34,61 +36,22 @@ const Cart = () => {
     }
   };
 
-  const totalAmount = items.reduce(
-    (sum, item) =>
-      sum +
-      (item.variant.product.sale_price ||
-        item.variant.product.price) *
-        item.quantity,
-    0
-  );
-
   /* ================= LOADING ================= */
   if (status === "loading") {
     return <p className="text-center py-5">Loading cart…</p>;
   }
 
   /* ================= EMPTY CART ================= */
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return (
-      <div className="container py-5 text-center empty-cart-wrap">
-        <i className="bi bi-cart-x cart-animate mb-3"></i>
-
-        <h4 className="fw-bold mt-3">Your cart is empty</h4>
-        <p className="text-muted mb-4">
-          Looks like you haven’t added anything yet
-        </p>
-
+      <div className="container py-5 text-center">
+        <h4 className="fw-bold">Your cart is empty</h4>
         <button
-          className="continue-shopping-btn"
+          className="btn btn-outline-dark mt-3"
           onClick={() => navigate("/")}
         >
-          <i className="bi bi-arrow-left"></i>
-          <span>Continue Shopping</span>
+          Continue Shopping
         </button>
-
-        <style>{`
-          .cart-animate {
-            font-size: 64px;
-            color: #6c757d;
-            animation: cartBounce 1.4s infinite;
-          }
-          @keyframes cartBounce {
-            0% { transform: translateY(0); }
-            30% { transform: translateY(-8px); }
-            50% { transform: translateY(0); }
-          }
-          .continue-shopping-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 1px solid #111;
-            background: #fff;
-            font-weight: 600;
-          }
-        `}</style>
       </div>
     );
   }
@@ -97,9 +60,11 @@ const Cart = () => {
     <div className="container py-4">
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <button className="continue-shopping" onClick={() => navigate("/")}>
-          <i className="bi bi-arrow-left"></i>
-          <span>Continue Shopping</span>
+        <button
+          className="continue-shopping"
+          onClick={() => navigate("/")}
+        >
+          ← Continue Shopping
         </button>
         <h3 className="fw-bold mb-0">Shopping Cart</h3>
       </div>
@@ -111,36 +76,77 @@ const Cart = () => {
             const { variant } = item;
             const product = variant.product;
 
+            const original = Number(item.original_price);
+            const final = Number(item.unit_price);
+
+            // 🔥 PERCENT DISCOUNT (OFFER OR SALE)
+            const discountPercent =
+              original > final
+                ? Math.round(
+                    ((original - final) / original) * 100
+                  )
+                : 0;
+
             return (
-              <div key={item.id} className="card border-0 shadow-sm mb-3">
+              <div
+                key={item.id}
+                className="card border-0 shadow-sm mb-3"
+              >
                 <div className="card-body d-flex gap-3">
                   <img
-                    src={product.images?.[0]?.image_url}
+                    src={product.image_url}
                     alt={product.name}
                     className="cart-img"
                   />
 
                   <div className="flex-grow-1">
-                    <h6 className="fw-bold mb-1">{product.name}</h6>
+                    <h6 className="fw-bold mb-1">
+                      {product.name}
+
+                      {/* 🔥 OFFER NAME */}
+                      {item.offer_title && (
+                        <span className="badge bg-warning text-dark ms-2">
+                          {item.offer_title}
+                        </span>
+                      )}
+                    </h6>
 
                     <p className="small mb-1">
                       Size: <strong>{variant.size}</strong>
                     </p>
 
-                    <p className="fw-semibold mb-1">
-                      ₹{product.sale_price || product.price}
+                    {/* PRICE */}
+                    <p className="fw-bold mb-1">
+                      ₹{item.unit_price}
+
+                      {discountPercent > 0 && (
+                        <span className="badge bg-success ms-2">
+                          {discountPercent}% OFF
+                        </span>
+                      )}
                     </p>
 
+                    {/* ORIGINAL PRICE */}
+                    {discountPercent > 0 && (
+                      <p className="small text-muted text-decoration-line-through mb-1">
+                        ₹{item.original_price}
+                      </p>
+                    )}
+
+                    {/* STOCK */}
                     <p className="small mb-2">
                       {variant.stock > 0 ? (
                         <span className="text-success">
                           In stock ({variant.stock})
                         </span>
                       ) : (
-                        <span className="text-danger">Out of stock</span>
+                        <span className="text-danger">
+                          Out of stock
+                        </span>
                       )}
                     </p>
 
+                    {/* QTY */}
                     <div className="d-flex align-items-center gap-2">
                       <button
                         className="btn btn-outline-dark btn-sm"
@@ -162,7 +168,9 @@ const Cart = () => {
 
                       <button
                         className="btn btn-outline-dark btn-sm"
-                        disabled={item.quantity >= variant.stock}
+                        disabled={
+                          item.quantity >= variant.stock
+                        }
                         onClick={() =>
                           updateQty(
                             item.id,
@@ -176,12 +184,19 @@ const Cart = () => {
                     </div>
                   </div>
 
-                  <button
-                    className="btn btn-link text-danger p-0"
-                    onClick={() => removeItem(item.id)}
-                  >
-                    <i className="bi bi-trash3 fs-5"></i>
-                  </button>
+                  {/* TOTAL */}
+                  <div className="text-end">
+                    <p className="fw-bold mb-2">
+                      ₹{item.total_price}
+                    </p>
+
+                    <button
+                      className="btn btn-link text-danger p-0"
+                      onClick={() => removeItem(item.id)}
+                    >
+                      <i className="bi bi-trash3 fs-5"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -193,9 +208,16 @@ const Cart = () => {
           <div className="card border-0 shadow-sm p-3 order-summary">
             <h5 className="fw-bold mb-3">Order Summary</h5>
 
+            <div className="d-flex justify-content-between">
+              <span>Items</span>
+              <span>{summary.total_quantity}</span>
+            </div>
+
+            <hr />
+
             <div className="d-flex justify-content-between fw-bold fs-5">
-              <span>Total</span>
-              <span>₹{totalAmount}</span>
+              <span>Subtotal</span>
+              <span>₹{summary.subtotal}</span>
             </div>
 
             <button
