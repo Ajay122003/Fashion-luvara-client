@@ -13,6 +13,7 @@ const STATUS_LIST = [
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState(""); // 🔍 search
   const [loading, setLoading] = useState(true);
 
   const loadOrders = async () => {
@@ -31,7 +32,13 @@ const Orders = () => {
     loadOrders();
   }, [filter]);
 
-  // ---------- STATUS COUNTS ----------
+  /* ================= FILTER + SEARCH ================= */
+  const filteredOrders = orders.filter((o) =>
+    o.order_number
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   const getCount = (status) => {
     if (!status) return orders.length;
     return orders.filter((o) => o.status === status).length;
@@ -39,28 +46,38 @@ const Orders = () => {
 
   return (
     <div className="container-fluid py-3">
-
       {/* ================= HEADER ================= */}
       <div className="mb-3">
         <h3 className="fw-bold mb-1">Orders</h3>
         <small className="text-muted">
-          Manage and track customer orders
+          Search & manage customer orders
         </small>
       </div>
 
-      {/* ================= STATUS FILTER WITH COUNT ================= */}
-      <div className="d-flex flex-wrap gap-2 mb-4">
+      {/* ================= SEARCH ================= */}
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder=" Search by order number"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* ================= STATUS FILTER ================= */}
+      <div className="status-scroll mb-3">
         {STATUS_LIST.map((s) => (
           <button
             key={s.key}
             onClick={() => setFilter(s.key)}
-            className={`btn btn-sm ${
+            className={`btn btn-sm me-2 ${
               filter === s.key
                 ? `btn-${s.color}`
                 : "btn-outline-secondary"
             }`}
           >
-            {s.label}{" "}
+            {s.label}
             <span className="badge bg-light text-dark ms-1">
               {getCount(s.key)}
             </span>
@@ -68,15 +85,15 @@ const Orders = () => {
         ))}
       </div>
 
-      {/* ================= LOADING ================= */}
+      {/* ================= CONTENT ================= */}
       {loading ? (
         <p className="text-center">Loading orders…</p>
       ) : (
         <>
-          {/* ================= DESKTOP TABLE ================= */}
-          <div className="table-responsive d-none d-md-block">
-            <table className="table table-hover align-middle border">
-              <thead className="table-light">
+          {/* ================= DESKTOP ================= */}
+          <div className="table-scroll d-none d-md-block">
+            <table className="table table-hover align-middle mb-0">
+              <thead>
                 <tr>
                   <th>#</th>
                   <th>Order No</th>
@@ -88,13 +105,26 @@ const Orders = () => {
                   <th></th>
                 </tr>
               </thead>
+
               <tbody>
-                {orders.map((o, i) => (
+                {filteredOrders.length === 0 && (
+                  <tr>
+                    <td colSpan="8" className="text-center text-muted">
+                      No orders found
+                    </td>
+                  </tr>
+                )}
+
+                {filteredOrders.map((o, i) => (
                   <tr key={o.id}>
                     <td>{i + 1}</td>
-                    <td className="fw-semibold">{o.order_number}</td>
+                    <td className="fw-semibold">
+                      {o.order_number}
+                    </td>
                     <td>{o.user_email}</td>
-                    <td className="fw-bold">₹{o.total_amount}</td>
+                    <td className="fw-bold">
+                      ₹{o.total_amount}
+                    </td>
 
                     <td>
                       <span
@@ -127,13 +157,15 @@ const Orders = () => {
                     </td>
 
                     <td>
-                      {new Date(o.created_at).toLocaleDateString()}
+                      {new Date(
+                        o.created_at
+                      ).toLocaleDateString()}
                     </td>
 
                     <td className="text-end">
                       <Link
                         to={`/admin/orders/${o.id}`}
-                        className="btn btn-sm btn-outline-primary"
+                        className="btn btn-sm btn-outline-dark"
                       >
                         View
                       </Link>
@@ -144,63 +176,93 @@ const Orders = () => {
             </table>
           </div>
 
-          {/* ================= MOBILE CARD VIEW ================= */}
+          {/* ================= MOBILE ================= */}
           <div className="d-md-none">
-            {orders.map((o) => (
-              <div key={o.id} className="card shadow-sm mb-3">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between">
-                    <h6 className="fw-bold">{o.order_number}</h6>
-                    <span
-                      className={`badge ${
-                        o.status === "DELIVERED"
-                          ? "bg-success"
-                          : o.status === "PENDING"
-                          ? "bg-warning"
-                          : o.status === "SHIPPED"
-                          ? "bg-info"
-                          : "bg-secondary"
-                      }`}
-                    >
-                      {o.status}
-                    </span>
-                  </div>
-
-                  <p className="mb-1">
-                    <b>User:</b> {o.user_email}
-                  </p>
-
-                  <p className="mb-1">
-                    <b>Total:</b> ₹{o.total_amount}
-                  </p>
-
-                  <p className="mb-1">
-                    <b>Payment:</b>{" "}
-                    <span className="fw-semibold">
-                      {o.payment_status}
-                    </span>
-                  </p>
-
-                  <p className="mb-2">
-                    <b>Date:</b>{" "}
-                    {new Date(o.created_at).toLocaleDateString()}
-                  </p>
-
-                  <Link
-                    to={`/admin/orders/${o.id}`}
-                    className="btn btn-sm btn-primary w-100"
+            {filteredOrders.map((o) => (
+              <div key={o.id} className="order-card mb-3">
+                <div className="d-flex justify-content-between">
+                  <h6 className="fw-bold">
+                    {o.order_number}
+                  </h6>
+                  <span
+                    className={`badge ${
+                      o.status === "DELIVERED"
+                        ? "bg-success"
+                        : o.status === "PENDING"
+                        ? "bg-warning"
+                        : o.status === "SHIPPED"
+                        ? "bg-info"
+                        : "bg-secondary"
+                    }`}
                   >
-                    View Order
-                  </Link>
+                    {o.status}
+                  </span>
                 </div>
+
+                <p className="small mb-1">
+                  <b>User:</b> {o.user_email}
+                </p>
+                <p className="small mb-1">
+                  <b>Total:</b> ₹{o.total_amount}
+                </p>
+                <p className="small mb-1">
+                  <b>Payment:</b>{" "}
+                  {o.payment_status}
+                </p>
+
+                <p className="small text-muted">
+                  {new Date(
+                    o.created_at
+                  ).toLocaleDateString()}
+                </p>
+
+                <Link
+                  to={`/admin/orders/${o.id}`}
+                  className="btn btn-sm btn-dark w-100"
+                >
+                  View Order
+                </Link>
               </div>
             ))}
           </div>
         </>
       )}
+
+      {/* ================= STYLES ================= */}
+      <style>{`
+        .status-scroll {
+          display: flex;
+          overflow-x: auto;
+          padding-bottom: 6px;
+        }
+
+        .table-scroll {
+          max-height: 65vh;
+          overflow-y: auto;
+          border: 1px solid #eee;
+          border-radius: 12px;
+        }
+
+        table thead th {
+          position: sticky;
+          top: 0;
+          background: #f8f9fa;
+          z-index: 1;
+        }
+
+        .order-card {
+          border: 1px solid #eee;
+          border-radius: 12px;
+          padding: 12px;
+          background: #fff;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+        }
+      `}</style>
     </div>
   );
 };
 
 export default Orders;
+
+
 

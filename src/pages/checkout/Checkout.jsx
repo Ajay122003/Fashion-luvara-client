@@ -17,14 +17,16 @@ const Checkout = () => {
   const [useNewAddress, setUseNewAddress] = useState(false);
 
   const [newAddress, setNewAddress] = useState({
-    name: "",
-    phone: "",
-    pincode: "",
-    city: "",
-    state: "",
-    full_address: "",
-    save_for_future: false,
-  });
+  first_name: "",
+  last_name: "",
+  phone: "",
+  address: "",
+  apartment: "",
+  city: "",
+  state: "",
+  pincode: "",
+});
+
 
   /* ================= BILLING ================= */
   const [sameAsDelivery, setSameAsDelivery] = useState(true);
@@ -44,7 +46,7 @@ const Checkout = () => {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   /* ================= OTHER ================= */
-  const [payment, setPayment] = useState("COD");
+  const [payment, setPayment] = useState("ONLINE");
   const [placing, setPlacing] = useState(false);
   const [settings, setSettings] = useState(null);
 
@@ -60,13 +62,15 @@ const Checkout = () => {
   }, []);
 
   const loadAddresses = async () => {
-    const res = await getAddresses();
-    setAddresses(data); // ✅ FIX
+  const data = await getAddresses(); // 👈 data = res.data
 
-    const defaultAddr =
-      res.data.find((a) => a.is_default) || res.data[0];
-    if (defaultAddr) setAddressId(defaultAddr.id);
-  };
+  setAddresses(data); // ✅ correct
+
+  const defaultAddr =
+    data.find((a) => a.is_default) || data[0];
+
+  if (defaultAddr) setAddressId(defaultAddr.id);
+};
 
   const loadSettings = async () => {
     const data = await fetchPublicSettings();
@@ -139,29 +143,67 @@ const Checkout = () => {
   };
 
   /* ================= PLACE ORDER ================= */
-  const handlePlaceOrder = async () => {
-    setPlacing(true);
-    try {
-      let payload = {
-        payment_method: payment,
-        billing_address: sameAsDelivery ? null : billingAddress,
-        coupon_code: couponCode || null,
-      };
+const handlePlaceOrder = async () => {
+  setPlacing(true);
+  try {
+    let payload = {
+      payment_method: payment,
+      billing_address: sameAsDelivery ? null : billingAddress,
+    };
 
-      if (useNewAddress) {
-        payload.delivery_address = newAddress;
-      } else {
-        payload.address_id = addressId;
-      }
-
-      const res = await createOrder(payload);
-      navigate("/order-success", { state: res.data });
-    } catch (err) {
-      alert(err.response?.data?.error || "Order failed");
-    } finally {
-      setPlacing(false);
+    if (couponCode.trim()) {
+      payload.coupon_code = couponCode.trim();
     }
-  };
+
+    if (useNewAddress) {
+      payload.delivery_address = {
+        name: `${newAddress.first_name} ${newAddress.last_name}`,
+        phone: newAddress.phone,
+        pincode: newAddress.pincode,
+        city: newAddress.city,
+        state: newAddress.state,
+        full_address: `${newAddress.address}, ${newAddress.apartment}`,
+      };
+    } else {
+      payload.address_id = addressId;
+    }
+
+    // 🔥 IMPORTANT LOGIC
+    if (payment === "ONLINE") {
+      // ❌ DO NOT CREATE ORDER HERE
+      navigate("/payment", {
+        state: {
+          checkout_payload: payload,
+          total_amount: grandTotal,
+        },
+      });
+    } else {
+      // ✅ COD → create order immediately
+      const res = await createOrder(payload);
+
+      navigate("/order-success", {
+        state: {
+          order_id: res.data.order_id,
+          order_number: res.data.order_number,
+          subtotal: res.data.subtotal,
+          discount: res.data.discount,
+          shipping: res.data.shipping,
+          gst_amount: res.data.gst_amount,
+          total_amount: res.data.total_amount,
+          coupon_code: res.data.coupon_code,
+        },
+      });
+    }
+
+  } catch (err) {
+    alert(err.response?.data?.error || "Order failed");
+  } finally {
+    setPlacing(false);
+  }
+};
+
+
+
 
   return (
     <div className="container py-4">
@@ -172,97 +214,151 @@ const Checkout = () => {
         <div className="col-md-7">
           {/* DELIVERY ADDRESS */}
           <div className="card p-3 shadow-sm mb-3">
-            <h5>Delivery Address</h5>
+  <h5>Delivery Address</h5>
 
-            <label className="d-block">
-              <input
-                type="radio"
-                checked={!useNewAddress}
-                onChange={() => setUseNewAddress(false)}
-                className="me-2"
-              />
-              Use saved address
-            </label>
+  <label className="d-block mt-3">
+    <input
+      type="radio"
+      checked={useNewAddress}
+      onChange={() => setUseNewAddress(true)}
+      className="me-2"
+    />
+    Enter Delivery Address
+  </label>
 
-            {!useNewAddress &&
-              addresses.map((a) => (
-                <label
-                  key={a.id}
-                  className={`border rounded p-3 d-block mb-2 ${
-                    addressId === a.id ? "border-dark" : ""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    checked={addressId === a.id}
-                    onChange={() => setAddressId(a.id)}
-                    className="me-2"
-                  />
-                  <strong>{a.name}</strong> – {a.phone}
-                  <p className="small mb-0">
-                    {a.full_address}, {a.city} – {a.pincode}
-                  </p>
-                </label>
-              ))}
+  {useNewAddress && (
+    <div className="mt-3">
 
-            <label className="d-block mt-3">
-              <input
-                type="radio"
-                checked={useNewAddress}
-                onChange={() => setUseNewAddress(true)}
-                className="me-2"
-              />
-              Use new delivery address
-            </label>
+      {/* COUNTRY */}
+      <select className="form-select mb-2" disabled>
+        <option>India</option>
+      </select>
 
-            {useNewAddress && (
-              <div className="mt-3">
-                {["name", "phone", "pincode", "city", "state"].map(
-                  (f) => (
-                    <input
-                      key={f}
-                      className="form-control mb-2"
-                      placeholder={f.toUpperCase()}
-                      value={newAddress[f]}
-                      onChange={(e) =>
-                        setNewAddress({
-                          ...newAddress,
-                          [f]: e.target.value,
-                        })
-                      }
-                    />
-                  )
-                )}
-                <textarea
-                  className="form-control mb-2"
-                  placeholder="Full address"
-                  value={newAddress.full_address}
-                  onChange={(e) =>
-                    setNewAddress({
-                      ...newAddress,
-                      full_address: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            )}
-          </div>
+      {/* FIRST + LAST NAME */}
+      <div className="row g-2">
+        <div className="col-md-6">
+          <input
+            className="form-control"
+            placeholder="First name"
+            value={newAddress.first_name}
+            onChange={(e) =>
+              setNewAddress({ ...newAddress, first_name: e.target.value })
+            }
+          />
+        </div>
+        <div className="col-md-6">
+          <input
+            className="form-control"
+            placeholder="Last name"
+            value={newAddress.last_name}
+            onChange={(e) =>
+              setNewAddress({ ...newAddress, last_name: e.target.value })
+            }
+          />
+        </div>
+      </div>
+
+      {/* ADDRESS */}
+      <input
+        className="form-control mt-2"
+        placeholder="Address"
+        value={newAddress.address}
+        onChange={(e) =>
+          setNewAddress({ ...newAddress, address: e.target.value })
+        }
+      />
+
+      {/* APARTMENT */}
+      <input
+        className="form-control mt-2"
+        placeholder="Apartment, suite, etc. (optional)"
+        value={newAddress.apartment}
+        onChange={(e) =>
+          setNewAddress({ ...newAddress, apartment: e.target.value })
+        }
+      />
+
+      {/* CITY / STATE / PIN */}
+      <div className="row g-2 mt-1">
+        <div className="col-md-4">
+          <input
+            className="form-control"
+            placeholder="City"
+            value={newAddress.city}
+            onChange={(e) =>
+              setNewAddress({ ...newAddress, city: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="col-md-4">
+          <select
+            className="form-select"
+            value={newAddress.state}
+            onChange={(e) =>
+              setNewAddress({ ...newAddress, state: e.target.value })
+            }
+          >
+            <option value="">State</option>
+            <option value="Tamil Nadu">Tamil Nadu</option>
+            <option value="Kerala">Kerala</option>
+            <option value="Karnataka">Karnataka</option>
+          </select>
+        </div>
+
+        <div className="col-md-4">
+          <input
+            className="form-control"
+            placeholder="PIN code"
+            value={newAddress.pincode}
+            onChange={(e) =>
+              setNewAddress({ ...newAddress, pincode: e.target.value })
+            }
+          />
+        </div>
+      </div>
+
+      {/* PHONE */}
+      <input
+        className="form-control mt-2"
+        placeholder="Phone"
+        value={newAddress.phone}
+        onChange={(e) =>
+          setNewAddress({ ...newAddress, phone: e.target.value })
+        }
+      />
+    </div>
+  )}
+</div>
+
 
           {/* PAYMENT */}
-          <div className="card p-3 shadow-sm">
-            <h5>Payment</h5>
-            {settings?.enable_cod && (
-              <label>
-                <input
-                  type="radio"
-                  checked={payment === "COD"}
-                  onChange={() => setPayment("COD")}
-                  className="me-2"
-                />
-                Cash on Delivery
-              </label>
-            )}
-          </div>
+         <div className="card p-3 shadow-sm">
+  <h5>Payment Method</h5>
+
+  {/* COD */}
+  {settings?.enable_cod && (
+    <label className="d-flex gap-2 mb-2">
+      <input
+        type="radio"
+        checked={payment === "COD"}
+        onChange={() => setPayment("COD")}
+      />
+      Cash on Delivery
+    </label>
+  )}
+
+  {/* ONLINE */}
+  <label className="d-flex gap-2">
+    <input
+      type="radio"
+      checked={payment === "ONLINE"}
+      onChange={() => setPayment("ONLINE")}
+    />
+    Online Payment (UPI / Card / Netbanking)
+  </label>
+</div>
+
         </div>
 
         {/* RIGHT */}

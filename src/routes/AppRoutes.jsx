@@ -64,6 +64,7 @@ import ManageOffers from "../pages/Admin/ManageOffers";
 import AddOffer from "../pages/Admin/AddOffer";
 import EditOffer from "../pages/Admin/EditOffer";
 import OfferDetail from "../pages/User/OfferDetail";
+import Payment from "../pages/payment/Payment";
 
 const AppRoutes = () => {
   return (
@@ -134,6 +135,14 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
+        <Route
+    path="payment"
+    element={
+      <PrivateRoute>
+        <Payment />
+      </PrivateRoute>
+    }
+  />
 
         <Route
           path="order-success"

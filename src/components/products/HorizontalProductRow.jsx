@@ -17,7 +17,7 @@ const HorizontalProductRow = ({
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const data = await fetchProducts({ limit: 4 });
+      const data = await fetchProducts({ limit: 6 });
       setProducts(data.results || data || []);
     } catch (err) {
       console.error("Failed to load products", err);
