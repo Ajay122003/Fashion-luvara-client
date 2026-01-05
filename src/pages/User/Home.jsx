@@ -62,9 +62,13 @@ const Home = () => {
       <div className="container">
 
         {/* COLLECTIONS TITLE */}
-        <h3 className="mb-4" data-aos="fade-up">
-          Collections
-        </h3>
+        <h3
+  className="mb-4"
+  data-aos="fade-up"
+  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}
+>
+  Collections
+</h3>
 
         {/* COLLECTIONS GRID */}
         <div className="row g-4 mb-4">

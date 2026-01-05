@@ -119,7 +119,7 @@ const Products = () => {
                   <div className="product-image-wrapper position-relative">
                     {hasOffer && (
                       <span
-                        className="badge bg-danger position-absolute"
+                        className="badge bg-success position-absolute"
                         style={{
                           top: "8px",
                           left: "8px",

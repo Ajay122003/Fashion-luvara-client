@@ -69,7 +69,7 @@ const RelatedProducts = ({ productId }) => {
                   {/* OFFER BADGE */}
                   {hasOffer && (
                     <span
-                      className="badge bg-danger position-absolute"
+                      className="badge bg-success position-absolute"
                       style={{
                         top: "8px",
                         left: "8px",
@@ -99,13 +99,14 @@ const RelatedProducts = ({ productId }) => {
 
                     <p className="mb-0 fw-bold text-danger">
                       ₹{hasOffer ? p.effective_price : p.price}
-                    </p>
+                    
 
                     {hasOffer && (
-                      <small className="text-muted text-decoration-line-through">
+                      <small className="text-muted ms-2 text-decoration-line-through">
                         ₹{p.price}
                       </small>
                     )}
+                    </p>
                   </div>
                 </div>
               </Link>

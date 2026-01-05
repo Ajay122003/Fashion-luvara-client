@@ -169,7 +169,7 @@ const UserNavbar = () => {
 
             <ul className="navbar-nav gap-4 small">
               <li><Link to="/" className="nav-link">Home</Link></li>
-              <li><Link to="/new" className="nav-link">New</Link></li>
+              <li><Link to="/new" className="nav-link">Customar support</Link></li>
 
               <li
                 className="nav-item dropdown"
@@ -294,7 +294,7 @@ const UserNavbar = () => {
 
         <div className="offcanvas-body">
           <Link to="/" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>Home</Link>
-          <Link to="/new" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>New</Link>
+          <Link to="/new" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>Customar support</Link>
 
           {/* CATEGORY */}
           <div className="mt-2">
@@ -361,6 +361,18 @@ const UserNavbar = () => {
           <Link to="/about" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>
             About us
           </Link>
+          <div className="position-fixed bottom-0 start-0 p-3 mb-5" style={{ zIndex: 1050 }}>
+  <a
+    href="https://www.instagram.com/your_username/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-dark fs-3"
+  >
+    <i className="bi bi-instagram"></i>
+  </a>
+</div>
+
+          
 
           {/* USER AREA */}
           <div className="position-absolute bottom-0 start-0 w-100 p-3 border-top">

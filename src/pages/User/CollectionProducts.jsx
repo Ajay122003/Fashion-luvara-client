@@ -57,7 +57,7 @@ const CollectionProducts = () => {
 
       {/* ================= HEADER ================= */}
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h3 className="fw-bold mb-0">
+        <h3 className="fw-bold mb-0"  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
           {collection.name}
         </h3>
 
@@ -103,7 +103,7 @@ const CollectionProducts = () => {
                     <div className="product-img-wrapper position-relative">
                       {hasOffer && (
                         <span
-                          className="badge bg-danger position-absolute"
+                          className="badge bg-success position-absolute"
                           style={{
                             top: "8px",
                             left: "8px",
@@ -134,13 +134,14 @@ const CollectionProducts = () => {
 
                       <p className="mb-0 fw-bold">
                         ₹{product.effective_price}
-                      </p>
+                      
 
                       {hasOffer && (
-                        <p className="text-muted small text-decoration-line-through mb-0">
+                        <span className="text-muted small ms-2 text-decoration-line-through mb-0">
                           ₹{product.price}
-                        </p>
+                        </span>
                       )}
+                      </p>
                     </div>
                   </div>
                 </Link>

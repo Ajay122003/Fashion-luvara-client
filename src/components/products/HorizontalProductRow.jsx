@@ -40,7 +40,7 @@ const HorizontalProductRow = ({
     <div className="container py-4">
       {/* ================= HEADER ================= */}
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="fw-bold mb-0">{title}</h5>
+        <h5 className="fw-bold mb-0" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>{title}</h5>
 
         <button
           className="btn btn-sm btn-outline-dark rounded-pill d-flex align-items-center gap-2 px-3"
@@ -74,7 +74,7 @@ const HorizontalProductRow = ({
                 {/* IMAGE */}
                 <div className="img-wrapper position-relative">
                   {hasOffer && (
-                    <span className="badge bg-danger position-absolute top-0 start-0 m-2">
+                    <span className="badge bg-success position-absolute top-0 start-0 m-2">
                       {discountPercent}% OFF
                     </span>
                   )}

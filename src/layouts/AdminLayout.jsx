@@ -213,7 +213,7 @@ const AdminLayout = () => {
         {`
           .admin-sidebar {
             width: 240px;
-            background: #111827;
+            background: #0A0A0A;
             color: #e5e7eb;
           }
 
@@ -229,7 +229,7 @@ const AdminLayout = () => {
           }
 
           .sidebar-link.active {
-            background: #2563eb;
+            background: #D4AF37;
             color: #fff;
           }
 
