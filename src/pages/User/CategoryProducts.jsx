@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import publicClient from "../../api/publicClient";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const CategoryProducts = () => {
   const { slug } = useParams();
@@ -21,9 +23,19 @@ const CategoryProducts = () => {
     }
   };
 
+  /* ================= LOAD CATEGORY ================= */
   useEffect(() => {
     loadCategory();
   }, [slug]);
+
+  /* ================= AOS INIT ================= */
+  useEffect(() => {
+    AOS.init({
+      duration: 900,
+      easing: "ease-in-out",
+      once: true,
+    });
+  }, []);
 
   if (loading)
     return (
@@ -38,20 +50,16 @@ const CategoryProducts = () => {
   if (!category)
     return (
       <div className="container py-5 text-center">
-        <h4 className="fw-bold">
-          Category Not Found
-        </h4>
+        <h4 className="fw-bold">Category Not Found</h4>
         <p>This category does not exist.</p>
       </div>
     );
 
   return (
     <div className="container py-4">
-      {/* CATEGORY TITLE + COUNT */}
+      {/* CATEGORY TITLE */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="fw-bold mb-0">
-          {category.name}
-        </h3>
+        <h3 className="fw-bold mb-0">{category.name}</h3>
 
         <span className="text-muted fw-semibold">
           {category.products?.length || 0} Products
@@ -65,7 +73,7 @@ const CategoryProducts = () => {
             No products available in this category.
           </p>
         ) : (
-          category.products.map((product) => {
+          category.products.map((product, index) => {
             const hasOffer =
               product.effective_price < product.price;
 
@@ -80,15 +88,17 @@ const CategoryProducts = () => {
 
             return (
               <div
-                className="col-6 col-md-4 col-lg-3"
                 key={product.id}
+                className="col-6 col-md-4 col-lg-3"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
               >
                 <Link
                   to={`/product/${product.id}`}
                   className="text-decoration-none text-dark"
                 >
                   <div className="card product-card shadow-sm h-100 border-0">
-                    {/* IMAGE + OFFER BADGE */}
+                    {/* IMAGE */}
                     <div className="product-img-wrapper position-relative">
                       {hasOffer && (
                         <span
@@ -106,10 +116,7 @@ const CategoryProducts = () => {
                       )}
 
                       <img
-                        src={
-                          product.images?.[0]
-                            ?.image_url
-                        }
+                        src={product.images?.[0]?.image_url}
                         alt={product.name}
                         className="product-img"
                       />
@@ -121,7 +128,6 @@ const CategoryProducts = () => {
                         {product.name}
                       </h6>
 
-                      {/* PRICE */}
                       <p className="mb-0 fw-bold">
                         ₹{product.effective_price}
                       </p>
@@ -180,4 +186,3 @@ const CategoryProducts = () => {
 };
 
 export default CategoryProducts;
-

@@ -177,6 +177,14 @@ const handlePlaceOrder = async () => {
           total_amount: grandTotal,
         },
       });
+
+//       navigate("/payment", {
+//   state: {
+//     order_id: res.data.order_id,
+//     total_amount: res.data.total_amount
+//   }
+// });
+
     } else {
       // ✅ COD → create order immediately
       const res = await createOrder(payload);
@@ -223,7 +231,7 @@ const handlePlaceOrder = async () => {
       onChange={() => setUseNewAddress(true)}
       className="me-2"
     />
-    Enter Delivery Address
+    Enter Delivery Address(click)
   </label>
 
   {useNewAddress && (

@@ -5,11 +5,11 @@ import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { fetchCart } from "../../features/cart/cartSlice";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
 import storage from "../../utils/storage";
-import brandLogo from "../../assets/images/logo3.jpeg";
+import brandLogo from "../../assets/images/logo3.png";
 import brandLogo2 from "../../assets/images/logo4.jpeg";
 import SearchModal from "../Search/SearchModal";
 
-const token = storage.getUserToken();
+
 
 
 
@@ -18,6 +18,7 @@ const UserNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
+  const token = storage.getUserToken();
 
   /* ================= LOAD CART + WISHLIST ================= */
   
@@ -163,7 +164,7 @@ const UserNavbar = () => {
         
           <div className="collapse navbar-collapse">
             <div className=" d-none d-lg-block me-4">
-              <img src={brandLogo} height="115" width="115" alt="logo" />
+              <img src={brandLogo} height="120" width="110" alt="logo" />
             </div>
 
             <ul className="navbar-nav gap-4 small">

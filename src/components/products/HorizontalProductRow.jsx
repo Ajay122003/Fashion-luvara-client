@@ -18,7 +18,7 @@ const HorizontalProductRow = ({
     try {
       setLoading(true);
       const data = await fetchProducts({ limit: 6 });
-      setProducts(data.results || data || []);
+      setProducts(data?.results || data || []);
     } catch (err) {
       console.error("Failed to load products", err);
     } finally {
@@ -38,26 +38,20 @@ const HorizontalProductRow = ({
 
   return (
     <div className="container py-4">
-
       {/* ================= HEADER ================= */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="fw-bold mb-0">{title}</h5>
 
         <button
-  className="btn btn-sm btn-outline-dark rounded-pill d-flex align-items-center gap-2 px-3"
-  onClick={() => navigate(viewAllLink)}
->
-  View All
-  <i className="bi bi-chevron-right"></i>
-</button>
-
+          className="btn btn-sm btn-outline-dark rounded-pill d-flex align-items-center gap-2 px-3"
+          onClick={() => navigate(viewAllLink)}
+        >
+          View All <i className="bi bi-arrow-right"></i>
+        </button>
       </div>
 
-      {/* ================= HORIZONTAL SCROLL ================= */}
-      <div
-        className="d-flex gap-3 overflow-auto pb-2"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
+      {/* ================= HORIZONTAL LIST ================= */}
+      <div className="horizontal-scroll d-flex gap-3 pb-2">
         {products.map((product) => {
           const hasOffer =
             product.effective_price < product.price;
@@ -76,15 +70,9 @@ const HorizontalProductRow = ({
               to={`/product/${product.id}`}
               className="text-decoration-none text-dark"
             >
-              <div
-                className="card shadow-sm border-0 h-100"
-                style={{ minWidth: 180, maxWidth: 180 }}
-              >
+              <div className="product-card-sm shadow-sm">
                 {/* IMAGE */}
-                <div
-                  className="position-relative bg-light rounded-top overflow-hidden"
-                  style={{ height: 180 }}
-                >
+                <div className="img-wrapper position-relative">
                   {hasOffer && (
                     <span className="badge bg-danger position-absolute top-0 start-0 m-2">
                       {discountPercent}% OFF
@@ -97,28 +85,29 @@ const HorizontalProductRow = ({
                       "/placeholder.png"
                     }
                     alt={product.name}
-                    className="w-100 h-100 object-fit-cover"
                   />
                 </div>
 
-                {/* BODY */}
-                <div className="card-body p-2">
+                {/* INFO */}
+                <div className="p-2">
                   <p
-                    className="fw-semibold mb-1 small text-truncate"
+                    className="fw-semibold small mb-1 text-truncate"
                     title={product.name}
                   >
                     {product.name}
                   </p>
 
-                  <p className="fw-bold mb-0">
-                    ₹{product.effective_price}
-                  </p>
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="fw-bold">
+                      ₹{Math.round(product.effective_price)}
+                    </span>
 
-                  {hasOffer && (
-                    <small className="text-muted text-decoration-line-through">
-                      ₹{product.price}
-                    </small>
-                  )}
+                    {hasOffer && (
+                      <small className="text-muted text-decoration-line-through">
+                        ₹{product.price}
+                      </small>
+                    )}
+                  </div>
                 </div>
               </div>
             </Link>
@@ -126,24 +115,71 @@ const HorizontalProductRow = ({
         })}
       </div>
 
-      {/* ================= MOBILE FIX ================= */}
+      {/* ================= STYLES ================= */}
       <style>{`
+        /* Horizontal scroll */
+        .horizontal-scroll {
+          overflow-x: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
+          display: none;
+        }
+
+        /* Product card */
+        .product-card-sm {
+          min-width: 180px;
+          max-width: 180px;
+          background: #fff;
+          border-radius: 12px;
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .product-card-sm:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        }
+
+        /* Image */
+        .img-wrapper {
+          height: 180px;
+          background: #f6f6f6;
+          overflow: hidden;
+          border-radius: 12px 12px 0 0;
+        }
+
+        .img-wrapper img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.4s ease;
+        }
+
+        .product-card-sm:hover img {
+          transform: scale(1.07);
+        }
+
+        /* Mobile */
         @media (max-width: 576px) {
-          .card {
-            min-width: 145px !important;
-            max-width: 145px !important;
+          .product-card-sm {
+            min-width: 145px;
+            max-width: 145px;
           }
-          .card > div:first-child {
-            height: 145px !important;
+
+          .img-wrapper {
+            height: 145px;
           }
         }
 
         @media (max-width: 768px) {
-          .card {
+          .product-card-sm {
             min-width: 160px;
             max-width: 160px;
           }
-          .card > div:first-child {
+
+          .img-wrapper {
             height: 160px;
           }
         }
@@ -153,3 +189,4 @@ const HorizontalProductRow = ({
 };
 
 export default HorizontalProductRow;
+

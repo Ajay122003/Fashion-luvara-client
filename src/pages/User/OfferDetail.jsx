@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchOfferDetail } from "../../api/offers";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 /* -------- COUNTDOWN HELPER -------- */
 const getRemainingTime = (endDate) => {
@@ -23,6 +25,10 @@ const OfferDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  /* 🔥 Typewriter state */
+  const [typedTitle, setTypedTitle] = useState("");
+
+  /* ================= LOAD OFFER ================= */
   useEffect(() => {
     const loadOffer = async () => {
       try {
@@ -39,6 +45,34 @@ const OfferDetail = () => {
 
     loadOffer();
   }, [slug]);
+
+  /* ================= AOS INIT ================= */
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      easing: "ease-in-out",
+      once: true,
+    });
+  }, []);
+
+  /* ================= TYPEWRITER EFFECT ================= */
+  useEffect(() => {
+    if (!offer?.title) return;
+
+    let index = 0;
+    setTypedTitle("");
+
+    const interval = setInterval(() => {
+      index++;
+      setTypedTitle(offer.title.slice(0, index));
+
+      if (index === offer.title.length) {
+        clearInterval(interval); // 🛑 stop after complete
+      }
+    }, 60);
+
+    return () => clearInterval(interval);
+  }, [offer?.title]);
 
   const products = useMemo(
     () => offer?.products || [],
@@ -63,9 +97,15 @@ const OfferDetail = () => {
 
   return (
     <div className="container py-4">
+
       {/* ================= OFFER HEADER ================= */}
       <div className="row mb-4 align-items-center">
-        <div className="col-md-5 mb-3 mb-md-0">
+
+        {/* IMAGE */}
+        <div
+          className="col-md-5 mb-3 mb-md-0"
+          data-aos="fade-right"
+        >
           {offer.image_url && (
             <img
               src={offer.image_url}
@@ -75,11 +115,21 @@ const OfferDetail = () => {
           )}
         </div>
 
-        <div className="col-md-7">
-          <h2 className="fw-bold">{offer.title}</h2>
+        {/* CONTENT */}
+        <div
+          className="col-md-7"
+          data-aos="fade-left"
+        >
+          {/* 🔥 TYPEWRITER TITLE */}
+          <h2 className="fw-bold">
+            {typedTitle}
+            <span className="typing-cursor">|</span>
+          </h2>
 
           {offer.description && (
-            <p className="text-muted">{offer.description}</p>
+            <p className="text-muted mt-2">
+              {offer.description}
+            </p>
           )}
 
           <span className="badge bg-danger fs-6">
@@ -95,52 +145,43 @@ const OfferDetail = () => {
       </div>
 
       {/* ================= PRODUCTS ================= */}
-      <h4 className="mb-3">Products in this offer</h4>
+      <h4 className="mb-3" data-aos="fade-up">
+        Products in this offer
+      </h4>
 
       {products.length === 0 && (
         <p className="text-muted">No products available</p>
       )}
 
       <div className="row g-4">
-        {products.map((p) => (
-          <div key={p.id} className="col-6 col-md-3">
+        {products.map((p, index) => (
+          <div
+            key={p.id}
+            className="col-6 col-md-3"
+            data-aos="fade-up"
+            data-aos-delay={index * 120}
+          >
             <Link
               to={`/product/${p.id}`}
               className="text-decoration-none text-dark"
             >
               <div className="card h-100 shadow-sm position-relative">
 
-                {/* 🔥 OFFER BADGE */}
-                 {offer.discount_type === "PERCENT" && (
-  <span
-    className="badge bg-danger position-absolute"
-    style={{
-      top: "8px",
-      left: "8px",
-      fontSize: "0.75rem",
-      padding: "6px 8px",
-      zIndex: 2,
-    }}
-  >
-    {offer.discount_value}% OFF
-  </span>
-)}
-
-{offer.discount_type === "FLAT" && (
-  <span
-    className="badge bg-danger position-absolute"
-    style={{
-      top: "8px",
-      left: "8px",
-      fontSize: "0.75rem",
-      padding: "6px 8px",
-      zIndex: 2,
-    }}
-  >
-    ₹{Math.round(offer.discount_value)} OFF
-  </span>
-)}
-
+                {/* OFFER BADGE */}
+                <span
+                  className="badge bg-danger position-absolute"
+                  style={{
+                    top: "8px",
+                    left: "8px",
+                    fontSize: "0.75rem",
+                    padding: "6px 8px",
+                    zIndex: 2,
+                  }}
+                >
+                  {offer.discount_type === "PERCENT"
+                    ? `${offer.discount_value}% OFF`
+                    : `₹${Math.round(offer.discount_value)} OFF`}
+                </span>
 
                 {/* IMAGE */}
                 <img
@@ -158,7 +199,6 @@ const OfferDetail = () => {
                     {p.name}
                   </h6>
 
-                  {/* PRICE */}
                   <div>
                     <span className="fw-bold text-danger">
                       ₹{Math.round(p.effective_price)}
@@ -171,7 +211,6 @@ const OfferDetail = () => {
                     )}
                   </div>
 
-                  {/* YOU SAVE */}
                   {p.effective_price < p.price && (
                     <p className="text-success small fw-semibold mb-0">
                       You save ₹{Math.round(p.price - p.effective_price)}
@@ -183,6 +222,20 @@ const OfferDetail = () => {
           </div>
         ))}
       </div>
+
+      {/* ================= CSS ================= */}
+      <style>{`
+        .typing-cursor {
+          display: inline-block;
+          margin-left: 2px;
+          animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+          0%, 50%, 100% { opacity: 1; }
+          25%, 75% { opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 };

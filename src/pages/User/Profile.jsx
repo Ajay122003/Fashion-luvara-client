@@ -14,6 +14,8 @@ import { toast } from "react-hot-toast";
 import storage from "../../utils/storage";
 import { useDispatch } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -35,6 +37,16 @@ const Profile = () => {
 
   const [loading, setLoading] = useState(true);
 
+  /* ================= AOS INIT ================= */
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+    });
+  }, []);
+
+  /* ================= LOAD DATA ================= */
   useEffect(() => {
     loadAll();
   }, []);
@@ -56,6 +68,7 @@ const Profile = () => {
     }
   };
 
+  /* ================= PROFILE UPDATE ================= */
   const saveProfile = async () => {
     if (!username.trim()) return toast.error("Username required");
     try {
@@ -67,6 +80,7 @@ const Profile = () => {
     }
   };
 
+  /* ================= ADDRESS ADD ================= */
   const saveAddress = async () => {
     const { name, phone, pincode, city, full_address } = addrForm;
     if (!name || !phone || !pincode || !city || !full_address) {
@@ -90,6 +104,7 @@ const Profile = () => {
     }
   };
 
+  /* ================= ADDRESS DELETE ================= */
   const removeAddress = async (id) => {
     try {
       await deleteAddress(id);
@@ -100,6 +115,7 @@ const Profile = () => {
     }
   };
 
+  /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     try {
       await logoutUser();
@@ -111,26 +127,36 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <p className="text-center py-5">Loading...</p>;
+  if (loading)
+    return <p className="text-center py-5">Loading...</p>;
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4">My Account</h3>
+      <h3 className="mb-4 fw-bold">My Account</h3>
 
       <div className="row g-4">
         {/* ================= LEFT : PROFILE ================= */}
-        <div className="col-md-4">
-          <div className="card shadow-sm p-3">
-            <h5 className="mb-1">{profile.username}</h5>
-            <p className="text-muted mb-2">{profile.email}</p>
+        <div className="col-md-4" data-aos="fade-right">
+          <div className="card shadow-sm p-4 rounded-4 text-center">
+            <i className="bi bi-person-circle fs-1 mb-2"></i>
+
+            <h5 className="fw-bold mb-0">{profile.username}</h5>
+            <p className="text-muted small">{profile.email}</p>
 
             <span
-              className={`badge ${
+              className={`badge px-3 py-2 ${
                 profile.is_email_verified
                   ? "bg-success"
                   : "bg-warning"
               }`}
             >
+              <i
+                className={`bi ${
+                  profile.is_email_verified
+                    ? "bi-patch-check-fill"
+                    : "bi-exclamation-circle-fill"
+                } me-1`}
+              ></i>
               {profile.is_email_verified
                 ? "Email Verified"
                 : "Email Not Verified"}
@@ -138,11 +164,13 @@ const Profile = () => {
 
             <hr />
 
-            <label className="form-label fw-semibold">
+            <label className="form-label fw-semibold text-start w-100">
+              <i className="bi bi-pencil-square me-1"></i>
               Update Username
             </label>
+
             <input
-              className="form-control mb-2"
+              className="form-control mb-3"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -151,6 +179,7 @@ const Profile = () => {
               className="btn btn-dark w-100 mb-2"
               onClick={saveProfile}
             >
+              <i className="bi bi-save me-1"></i>
               Save Profile
             </button>
 
@@ -158,6 +187,7 @@ const Profile = () => {
               className="btn btn-outline-danger w-100"
               onClick={handleLogout}
             >
+              <i className="bi bi-box-arrow-right me-1"></i>
               Sign Out
             </button>
           </div>
@@ -165,50 +195,67 @@ const Profile = () => {
 
         {/* ================= RIGHT : ADDRESSES ================= */}
         <div className="col-md-8">
-          <div className="d-flex justify-content-between mb-3">
-            <h5>Saved Addresses</h5>
+          <div
+            className="d-flex justify-content-between align-items-center mb-3"
+            data-aos="fade-up"
+          >
+            <h5 className="fw-bold mb-0">
+              <i className="bi bi-geo-alt-fill me-1"></i>
+              Saved Addresses
+            </h5>
+
             <button
               className="btn btn-sm btn-dark"
               onClick={() => setShowAddrForm(!showAddrForm)}
             >
-              {showAddrForm ? "Close" : "+ Add Address"}
+              <i
+                className={`bi ${
+                  showAddrForm ? "bi-x-lg" : "bi-plus-lg"
+                } me-1`}
+              ></i>
+              {showAddrForm ? "Close" : "Add Address"}
             </button>
           </div>
 
+          {/* ADD ADDRESS FORM */}
           {showAddrForm && (
-            <div className="card shadow-sm p-3 mb-3">
-              <div className="row g-2">
+            <div
+              className="card shadow-sm p-4 mb-3 rounded-4"
+              data-aos="fade-down"
+            >
+              <div className="row g-3">
                 <input
                   className="form-control"
-                  placeholder="Name"
+                  placeholder=" Name"
                   onChange={(e) =>
                     setAddrForm({ ...addrForm, name: e.target.value })
                   }
                 />
                 <input
                   className="form-control"
-                  placeholder="Phone"
+                  placeholder=" Phone"
                   onChange={(e) =>
                     setAddrForm({ ...addrForm, phone: e.target.value })
                   }
                 />
                 <input
                   className="form-control"
-                  placeholder="Pincode"
+                  placeholder=" Pincode"
                   onChange={(e) =>
                     setAddrForm({ ...addrForm, pincode: e.target.value })
                   }
                 />
                 <input
                   className="form-control"
-                  placeholder="City"
+                  placeholder=" City"
                   onChange={(e) =>
                     setAddrForm({ ...addrForm, city: e.target.value })
                   }
                 />
                 <textarea
                   className="form-control"
-                  placeholder="Full Address"
+                  placeholder=" Full Address"
+                  rows={2}
                   onChange={(e) =>
                     setAddrForm({
                       ...addrForm,
@@ -219,9 +266,10 @@ const Profile = () => {
               </div>
 
               <button
-                className="btn btn-dark mt-3"
+                className="btn btn-dark mt-3 w-100"
                 onClick={saveAddress}
               >
+                <i className="bi bi-check-circle me-1"></i>
                 Save Address
               </button>
             </div>
@@ -232,33 +280,54 @@ const Profile = () => {
           )}
 
           {addresses.map((addr) => (
-            <div key={addr.id} className="card shadow-sm p-3 mb-2">
-              <strong>{addr.name}</strong> – {addr.phone}
-              <p className="mb-2 text-muted">
-                {addr.full_address}, {addr.city} – {addr.pincode}
-              </p>
-              <button
-                className="btn btn-sm btn-outline-danger"
-                onClick={() => removeAddress(addr.id)}
-              >
-                Delete
-              </button>
+            <div
+              key={addr.id}
+              className="card shadow-sm p-3 mb-3 rounded-4"
+              data-aos="fade-up"
+            >
+              <div className="d-flex justify-content-between">
+                <div>
+                  <strong>
+                    <i className="bi bi-person-fill me-1"></i>
+                    {addr.name}
+                  </strong>
+                  <p className="small text-muted mb-1">
+                    <i className="bi bi-telephone-fill me-1"></i>
+                    {addr.phone}
+                  </p>
+                  <p className="small text-muted mb-0">
+                    <i className="bi bi-house-door-fill me-1"></i>
+                    {addr.full_address}, {addr.city} – {addr.pincode}
+                  </p>
+                </div>
+
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => removeAddress(addr.id)}
+                >
+                  <i className="bi bi-trash"></i>
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
+      {/* ================= BOTTOM ACTIONS ================= */}
       <div className="d-flex gap-3 mt-4">
         <button
-          className="btn btn-outline-dark"
+          className="btn btn-outline-dark w-50"
           onClick={() => navigate("/")}
         >
+          <i className="bi bi-shop me-1"></i>
           Go to Shop
         </button>
+
         <button
-          className="btn btn-outline-dark"
+          className="btn btn-outline-dark w-50"
           onClick={() => navigate("/orders")}
         >
+          <i className="bi bi-receipt me-1"></i>
           My Orders
         </button>
       </div>

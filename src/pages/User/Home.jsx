@@ -7,35 +7,46 @@ import Products from "./Products";
 import banner from "../../assets/images/banner1.jpg";
 import Offers from "./Offers";
 import HorizontalProductRow from "../../components/products/HorizontalProductRow";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Home = () => {
   const [collections, setCollections] = useState([]);
   const [categories, setCategories] = useState([]);
 
   const loadData = async () => {
-  try {
-    const colRes = await fetchCollections();
-    const catRes = await getCategories();
+    try {
+      const colRes = await fetchCollections();
+      const catRes = await getCategories();
 
-    setCollections(colRes?.data ?? colRes ?? []);
-    setCategories(catRes?.data ?? catRes ?? []);
-  } catch (error) {
-    console.log("Home API error:", error);
-    setCollections([]);
-    setCategories([]);
-  }
-};
+      setCollections(colRes?.data ?? colRes ?? []);
+      setCategories(catRes?.data ?? catRes ?? []);
+    } catch (error) {
+      console.log("Home API error:", error);
+      setCollections([]);
+      setCategories([]);
+    }
+  };
 
-
+  /* ================= LOAD DATA ================= */
   useEffect(() => {
     loadData();
+  }, []);
+
+  /* ================= AOS INIT ================= */
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      easing: "ease-in-out",
+      once: true,
+    });
   }, []);
 
   return (
     <div className="bg-white py-4">
 
       {/* ================= HERO BANNER ================= */}
-      <div className=" mb-5">
+      <div className="mb-5" data-aos="fade-in">
         <div className="hero-banner">
           <img
             src={banner}
@@ -44,17 +55,26 @@ const Home = () => {
           />
         </div>
       </div>
-      <Offers/>
+
+      <Offers />
+
       {/* ================= CONTENT ================= */}
       <div className="container">
 
         {/* COLLECTIONS TITLE */}
-        <h3 className="mb-4">Collections</h3>
+        <h3 className="mb-4" data-aos="fade-up">
+          Collections
+        </h3>
 
         {/* COLLECTIONS GRID */}
         <div className="row g-4 mb-4">
-          {collections.map((col) => (
-            <div className="col-12 col-md-4" key={col.id}>
+          {collections.map((col, index) => (
+            <div
+              className="col-12 col-md-4"
+              key={col.id}
+              data-aos="fade-up"
+              data-aos-delay={index * 120}
+            >
               <Link
                 to={`/collections/${col.slug}`}
                 className="text-decoration-none text-dark"
@@ -68,7 +88,7 @@ const Home = () => {
                   />
                 </div>
 
-                <p className="mt-2 ">
+                <p className="mt-2 fw-semibold">
                   {col.name} <i className="bi bi-arrow-right"></i>
                 </p>
               </Link>
@@ -78,13 +98,18 @@ const Home = () => {
 
         {/* CATEGORIES GRID */}
         <div className="row g-4 mb-5">
-          {categories.map((cat) => (
-            <div className="col-12 col-md-4" key={cat.id}>
+          {categories.map((cat, index) => (
+            <div
+              className="col-12 col-md-4"
+              key={cat.id}
+              data-aos="fade-up"
+              data-aos-delay={index * 120}
+            >
               <Link
                 to={`/categories/${cat.slug}`}
                 className="text-decoration-none text-dark"
               >
-                <div className="overflow-hidden ">
+                <div className="overflow-hidden">
                   <img
                     src={cat.image_url || "/placeholder.png"}
                     alt={cat.name}
@@ -93,7 +118,7 @@ const Home = () => {
                   />
                 </div>
 
-                <p className="mt-2 ">
+                <p className="mt-2 fw-semibold">
                   {cat.name} <i className="bi bi-arrow-right"></i>
                 </p>
               </Link>
@@ -101,8 +126,10 @@ const Home = () => {
           ))}
         </div>
 
-        {/* PRODUCTS */}
-        <HorizontalProductRow/>
+        {/* PRODUCTS ROW */}
+        <div data-aos="fade-up">
+          <HorizontalProductRow />
+        </div>
       </div>
 
       {/* ================= STYLES ================= */}
@@ -111,7 +138,6 @@ const Home = () => {
         .hero-banner {
           width: 100%;
           overflow: hidden;
-          
         }
 
         .hero-banner-img {
@@ -131,8 +157,6 @@ const Home = () => {
 
         /* Mobile */
         @media (max-width: 576px) {
-          
-
           .hero-banner-img {
             max-height: 220px;
           }

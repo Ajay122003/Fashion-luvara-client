@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchCollectionProducts } from "../../api/collections";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const CollectionProducts = () => {
   const { slug } = useParams();
@@ -20,9 +22,19 @@ const CollectionProducts = () => {
     }
   };
 
+  /* ================= LOAD DATA ================= */
   useEffect(() => {
     loadCollection();
   }, [slug]);
+
+  /* ================= AOS INIT ================= */
+  useEffect(() => {
+    AOS.init({
+      duration: 900,
+      easing: "ease-in-out",
+      once: true,
+    });
+  }, []);
 
   if (loading)
     return (
@@ -61,7 +73,7 @@ const CollectionProducts = () => {
             No products available.
           </p>
         ) : (
-          collection.products.map((product) => {
+          collection.products.map((product, index) => {
             const hasOffer =
               product.effective_price < product.price;
 
@@ -78,6 +90,8 @@ const CollectionProducts = () => {
               <div
                 key={product.id}
                 className="col-6 col-md-4 col-lg-3"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
               >
                 <Link
                   to={`/product/${product.id}`}

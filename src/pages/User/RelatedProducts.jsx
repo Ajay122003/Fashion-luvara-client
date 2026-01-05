@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchRelatedProducts } from "../../api/products";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const RelatedProducts = ({ productId }) => {
   const [products, setProducts] = useState([]);
 
+  /* ================= LOAD PRODUCTS ================= */
   useEffect(() => {
     const load = async () => {
       const data = await fetchRelatedProducts(productId);
@@ -13,14 +16,30 @@ const RelatedProducts = ({ productId }) => {
     if (productId) load();
   }, [productId]);
 
+  /* ================= AOS INIT ================= */
+  useEffect(() => {
+    AOS.init({
+      duration: 900,
+      easing: "ease-in-out",
+      once: true,
+    });
+  }, []);
+
   if (!products.length) return null;
 
   return (
     <div className="mt-5">
-      <h5 className="fw-semibold mb-3">You may also like</h5>
+
+      {/* TITLE */}
+      <h5
+        className="fw-semibold mb-3"
+        data-aos="fade-up"
+      >
+        You may also like
+      </h5>
 
       <div className="row g-3 g-md-4">
-        {products.map((p) => {
+        {products.map((p, index) => {
           const hasOffer =
             p.effective_price !== undefined &&
             p.effective_price < p.price;
@@ -35,6 +54,8 @@ const RelatedProducts = ({ productId }) => {
             <div
               className="col-6 col-sm-6 col-md-4 col-lg-3"
               key={p.id}
+              data-aos="fade-up"
+              data-aos-delay={index * 120}
             >
               <Link
                 to={`/product/${p.id}`}
@@ -45,7 +66,7 @@ const RelatedProducts = ({ productId }) => {
               >
                 <div className="card related-card h-100 border-0 position-relative">
 
-                  {/*  OFFER BADGE */}
+                  {/* OFFER BADGE */}
                   {hasOffer && (
                     <span
                       className="badge bg-danger position-absolute"
@@ -116,6 +137,10 @@ const RelatedProducts = ({ productId }) => {
 
         .related-card:hover img {
           transform: scale(1.08);
+        }
+
+        .related-card:hover {
+          box-shadow: 0 6px 18px rgba(0,0,0,0.15);
         }
 
         @media (max-width: 576px) {

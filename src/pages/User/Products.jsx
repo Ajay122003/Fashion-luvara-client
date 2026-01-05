@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { fetchProducts } from "../../api/products";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -9,9 +11,9 @@ const Products = () => {
 
   const [params, setParams] = useSearchParams();
 
+  /* ================= LOAD PRODUCTS ================= */
   const loadProducts = async () => {
     setLoading(true);
-
     try {
       const data = await fetchProducts(
         Object.fromEntries([...params])
@@ -34,6 +36,15 @@ const Products = () => {
     loadProducts();
   }, [params]);
 
+  /* ================= AOS INIT ================= */
+  useEffect(() => {
+    AOS.init({
+      duration: 900,
+      easing: "ease-in-out",
+      once: true, // animation only once
+    });
+  }, []);
+
   const updateFilter = (key, value) => {
     if (value) params.set(key, value);
     else params.delete(key);
@@ -54,12 +65,8 @@ const Products = () => {
             }
           >
             <option value="">Sort</option>
-            <option value="price_low">
-              Low to High
-            </option>
-            <option value="price_high">
-              High to Low
-            </option>
+            <option value="price_low">Low to High</option>
+            <option value="price_high">High to Low</option>
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
           </select>
@@ -79,21 +86,18 @@ const Products = () => {
 
       {/* LOADING */}
       {loading && (
-        <p className="text-center py-5">
-          Loading...
-        </p>
+        <p className="text-center py-5">Loading...</p>
       )}
 
       {/* PRODUCT GRID */}
       <div className="row g-3 g-md-4">
-        {products.map((product) => {
+        {products.map((product, index) => {
           const hasOffer =
             product.effective_price < product.price;
 
           const discountPercent = hasOffer
             ? Math.round(
-                ((product.price -
-                  product.effective_price) /
+                ((product.price - product.effective_price) /
                   product.price) *
                   100
               )
@@ -103,14 +107,16 @@ const Products = () => {
             <div
               key={product.id}
               className="col-6 col-md-4 col-lg-3"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
             >
               <Link
                 to={`/product/${product.id}`}
                 className="text-decoration-none text-dark"
               >
                 <div className="card border-0 shadow-sm product-card">
-                  {/* IMAGE + OFFER BADGE */}
-                  <div className="product-image-wrapper w-100 rounded-top position-relative">
+                  {/* IMAGE */}
+                  <div className="product-image-wrapper position-relative">
                     {hasOffer && (
                       <span
                         className="badge bg-danger position-absolute"
@@ -127,9 +133,7 @@ const Products = () => {
                     )}
 
                     <img
-                      src={
-                        product.images?.[0]?.image_url
-                      }
+                      src={product.images?.[0]?.image_url}
                       alt={product.name}
                       className="w-100"
                       style={{
@@ -139,7 +143,7 @@ const Products = () => {
                     />
                   </div>
 
-                  {/* CARD BODY */}
+                  {/* BODY */}
                   <div className="card-body">
                     <h6 className="fw-semibold text-truncate">
                       {product.name}
@@ -170,9 +174,7 @@ const Products = () => {
           <button
             className="btn btn-outline-dark"
             onClick={() => {
-              const url = new URL(
-                pagination.previous
-              );
+              const url = new URL(pagination.previous);
               setParams(url.searchParams);
             }}
           >
@@ -184,9 +186,7 @@ const Products = () => {
           <button
             className="btn btn-dark"
             onClick={() => {
-              const url = new URL(
-                pagination.next
-              );
+              const url = new URL(pagination.next);
               setParams(url.searchParams);
             }}
           >
@@ -195,7 +195,7 @@ const Products = () => {
         )}
       </div>
 
-      {/* RESPONSIVE CSS */}
+      {/* STYLE */}
       <style>{`
         .product-image-wrapper {
           height: 180px;
@@ -204,13 +204,13 @@ const Products = () => {
 
         @media (min-width: 768px) {
           .product-image-wrapper {
-            height: 220px !important;
+            height: 220px;
           }
         }
 
         @media (min-width: 992px) {
           .product-image-wrapper {
-            height: 260px !important;
+            height: 260px;
           }
         }
 
