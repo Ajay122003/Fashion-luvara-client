@@ -272,10 +272,16 @@ const ProductDetail = () => {
       {product.offer_title}
     </span>
 
-    <p className="text-danger small fw-semibold mb-2">
-      ⏱ Offer ends in{" "}
+    {/* <p className="text-danger small fw-semibold mb-2">
+      <i class="bi bi-alarm"></i> Offer ends in{" "}
       {getRemainingTime(product.offer_end_date)}
-    </p>
+    </p> */}
+
+    <p className="text-danger small fw-semibold mb-2">
+  <i className="bi bi-alarm alarm-icon me-2"></i>
+  Offer ends in {getRemainingTime(product.offer_end_date)}
+</p>
+
   </>
 )}
 
@@ -433,6 +439,23 @@ const ProductDetail = () => {
 
       {/*  ADDED MODAL */}
       <SizeChartModal />
+      <style>
+        {`
+        /* Shake + glow feel */
+.alarm-icon {
+  display: inline-block;
+  animation: alarmShake 1.2s infinite ease-in-out;
+}
+
+@keyframes alarmShake {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-10deg) scale(1.1); }
+  50%  { transform: rotate(10deg) scale(1.1); }
+  75%  { transform: rotate(-6deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+`}
+      </style>
     </div>
   );
 };

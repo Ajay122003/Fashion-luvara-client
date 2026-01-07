@@ -77,7 +77,7 @@ const Home = () => {
               className="col-12 col-md-4"
               key={col.id}
               data-aos="fade-up"
-              data-aos-delay={index * 120}
+              data-aos-delay={index * 1200}
             >
               <Link
                 to={`/collections/${col.slug}`}
@@ -98,16 +98,16 @@ const Home = () => {
               </Link>
             </div>
           ))}
-        </div>
+        {/* </div> */}
 
         {/* CATEGORIES GRID */}
-        <div className="row g-4 mb-5">
+        {/* <div className="row g-4 mb-5"> */}
           {categories.map((cat, index) => (
             <div
               className="col-12 col-md-4"
               key={cat.id}
               data-aos="fade-up"
-              data-aos-delay={index * 120}
+              data-aos-delay={index * 1000}
             >
               <Link
                 to={`/categories/${cat.slug}`}

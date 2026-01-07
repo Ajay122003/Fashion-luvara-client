@@ -285,7 +285,7 @@ const UserNavbar = () => {
 
       {/* ================= MOBILE OFFCANVAS ================= */}
       <div className="offcanvas offcanvas-start" id="mobileMenu">
-        <div className="offcanvas-header">
+        <div className="offcanvas-header border-bottom">
           <button className="btn" onClick={closeMenu}>
             <i className="bi bi-x-lg fs-3" />
           </button>
@@ -317,7 +317,7 @@ const UserNavbar = () => {
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
-                  className="d-block py-2 small"
+                  className="d-block py-2 small text-decoration-none"
                   to={`/categories/${cat.slug}`}
                   onClick={closeMenu}
                 >
@@ -348,7 +348,7 @@ const UserNavbar = () => {
               {collections.map((col) => (
                 <Link
                   key={col.id}
-                  className="d-block py-2 small"
+                  className="d-block py-2 small text-decoration-none"
                   to={`/collections/${col.slug}`}
                   onClick={closeMenu}
                 >
@@ -361,7 +361,7 @@ const UserNavbar = () => {
           <Link to="/about" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>
             About us
           </Link>
-          <div className="position-fixed bottom-0 start-0 p-3 mb-5" style={{ zIndex: 1050 }}>
+          <div className="position-fixed bottom-5 start-0 p-3 mb-5" style={{ zIndex: 1050 }}>
   <a
     href="https://www.instagram.com/your_username/"
     target="_blank"
@@ -379,7 +379,7 @@ const UserNavbar = () => {
             {user ? (
               <Link
                 to="/profile"
-                className="text-dark d-flex align-items-center gap-2"
+                className="text-dark d-flex align-items-center gap-2 text-decoration-none"
                 onClick={closeMenu}
               >
                 <i className="bi bi-person-circle" /> {user.username}

@@ -139,7 +139,7 @@ const OfferDetail = () => {
           </span>
 
           <p className="mt-3 fw-bold text-danger">
-            ⏱ Ends in: {getRemainingTime(offer.end_date)}
+            <i class="bi bi-alarm alarm-icon"></i> offer Ends in: {getRemainingTime(offer.end_date)}
           </p>
         </div>
       </div>
@@ -235,6 +235,19 @@ const OfferDetail = () => {
           0%, 50%, 100% { opacity: 1; }
           25%, 75% { opacity: 0; }
         }
+          /* Shake + glow feel */
+.alarm-icon {
+  display: inline-block;
+  animation: alarmShake 1.2s infinite ease-in-out;
+}
+
+@keyframes alarmShake {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-10deg) scale(1.1); }
+  50%  { transform: rotate(10deg) scale(1.1); }
+  75%  { transform: rotate(-6deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
       `}</style>
     </div>
   );

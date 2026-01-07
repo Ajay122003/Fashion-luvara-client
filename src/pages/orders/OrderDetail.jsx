@@ -79,7 +79,7 @@ const OrderDetail = () => {
       {/* ================= HEADER ================= */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">
         <h4 className="fw-bold mb-0">
-          Order #{order.order_number}
+          Order id : {order.order_number}
         </h4>
 
         <span className={`badge fs-6 ${getStatusBadge(order.status)}`}>
