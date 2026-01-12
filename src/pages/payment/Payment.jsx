@@ -29,7 +29,7 @@ const handleOnlinePayment = async () => {
       handler: async function (response) {
         console.log("✅ PAYMENT SUCCESS", response);
 
-        // ✅ NOW create order (FIRST TIME)
+        //  NOW create order (FIRST TIME)
         const res = await createOrder({
           ...state.checkout_payload,
           payment_method: "ONLINE",
