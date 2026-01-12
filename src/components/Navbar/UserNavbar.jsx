@@ -45,6 +45,7 @@ const UserNavbar = () => {
 
     setMobileCatOpen(false);
     setMobileColOpen(false);
+    setMobileSupportOpen(false);
   }, [location.pathname]);
 
   /* ================= REDUX STATE ================= */
@@ -67,6 +68,8 @@ const UserNavbar = () => {
   const [mobileColOpen, setMobileColOpen] = useState(false);
   const [hoverCat, setHoverCat] = useState(false);
   const [hoverCol, setHoverCol] = useState(false);
+  const [mobileSupportOpen, setMobileSupportOpen] = useState(false);
+
 
   /* ================= HOVER SUPPORT ================= */
   const hoverSupported = useMemo(
@@ -169,7 +172,32 @@ const UserNavbar = () => {
 
             <ul className="navbar-nav gap-4 small">
               <li><Link to="/" className="nav-link">Home</Link></li>
-              <li><Link to="/new" className="nav-link">Customar support</Link></li>
+              <li className="nav-item dropdown">
+  <span
+    className="nav-link dropdown-toggle"
+    role="button"
+    data-bs-toggle="dropdown"
+  >
+    Customer Support
+  </span>
+
+  <ul className="dropdown-menu">
+    <li>
+      
+    </li>
+    <li>
+      <a
+        className="dropdown-item"
+        href="https://stcourier.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        ST Courier
+      </a>
+    </li>
+  </ul>
+</li>
+
 
               <li
                 className="nav-item dropdown"
@@ -294,7 +322,49 @@ const UserNavbar = () => {
 
         <div className="offcanvas-body">
           <Link to="/" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>Home</Link>
-          <Link to="/new" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>Customar support</Link>
+          <div className="mt-2">
+  <div
+    className="d-flex justify-content-between align-items-center py-2"
+    onClick={() => setMobileSupportOpen((v) => !v)}
+  >
+    <span>Customer Support</span>
+    <i
+      className={`bi ${
+        mobileSupportOpen ? "bi-chevron-up" : "bi-chevron-down"
+      }`}
+    />
+  </div>
+
+  <div
+    className="ps-3"
+    style={{
+      maxHeight: mobileSupportOpen ? "200px" : "0",
+      overflow: "hidden",
+      transition: "max-height .35s ease",
+    }}
+  >
+    <a
+      href="https://www.tpcindia.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="d-block py-2 small text-decoration-none text-dark"
+      onClick={closeMenu}
+    >
+      Professional Courier
+    </a>
+
+    <a
+      href="https://stcourier.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="d-block py-2 small text-decoration-none text-dark"
+      onClick={closeMenu}
+    >
+      ST Courier
+    </a>
+  </div>
+</div>
+
 
           {/* CATEGORY */}
           <div className="mt-2">

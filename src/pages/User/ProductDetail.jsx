@@ -114,6 +114,11 @@ const ProductDetail = () => {
         ),
       ]
     : [];
+  
+  const isProductOutOfStock =
+  product?.variants?.length > 0 &&
+  product.variants.every((v) => v.stock === 0);
+
 
   const hasColors = colors.length > 0;
 
@@ -238,6 +243,11 @@ const ProductDetail = () => {
             />
           </div>
 
+          
+
+
+
+
           <div className="d-flex gap-2 mt-3 overflow-auto">
             {product.images?.map((img) => (
               <img
@@ -263,6 +273,11 @@ const ProductDetail = () => {
         {/* DETAILS */}
         <div className="col-12 col-md-6">
           <h4 className="fw-bold">{product.name}</h4>
+          {isProductOutOfStock && (
+  <p className="text-danger fw-semibold my-2">
+    Out of Stock
+  </p>
+)}
 
           {product.offer &&
  product.offer_is_active &&

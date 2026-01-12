@@ -86,6 +86,12 @@ const CategoryProducts = () => {
                 )
               : 0;
 
+            const isOutOfStock =
+  product.variants &&
+  product.variants.length > 0 &&
+  product.variants.every((v) => v.stock === 0);
+
+
             return (
               <div
                 key={product.id}
@@ -114,6 +120,21 @@ const CategoryProducts = () => {
                           {discountPercent}% OFF
                         </span>
                       )}
+
+                       {isOutOfStock && (
+    <span
+      className="badge bg-dark position-absolute"
+      style={{
+        top: "8px",
+        right: "8px",
+        fontSize: "0.75rem",
+        padding: "6px 8px",
+        zIndex: 2,
+      }}
+    >
+      0 Stock
+    </span>
+  )}
 
                       <img
                         src={product.images?.[0]?.image_url}

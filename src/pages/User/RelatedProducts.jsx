@@ -10,9 +10,14 @@ const RelatedProducts = ({ productId }) => {
   /* ================= LOAD PRODUCTS ================= */
   useEffect(() => {
     const load = async () => {
-      const data = await fetchRelatedProducts(productId);
-      setProducts(data || []);
+      try {
+        const data = await fetchRelatedProducts(productId);
+        setProducts(data || []);
+      } catch (err) {
+        console.error(err);
+      }
     };
+
     if (productId) load();
   }, [productId]);
 
@@ -29,12 +34,8 @@ const RelatedProducts = ({ productId }) => {
 
   return (
     <div className="mt-5">
-
       {/* TITLE */}
-      <h5
-        className="fw-semibold mb-3"
-        data-aos="fade-up"
-      >
+      <h5 className="fw-semibold mb-3" data-aos="fade-up">
         You may also like
       </h5>
 
@@ -49,6 +50,12 @@ const RelatedProducts = ({ productId }) => {
                 ((p.price - p.effective_price) / p.price) * 100
               )
             : null;
+
+          /* 🔴 OUT OF STOCK LOGIC */
+          const isOutOfStock =
+            p.variants &&
+            p.variants.length > 0 &&
+            p.variants.every((v) => v.stock === 0);
 
           return (
             <div
@@ -65,7 +72,6 @@ const RelatedProducts = ({ productId }) => {
                 className="text-decoration-none text-dark"
               >
                 <div className="card related-card h-100 border-0 position-relative">
-
                   {/* OFFER BADGE */}
                   {hasOffer && (
                     <span
@@ -82,12 +88,29 @@ const RelatedProducts = ({ productId }) => {
                     </span>
                   )}
 
+                  {/* 🔴 OUT OF STOCK BADGE */}
+                  {isOutOfStock && (
+                    <span
+                      className="badge bg-dark position-absolute"
+                      style={{
+                        top: "8px",
+                        right: "8px",
+                        fontSize: "0.7rem",
+                        padding: "6px 8px",
+                        zIndex: 2,
+                      }}
+                    >
+                      0 Stock
+                    </span>
+                  )}
+
                   {/* IMAGE */}
                   <div className="related-img-wrapper">
                     <img
                       src={p.images?.[0]?.image_url}
                       alt={p.name}
                       loading="lazy"
+                      className={isOutOfStock ? "opacity-75" : ""}
                     />
                   </div>
 
@@ -99,13 +122,12 @@ const RelatedProducts = ({ productId }) => {
 
                     <p className="mb-0 fw-bold text-danger">
                       ₹{hasOffer ? p.effective_price : p.price}
-                    
 
-                    {hasOffer && (
-                      <small className="text-muted ms-2 text-decoration-line-through">
-                        ₹{p.price}
-                      </small>
-                    )}
+                      {hasOffer && (
+                        <small className="text-muted ms-2 text-decoration-line-through">
+                          ₹{p.price}
+                        </small>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -159,4 +181,3 @@ const RelatedProducts = ({ productId }) => {
 };
 
 export default RelatedProducts;
-
