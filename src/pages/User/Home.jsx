@@ -9,6 +9,7 @@ import Offers from "./Offers";
 import HorizontalProductRow from "../../components/products/HorizontalProductRow";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import ProductImageShowcase from "../../components/ProductImageShowcase";
 
 const Home = () => {
   const [collections, setCollections] = useState([]);
@@ -59,6 +60,7 @@ const Home = () => {
 
 
       <Offers />
+      {/* <ProductImageShowcase/> */}
 
       {/* ================= CONTENT ================= */}
       <div className="container mt-5">

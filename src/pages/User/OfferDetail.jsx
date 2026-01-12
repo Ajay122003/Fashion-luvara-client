@@ -142,7 +142,7 @@ const OfferDetail = () => {
                   {/* 🔴 OUT OF STOCK BADGE */}
                   {isOutOfStock && (
                     <span
-                      className="badge bg-dark position-absolute"
+                      className="badge bg-dark rounded-pill position-absolute"
                       style={{ top: 8, right: 8, zIndex: 2 }}
                     >
                       0 Stock

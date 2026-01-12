@@ -357,7 +357,7 @@ const ProductDetail = () => {
                     onClick={() =>
                       !disabled && setSelectedSize(s)
                     }
-                    className={`btn btn-sm ${
+                    className={`btn btn-sm rounded-pill ${
                       selectedSize === s
                         ? "btn-dark"
                         : "btn-outline-dark"

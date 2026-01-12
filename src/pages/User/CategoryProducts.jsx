@@ -123,7 +123,7 @@ const CategoryProducts = () => {
 
                        {isOutOfStock && (
     <span
-      className="badge bg-dark position-absolute"
+      className="badge bg-dark rounded-pill position-absolute"
       style={{
         top: "8px",
         right: "8px",
