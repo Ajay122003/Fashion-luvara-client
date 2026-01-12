@@ -65,6 +65,7 @@ import AddOffer from "../pages/Admin/AddOffer";
 import EditOffer from "../pages/Admin/EditOffer";
 import OfferDetail from "../pages/User/OfferDetail";
 import Payment from "../pages/payment/Payment";
+import About from "../components/About/About";
 
 const AppRoutes = () => {
   return (
@@ -84,7 +85,7 @@ const AppRoutes = () => {
         <Route path="collections" element={<Collections />} />
         <Route path="collections/:slug" element={<CollectionProducts />} />
         <Route path="/offers/:slug" element={<OfferDetail />} />
-
+        <Route path="/about" element={<About/>} />
         {/* PROTECTED USER ROUTES */}
         <Route
           path="cart"

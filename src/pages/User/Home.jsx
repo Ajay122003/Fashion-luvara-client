@@ -4,7 +4,7 @@ import { fetchCollections } from "../../api/collections";
 import { getCategories } from "../../api/category";
 import { Link } from "react-router-dom";
 import Products from "./Products";
-import banner from "../../assets/images/banner1.jpg";
+import banner from "../../assets/videos/banner.mp4";
 import Offers from "./Offers";
 import HorizontalProductRow from "../../components/products/HorizontalProductRow";
 import AOS from "aos";
@@ -46,20 +46,22 @@ const Home = () => {
     <div className="bg-white py-4">
 
       {/* ================= HERO BANNER ================= */}
-      <div className="mb-5" data-aos="fade-in">
-        <div className="hero-banner">
-          <img
-            src={banner}
-            alt="Banner"
-            className="hero-banner-img"
-          />
-        </div>
-      </div>
+      <div className="hero-banner">
+  <video
+    className="hero-banner-video mb-4"
+    src={banner}
+    autoPlay
+    loop
+    muted
+    playsInline
+  />
+</div>
+
 
       <Offers />
 
       {/* ================= CONTENT ================= */}
-      <div className="container">
+      <div className="container mt-5">
 
         {/* COLLECTIONS TITLE */}
         <h3
@@ -174,6 +176,36 @@ const Home = () => {
         .image-zoom:hover {
           transform: scale(1.07);
         }
+
+
+        /* HERO VIDEO */
+.hero-banner {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-banner-video {
+  width: 100%;
+  height: 620px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  .hero-banner-video {
+    height: 420px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .hero-banner-video {
+    height: 220px;
+  }
+}
+
       `}</style>
     </div>
   );

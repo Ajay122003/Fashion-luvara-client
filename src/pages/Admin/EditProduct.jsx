@@ -9,6 +9,8 @@ import {
 import adminClient from "../../api/adminClient";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
+import toast from "react-hot-toast";
+
 
 const EditProduct = () => {
   const navigate = useNavigate();
@@ -104,12 +106,12 @@ const EditProduct = () => {
     e.preventDefault();
 
     if (!product.sku.trim()) {
-      alert("Product SKU is required");
+      toast.error("Product SKU is required");
       return;
     }
 
     if (product.variants.length === 0) {
-      alert("Add at least one variant");
+      toast.error("Add at least one variant");
       return;
     }
 
@@ -159,11 +161,12 @@ const EditProduct = () => {
 
     try {
       await updateAdminProduct(id, form);
-      alert("Product updated successfully!");
+      toast.success("Product updated successfully!");
       navigate("/admin/products");
     } catch (err) {
       console.error(err.response?.data || err);
-      alert("Failed to update product");
+      toast.error("Failed to update product");
+
     }
   };
 

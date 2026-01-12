@@ -5,6 +5,8 @@ import {
   adminUpdateEmail,
   adminChangePassword,
 } from "../../api/admin";
+import { toast } from "react-hot-toast";
+
 
 const Settings = () => {
   const [openSection, setOpenSection] = useState("store");
@@ -55,16 +57,21 @@ const Settings = () => {
 
   /* ================= SAVE SETTINGS (COMMON) ================= */
   const saveSettings = async () => {
-    setSaving(true);
-    try {
-      await updateSiteSettings(settings);
-      alert("Settings updated successfully!");
-    } catch {
-      alert("Failed to save settings");
-    } finally {
-      setSaving(false);
-    }
-  };
+  setSaving(true);
+  try {
+    await updateSiteSettings(settings);
+
+    // 🔥 ADD THIS LINE
+    toast.success("Settings updated successfully");
+
+    loadSettings();
+  } catch (err) {
+    toast.error("Failed to update settings");
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   /* ================= ACCOUNT ================= */
   const [newEmail, setNewEmail] = useState("");

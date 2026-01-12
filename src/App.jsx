@@ -7,7 +7,7 @@ import AppRoutes from "./routes/AppRoutes";
 import { getCategories } from "./api/category";
 import { fetchCollections } from "./api/collections";
 import { getMe } from "./api/auth";
-
+import { Toaster } from "react-hot-toast";   
 // Redux
 import { fetchCart } from "./features/cart/cartSlice";
 import { setCategories } from "./features/category/categorySlice";
@@ -82,8 +82,13 @@ const App = () => {
 //   dispatch(loadOffers());
 // }, [dispatch]);
 
-
-  return <AppRoutes />;
+ 
+  return (
+    <>
+      <Toaster position="top-right" />   {/* 🔥 MUST */}
+      <AppRoutes />
+    </>
+  );
 };
 
 export default App;

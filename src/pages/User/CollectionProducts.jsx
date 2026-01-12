@@ -100,7 +100,7 @@ const CollectionProducts = () => {
                   <div className="card product-card shadow-sm h-100 border-0">
 
                     {/* IMAGE + OFFER BADGE */}
-                    <div className="product-img-wrapper position-relative">
+                    <div className="product-image-wrapper position-relative">
                       {hasOffer && (
                         <span
                           className="badge bg-success position-absolute"
@@ -122,7 +122,11 @@ const CollectionProducts = () => {
                           "/placeholder.png"
                         }
                         alt={product.name}
-                        className="product-img"
+                        className="w-100"
+                      style={{
+                        objectFit: "cover",
+                        transition: "transform .3s",
+                      }}
                       />
                     </div>
 
@@ -153,41 +157,25 @@ const CollectionProducts = () => {
 
       {/* ================= CSS ================= */}
       <style>{`
-        .product-card {
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
-          border-radius: 12px;
-        }
-
-        .product-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-
-        .product-img-wrapper {
-          height: 220px;
-          background: #f8f8f8;
-          border-radius: 12px 12px 0 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .product-image-wrapper {
+          height: 180px;
           overflow: hidden;
         }
 
-        .product-img {
-          height: 100%;
-          width: 100%;
-          object-fit: cover;
-          transition: transform 0.4s ease;
-        }
-
-        .product-card:hover .product-img {
-          transform: scale(1.05);
-        }
-
-        @media (max-width: 576px) {
-          .product-img-wrapper {
-            height: 180px;
+        @media (min-width: 768px) {
+          .product-image-wrapper {
+            height: 220px;
           }
+        }
+
+        @media (min-width: 992px) {
+          .product-image-wrapper {
+            height: 260px;
+          }
+        }
+
+        .product-card:hover img {
+          transform: scale(1.06);
         }
       `}</style>
     </div>

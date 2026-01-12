@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "../../styles/login.css";
 import Home from "../User/Home";
 
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -39,6 +40,7 @@ const Login = () => {
       await sendOtpLogin({ email });
 
       setMessage("OTP has been sent to your email.");
+      
       setMessageType("success");
       setCooldown(60);
 

@@ -85,6 +85,7 @@ const HorizontalProductRow = ({
                       "/placeholder.png"
                     }
                     alt={product.name}
+                    
                   />
                 </div>
 

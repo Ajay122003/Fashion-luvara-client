@@ -24,220 +24,155 @@ const Offers = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [, setTick] = useState(0);
 
-  /* ---------------- INIT AOS ---------------- */
+  /* AOS INIT */
   useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: false,
-      easing: "ease-in-out",
-    });
+    AOS.init({ duration: 1000, once: false });
   }, []);
 
-  /* ---------------- FETCH OFFERS ---------------- */
+  /* FETCH OFFERS */
   useEffect(() => {
     fetchActiveOffers().then((res) => {
-      const data = res.data?.results || res.data || [];
-      setOffers(data);
+      setOffers(res.data?.results || res.data || []);
     });
   }, []);
 
-  /* ---------------- COUNTDOWN TICK ---------------- */
+  /* COUNTDOWN TICK */
   useEffect(() => {
     const i = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(i);
   }, []);
 
-  /* ---------------- AUTO SLIDE (5 SEC) ---------------- */
+  /* AUTO SLIDER */
   useEffect(() => {
     if (offers.length <= 1) return;
-
-    const slider = setInterval(() => {
-      setActiveIndex((prev) =>
-        prev === offers.length - 1 ? 0 : prev + 1
+    const s = setInterval(() => {
+      setActiveIndex((p) =>
+        p === offers.length - 1 ? 0 : p + 1
       );
     }, 5000);
-
-    return () => clearInterval(slider);
+    return () => clearInterval(s);
   }, [offers]);
 
-  if (offers.length === 0) return null;
+  if (!offers.length) return null;
 
   const offer = offers[activeIndex];
   const time = getRemainingTime(offer.end_date);
   if (!time) return null;
 
   return (
-    <>
-      <Link
-        to={`/offers/${offer.slug}`}
-        className="hero-offer"
-        style={{ backgroundImage: `url(${offer.image_url})` }}
-        data-aos="fade-up"
-      >
-        <div className="overlay">
-          <h1 data-aos="zoom-in">
-            {offer.discount_type === "PERCENT"
-              ? `${offer.discount_value}% OFF`
-              : `₹${offer.discount_value} OFF`}
-          </h1>
+    <Link to={`/offers/${offer.slug}`} className="offer-wrapper">
+      <div className="container">
+        <div className="row g-0 align-items-stretch">
 
-          <p className="sale" data-aos="fade-right">
-            {offer.title}
-          </p>
+          {/* LEFT IMAGE */}
+          <div
+            className="col-6 offer-image"
+            style={{ backgroundImage: `url(${offer.image_url})` }}
+            data-aos="fade-right"
+          />
 
-          {/* COUNTDOWN */}
-          <div className="countdown" data-aos="fade-up">
-            <div className="box">{time.days}</div>
-            <div className="box">{time.hours}</div>
-            <div className="box">{time.minutes}</div>
-            <div className="box">{time.seconds} </div>
-          </div>
-          
-          <div className="labels">
+          {/* RIGHT CONTENT */}
+          <div className="col-6 offer-content" data-aos="fade-left">
+            <h1>
+              {offer.discount_type === "PERCENT"
+                ? `${offer.discount_value}% OFF`
+                : `₹${offer.discount_value} OFF`}
+            </h1>
+
+            <p className="sale">{offer.title}</p>
+
+            <div className="countdown">
+  <div className="time-box">
+    <div className="box">{time.days}</div>
     <span>DAY</span>
+  </div>
+  <div className="time-box">
+    <div className="box">{time.hours}</div>
     <span>HOUR</span>
+  </div>
+  <div className="time-box">
+    <div className="box">{time.minutes}</div>
     <span>MIN</span>
+  </div>
+  <div className="time-box">
+    <div className="box">{time.seconds}</div>
     <span>SEC</span>
   </div>
-          
+</div>
+
+          </div>
+
         </div>
-      </Link>
+      </div>
 
       {/* ---------------- STYLES ---------------- */}
       <style>{`
-        .hero-offer {
-  display: block;
-  position: relative;
-  height: 520px;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 40px;
-  text-decoration: none;
-  color: #1f1f1f;
-  transition: background-image 1s ease-in-out;
-  font-family: 'Montserrat', sans-serif;
+        .offer-wrapper {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+          margin-bottom: 40px;
+        }
+
+        /* IMAGE */
+        .offer-image {
+          height: clamp(260px, 40vw, 520px);
+          background-size: cover;
+          background-position: center;
+          border-radius: 14px 0 0 14px;
+        }
+
+        /* CONTENT */
+        .offer-content {
+          padding: clamp(20px, 4vw, 60px);
+          background: #f8f8f8;
+          border-radius: 0 14px 14px 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        /* MAIN HEADING */
+        h1 {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(28px, 6vw, 72px);
+          font-weight: 800;
+          line-height: 1.05;
+          margin-bottom: 12px;
+        }
+
+        /* SUB TITLE */
+        .sale {
+          font-size: clamp(12px, 2vw, 18px);
+          letter-spacing: clamp(2px, 0.8vw, 5px);
+          text-transform: uppercase;
+          margin-bottom: 22px;
+          color: #555;
+        }
+
+        /* COUNTDOWN */
+        .countdown {
+  display: flex;
+  gap: clamp(8px, 2vw, 16px);
+  flex-wrap: nowrap; /*  NO WRAP */
 }
 
-/* Glass overlay */
-.overlay {
-  position: absolute;
-  inset: 0;
-  padding: 60px;
-  background: linear-gradient(
-    to right,
-    
-    rgba(255,255,255,0.15)
-  );
-  
+.time-box {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
 }
 
-/* MASS HEADLINE */
-.overlay h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 88px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-  line-height: 1.05;
-}
-
-/* Offer title */
-.sale {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  margin-bottom: 30px;
-  color: #333;
-}
-
-/* Countdown row */
-.countdown {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-/* Countdown boxes – premium card look */
-.box {
-  background: linear-gradient(145deg, #111, #333);
-  color: #fff;
-  font-size: 28px;
-  font-weight: 700;
-  padding: 18px 22px;
-  border-radius: 10px;
-  min-width: 78px;
-  text-align: center;
-  box-shadow:
-    0 10px 20px rgba(0,0,0,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.15);
-}
-
-/* Labels under countdown */
-.labels {
-  display: flex;
-  gap: 48px;
-  margin-top: 8px;
-  font-size: 11px;
+.time-box span {
+  margin-top: 4px;
+  font-size: clamp(8px, 1.8vw, 11px);
   font-weight: 700;
   letter-spacing: 2px;
-  color: #444;
-  padding-left: 10px;
-}
-
-/* ---------------- TABLET ---------------- */
-@media (max-width: 768px) {
-  .hero-offer {
-    height: 380px;
-  }
-
-  .overlay {
-    padding: 30px;
-  }
-
-  .overlay h1 {
-    font-size: 46px;
-    letter-spacing: 1px;
-  }
-
-  .sale {
-    font-size: 14px;
-    letter-spacing: 4px;
-  }
-
-  .box {
-    font-size: 18px;
-    padding: 12px 14px;
-    min-width: 60px;
-  }
-
-  .labels {
-    gap: 30px;
-    font-size: 10px;
-  }
-}
-
-/* ---------------- MOBILE ---------------- */
-@media (max-width: 480px) {
-  .overlay h1 {
-    font-size: 34px;
-  }
-
-  .countdown {
-    justify-content: center;
-  }
-
-  .labels {
-    justify-content: center;
-    gap: 22px;
-  }
+  color: #666;
 }
 
       `}</style>
-    </>
+    </Link>
   );
 };
 

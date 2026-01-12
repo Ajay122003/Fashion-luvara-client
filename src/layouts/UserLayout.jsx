@@ -1,13 +1,22 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import UserNavbar from "../components/Navbar/UserNavbar";
 import Footer from "../components/Footer/Footer";
 import ThemeToggle from "../components/ThemeToggle";
-import CartOffcanvas from "../components/Cart/CartOffcanvas"; // 🔥 ADD THIS
+import CartOffcanvas from "../components/Cart/CartOffcanvas";
+import { Toaster } from "react-hot-toast";
 
 const UserLayout = () => {
+  const location = useLocation();
+
+  // 🔥 Home page check
+  const isHomePage = location.pathname === "/";
+
   return (
     <>
-      {/* CSS INSIDE JSX */}
+      {/* 🔥 TOAST ROOT */}
+      <Toaster position="top-right" reverseOrder={false} />
+
+      {/* 🔥 THEME TOGGLE STYLE */}
       <style>{`
         .theme-toggle-wrapper {
           position: fixed;
@@ -26,25 +35,23 @@ const UserLayout = () => {
       `}</style>
 
       <div className="min-h-screen flex flex-col">
+        {/* 🔥 THEME TOGGLE – HOME PAGE ONLY */}
+        {isHomePage && (
+          <div className="theme-toggle-wrapper">
+            <ThemeToggle />
+          </div>
+        )}
 
-        {/* GLOBAL THEME TOGGLE */}
-        <div className="theme-toggle-wrapper">
-          <ThemeToggle />
-        </div>
-
-        {/* NAVBAR */}
         <UserNavbar />
 
-        {/* PAGE CONTENT */}
         <main className="flex-1">
           <Outlet />
         </main>
 
-        {/* FOOTER */}
         <Footer />
       </div>
 
-      {/* 🔥 GLOBAL SIDE CART (OFFCANVAS) */}
+      {/*  SIDE CART */}
       <CartOffcanvas />
     </>
   );

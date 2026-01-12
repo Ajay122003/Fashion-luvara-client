@@ -46,7 +46,7 @@ const Register = () => {
       setLoading(true);
       await registerUser(form);
       toast.success("Account created! Please login.");
-      navigate("/login", { replace: true });
+      setTimeout(()=>navigate("/login", { replace: true }),1000);
     } catch (err) {
       const data = err.response?.data;
       toast.error(

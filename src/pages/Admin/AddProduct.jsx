@@ -7,6 +7,7 @@ import {
 } from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/Admin/ProductForm";
+import toast from "react-hot-toast";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const AddProduct = () => {
     collections: [],
     offer: null,
     is_active: true,
-    variants: [],
+    variants: [], // 🔥 important
   });
 
   /* ================= MASTER DATA ================= */
@@ -47,13 +48,24 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    /* ===== BASIC VALIDATION ===== */
     if (!product.sku.trim()) {
-      alert("Product Number (SKU) is required");
+      toast.error("Product SKU is required");
       return;
     }
 
     if (product.variants.length === 0) {
-      alert("Add at least one variant");
+      toast.error("Add at least one variant");
+      return;
+    }
+
+    /* ===== VARIANT VALIDATION (🔥 IMPORTANT FIX) ===== */
+    const invalidVariant = product.variants.some(
+      (v) => !v.size || v.stock === "" || Number(v.stock) < 0
+    );
+
+    if (invalidVariant) {
+      toast.error("Please fill all variant fields correctly");
       return;
     }
 
@@ -72,7 +84,7 @@ const AddProduct = () => {
     }
 
     /* ===== OFFER ===== */
-    if (product.offer) {
+    if (product.offer !== null) {
       form.append("offer", product.offer);
     }
 
@@ -81,7 +93,7 @@ const AddProduct = () => {
       form.append("collections", id);
     });
 
-    /* ===== VARIANTS (🔥 FIXED – JSON FORMAT) ===== */
+    /* ===== VARIANTS (JSON) ===== */
     form.append(
       "variants",
       JSON.stringify(
@@ -100,17 +112,17 @@ const AddProduct = () => {
 
     try {
       await createAdminProduct(form);
-      alert("Product added successfully!");
+      toast.success("Product added successfully!");
       navigate("/admin/products");
     } catch (err) {
-      console.error(err.response?.data);
+      console.error(err.response?.data || err);
 
       if (err.response?.data?.sku) {
-        alert("Product Number (SKU) already exists");
+        toast.error("Product SKU already exists");
       } else if (err.response?.data?.variants) {
-        alert("Invalid variants data");
+        toast.error("Invalid variants data");
       } else {
-        alert("Failed to add product");
+        toast.error("Failed to add product");
       }
     }
   };

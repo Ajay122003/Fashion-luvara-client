@@ -132,7 +132,7 @@ const Profile = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4 fw-bold">My Account</h3>
+      <h3 className="mb-4 fw-bold" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>My Account</h3>
 
       <div className="row g-4">
         {/* ================= LEFT : PROFILE ================= */}

@@ -4,6 +4,7 @@ import {
   adminUpdateOrder,
 } from "../../api/admin";
 import { useParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const STATUS_FLOW = [
   "PENDING",
@@ -39,27 +40,37 @@ const OrderDetails = () => {
     // eslint-disable-next-line
   }, []);
 
-  const updateOrder = async (key, value) => {
-    try {
-      await adminUpdateOrder(id, { [key]: value });
-      loadOrder();
-    } catch {
-      alert("Update failed");
-    }
-  };
+ const updateOrder = async (key, value) => {
+  try {
+    await adminUpdateOrder(id, { [key]: value });
+
+    // 🔥 ADD TOAST HERE
+    toast.success("Order updated successfully");
+
+    loadOrder();
+  } catch {
+    toast.error("Update failed");
+  }
+};
+
 
   const saveShippingDetails = async () => {
-    try {
-      await adminUpdateOrder(id, {
-        courier_name: courierName,
-        tracking_id: trackingId,
-        status: "SHIPPED",
-      });
-      loadOrder();
-    } catch {
-      alert("Failed to update shipping");
-    }
-  };
+  try {
+    await adminUpdateOrder(id, {
+      courier_name: courierName,
+      tracking_id: trackingId,
+      status: "SHIPPED",
+    });
+
+    // 🔥 ADD
+    toast.success("Shipping details updated");
+
+    loadOrder();
+  } catch {
+    toast.error("Failed to update shipping");
+  }
+};
+
 
   if (loading)
     return <p className="text-center py-5">Loading…</p>;
