@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CategoryForm from "../../components/Admin/CategoryForm";
-import { fetchAdminCategories, updateAdminCategory } from "../../api/admin";
-import adminClient from "../../api/adminClient";
+import { fetchSingleAdminCategory,  updateAdminCategory } from "../../api/admin";
+
 
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -22,9 +22,9 @@ const EditCategory = () => {
     loadCategory();
   }, []);
 
-  const loadCategory = async () => {
-    const res = await adminClient.get(`/api/admin-panel/categories/${id}/`);
-    setCategory(res.data);
+   const loadCategory = async () => {
+    const data = await fetchSingleAdminCategory(id); //  API function
+    setCategory(data);
   };
 
   const handleSubmit = async (e) => {

@@ -19,8 +19,8 @@ const Settings = () => {
     enable_cod: true,
     allow_order_cancel: true,
     allow_order_return: true,
-    shipping_charge: 50,
-    free_shipping_min_amount: 999,
+    shipping_charge: "",
+    free_shipping_min_amount: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -28,23 +28,35 @@ const Settings = () => {
 
   /* ================= LOAD SETTINGS ================= */
   const loadSettings = async () => {
-    try {
-      const data = await fetchSiteSettings();
-      setSettings({
-        ...data,
-        shipping_charge: Number(data.shipping_charge),
-        free_shipping_min_amount: Number(data.free_shipping_min_amount),
-      });
-    } catch {
-      alert("Failed to load settings");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await fetchSiteSettings();
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
+    setSettings({
+      enable_cod: data.enable_cod ?? true,
+      allow_order_cancel: data.allow_order_cancel ?? true,
+      allow_order_return: data.allow_order_return ?? true,
+
+      // 🔥 STRING-ah set pannu
+      shipping_charge:
+        data.shipping_charge !== null &&
+        data.shipping_charge !== undefined
+          ? String(data.shipping_charge)
+          : "",
+
+      free_shipping_min_amount:
+        data.free_shipping_min_amount !== null &&
+        data.free_shipping_min_amount !== undefined
+          ? String(data.free_shipping_min_amount)
+          : "",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() => {
+  loadSettings();
+}, []);
+
 
   /* ================= HANDLERS ================= */
   const handleToggle = (e) => {
@@ -52,25 +64,39 @@ const Settings = () => {
   };
 
   const handleNumberChange = (e) => {
-    setSettings({ ...settings, [e.target.name]: Number(e.target.value) });
-  };
+  setSettings({
+    ...settings,
+    [e.target.name]: e.target.value,
+  });
+};
+
 
   /* ================= SAVE SETTINGS (COMMON) ================= */
-  const saveSettings = async () => {
+ const saveSettings = async () => {
   setSaving(true);
   try {
-    await updateSiteSettings(settings);
+    await updateSiteSettings({
+      ...settings,
+      shipping_charge:
+        settings.shipping_charge === ""
+          ? null
+          : Number(settings.shipping_charge),
 
-    // 🔥 ADD THIS LINE
+      free_shipping_min_amount:
+        settings.free_shipping_min_amount === ""
+          ? null
+          : Number(settings.free_shipping_min_amount),
+    });
+
     toast.success("Settings updated successfully");
-
     loadSettings();
-  } catch (err) {
+  } catch {
     toast.error("Failed to update settings");
   } finally {
     setSaving(false);
   }
 };
+
 
 
   /* ================= ACCOUNT ================= */

@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
-import publicClient from "../../api/publicClient";
-import apiClient from "../../api/client";
-
+import { fetchProductDetail } from "../../api/products";
+import { addToCart } from "../../api/cart";
 import { fetchCart } from "../../features/cart/cartSlice";
 import { toggleWishlist, getWishlistStatus } from "../../api/wishlist";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
-
 import storage from "../../utils/storage";
 import {
   toggleGuestWishlist,
@@ -52,21 +49,22 @@ const ProductDetail = () => {
 
   /* ================= LOAD PRODUCT ================= */
   useEffect(() => {
-    const loadProduct = async () => {
-      try {
-        const res = await publicClient.get(`/api/products/${id}/`);
-        setProduct(res.data);
-        if (res.data.images?.length) {
-          setMainImage(res.data.images[0].image_url);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadProduct = async () => {
+    try {
+      const data = await fetchProductDetail(id); //  API function
+      setProduct(data);
 
-    setLoading(true);
-    loadProduct();
-  }, [id]);
+      if (data.images?.length) {
+        setMainImage(data.images[0].image_url);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  setLoading(true);
+  loadProduct();
+}, [id]);
 
   useEffect(() => {
   if (!product?.offer_end_date) return;
@@ -170,29 +168,31 @@ const ProductDetail = () => {
 
   /* ================= ADD TO CART ================= */
   const handleAddToCart = async () => {
-    if (!selectedVariant || isOutOfStock) return;
+  if (!selectedVariant || isOutOfStock) return;
 
-    await apiClient.post("/api/cart/add/", {
-      variant_id: selectedVariant.id,
-      quantity: 1,
-    });
+  await addToCart({
+    variant_id: selectedVariant.id,
+    quantity: 1,
+  });
 
-    dispatch(fetchCart());
-    openCartSidebar();
-  };
+  dispatch(fetchCart());
+  openCartSidebar();
+};
+
 
   /* ================= BUY NOW ================= */
   const handleBuyNow = async () => {
-    if (!selectedVariant || isOutOfStock) return;
+  if (!selectedVariant || isOutOfStock) return;
 
-    await apiClient.post("/api/cart/add/", {
-      variant_id: selectedVariant.id,
-      quantity: 1,
-    });
+  await addToCart({
+    variant_id: selectedVariant.id,
+    quantity: 1,
+  });
 
-    dispatch(fetchCart());
-    navigate("/checkout");
-  };
+  dispatch(fetchCart());
+  navigate("/checkout");
+};
+
 
   /* ================= WISHLIST TOGGLE ================= */
   const handleWishlistToggle = async () => {
@@ -338,7 +338,7 @@ const ProductDetail = () => {
 
               {/*  ADDED */}
               <button
-                className="btn btn-link p-0 small text-decoration-underline"
+                className="btn btn-link p-0 small text-decoration-underline text-dark"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#sizeChartModal"
               >

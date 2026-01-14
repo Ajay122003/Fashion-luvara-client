@@ -88,6 +88,13 @@ export const createAdminProduct = async (formData) => {
   return res.data;
 };
 
+export const fetchSingleAdminProduct = async (id) => {
+  const res = await adminClient.get(
+    `/api/admin-panel/products/${id}/`
+  );
+  return res.data;
+};
+
 export const updateAdminProduct = async (id, formData) => {
   const res = await adminClient.put(
     `/api/admin-panel/products/${id}/`,

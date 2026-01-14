@@ -28,12 +28,16 @@ const Profile = () => {
   const [showAddrForm, setShowAddrForm] = useState(false);
 
   const [addrForm, setAddrForm] = useState({
-    name: "",
-    phone: "",
-    pincode: "",
-    city: "",
-    full_address: "",
-  });
+  first_name: "",
+  last_name: "",
+  phone: "",
+  address: "",
+  apartment: "",
+  city: "",
+  state: "",
+  pincode: "",
+});
+
 
   const [loading, setLoading] = useState(true);
 
@@ -82,27 +86,58 @@ const Profile = () => {
 
   /* ================= ADDRESS ADD ================= */
   const saveAddress = async () => {
-    const { name, phone, pincode, city, full_address } = addrForm;
-    if (!name || !phone || !pincode || !city || !full_address) {
-      return toast.error("Fill all address fields");
-    }
+  const {
+    first_name,
+    last_name,
+    phone,
+    address,
+    city,
+    state,
+    pincode,
+  } = addrForm;
 
-    try {
-      await addAddress(addrForm);
-      toast.success("Address added");
-      setAddrForm({
-        name: "",
-        phone: "",
-        pincode: "",
-        city: "",
-        full_address: "",
-      });
-      setShowAddrForm(false);
-      loadAll();
-    } catch {
-      toast.error("Failed to add address");
-    }
-  };
+  if (
+    !first_name ||
+    !last_name ||
+    !phone ||
+    !address ||
+    !city ||
+    !state ||
+    !pincode
+  ) {
+    return toast.error("Fill all address fields");
+  }
+
+  try {
+    await addAddress({
+      name: `${first_name} ${last_name}`,
+      phone,
+      pincode,
+      city,
+      state,
+      full_address: `${address}, ${addrForm.apartment}`,
+    });
+
+    toast.success("Address added");
+
+    // ✅ reset properly
+    setAddrForm({
+      first_name: "",
+      last_name: "",
+      phone: "",
+      address: "",
+      apartment: "",
+      city: "",
+      state: "",
+      pincode: "",
+    });
+
+    setShowAddrForm(false);
+    loadAll();
+  } catch {
+    toast.error("Failed to add address");
+  }
+};
 
   /* ================= ADDRESS DELETE ================= */
   const removeAddress = async (id) => {
@@ -223,47 +258,92 @@ const Profile = () => {
               className="card shadow-sm p-4 mb-3 rounded-4"
               data-aos="fade-down"
             >
-              <div className="row g-3">
-                <input
-                  className="form-control"
-                  placeholder=" Name"
-                  onChange={(e) =>
-                    setAddrForm({ ...addrForm, name: e.target.value })
-                  }
-                />
-                <input
-                  className="form-control"
-                  placeholder=" Phone"
-                  onChange={(e) =>
-                    setAddrForm({ ...addrForm, phone: e.target.value })
-                  }
-                />
-                <input
-                  className="form-control"
-                  placeholder=" Pincode"
-                  onChange={(e) =>
-                    setAddrForm({ ...addrForm, pincode: e.target.value })
-                  }
-                />
-                <input
-                  className="form-control"
-                  placeholder=" City"
-                  onChange={(e) =>
-                    setAddrForm({ ...addrForm, city: e.target.value })
-                  }
-                />
-                <textarea
-                  className="form-control"
-                  placeholder=" Full Address"
-                  rows={2}
-                  onChange={(e) =>
-                    setAddrForm({
-                      ...addrForm,
-                      full_address: e.target.value,
-                    })
-                  }
-                />
-              </div>
+              <div className="row g-2">
+  <div className="col-md-6">
+    <input
+      className="form-control"
+      placeholder="First name"
+      value={addrForm.first_name}
+      onChange={(e) =>
+        setAddrForm({ ...addrForm, first_name: e.target.value })
+      }
+    />
+  </div>
+
+  <div className="col-md-6">
+    <input
+      className="form-control"
+      placeholder="Last name"
+      value={addrForm.last_name}
+      onChange={(e) =>
+        setAddrForm({ ...addrForm, last_name: e.target.value })
+      }
+    />
+  </div>
+</div>
+
+<input
+  className="form-control mt-2"
+  placeholder="Address"
+  value={addrForm.address}
+  onChange={(e) =>
+    setAddrForm({ ...addrForm, address: e.target.value })
+  }
+/>
+
+<input
+  className="form-control mt-2"
+  placeholder="Apartment (optional)"
+  value={addrForm.apartment}
+  onChange={(e) =>
+    setAddrForm({ ...addrForm, apartment: e.target.value })
+  }
+/>
+
+<div className="row g-2 mt-1">
+  <div className="col-md-4">
+    <input
+      className="form-control"
+      placeholder="City"
+      value={addrForm.city}
+      onChange={(e) =>
+        setAddrForm({ ...addrForm, city: e.target.value })
+      }
+    />
+  </div>
+
+  <div className="col-md-4">
+    <input
+      className="form-control"
+      placeholder="State"
+      value={addrForm.state}
+      onChange={(e) =>
+        setAddrForm({ ...addrForm, state: e.target.value })
+      }
+    />
+  </div>
+
+  <div className="col-md-4">
+    <input
+      className="form-control"
+      placeholder="Pincode"
+      value={addrForm.pincode}
+      onChange={(e) =>
+        setAddrForm({ ...addrForm, pincode: e.target.value })
+      }
+    />
+  </div>
+</div>
+
+<input
+  className="form-control mt-2"
+  placeholder="Phone"
+  value={addrForm.phone}
+  onChange={(e) =>
+    setAddrForm({ ...addrForm, phone: e.target.value })
+  }
+/>
+
 
               <button
                 className="btn btn-dark mt-3 w-100"
@@ -297,7 +377,7 @@ const Profile = () => {
                   </p>
                   <p className="small text-muted mb-0">
                     <i className="bi bi-house-door-fill me-1"></i>
-                    {addr.full_address}, {addr.city} – {addr.pincode}
+                    {addr.full_address}, {addr.city}, {addr.state} – {addr.pincode}
                   </p>
                 </div>
 

@@ -3,6 +3,7 @@ import {
   fetchAdminCategories,
   fetchAdminCollections,
   fetchAdminOffers,
+   fetchSingleAdminProduct,
   updateAdminProduct,
   deleteProductImage,
 } from "../../api/admin";
@@ -46,46 +47,44 @@ const EditProduct = () => {
   }, []);
 
   const loadData = async () => {
-    try {
-      /* -------- PRODUCT -------- */
-      const prodRes = await adminClient.get(
-        `/api/admin-panel/products/${id}/`
-      );
+  try {
+    /* -------- PRODUCT -------- */
+    const prodData = await fetchSingleAdminProduct(id);
 
-      /* -------- MASTER DATA -------- */
-      const cats = await fetchAdminCategories();
-      const cols = await fetchAdminCollections();
-      const offerRes = await fetchAdminOffers();
+    /* -------- MASTER DATA -------- */
+    const cats = await fetchAdminCategories();
+    const cols = await fetchAdminCollections();
+    const offerRes = await fetchAdminOffers();
 
-      setCategories(cats);
-      setCollections(cols);
-      setOffers(offerRes.results || offerRes);
+    setCategories(cats);
+    setCollections(cols);
+    setOffers(offerRes.results || offerRes);
 
-      /* -------- SET PRODUCT -------- */
-      setProduct({
-        name: prodRes.data.name || "",
-        sku: prodRes.data.sku || "",
-        description: prodRes.data.description || "",
-        price: prodRes.data.price || "",
-        sale_price: prodRes.data.sale_price || "",
-        category: prodRes.data.category || "",
-        collections: prodRes.data.collections || [],
-        offer: prodRes.data.offer ?? null,
-        is_active: prodRes.data.is_active ?? true,
-        variants:
-          (prodRes.data.variants || []).map((v) => ({
-            size: v.size || "",
-            color: v.color || "",
-            stock: v.stock ?? "",
-          })),
-      });
+    /* -------- SET PRODUCT -------- */
+    setProduct({
+      name: prodData.name || "",
+      sku: prodData.sku || "",
+      description: prodData.description || "",
+      price: prodData.price || "",
+      sale_price: prodData.sale_price || "",
+      category: prodData.category || "",
+      collections: prodData.collections || [],
+      offer: prodData.offer ?? null,
+      is_active: prodData.is_active ?? true,
+      variants: (prodData.variants || []).map((v) => ({
+        size: v.size || "",
+        color: v.color || "",
+        stock: v.stock ?? "",
+      })),
+    });
 
-      setExistingImages(prodRes.data.images || []);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load product");
-    }
-  };
+    setExistingImages(prodData.images || []);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to load product");
+  }
+};
+
 
   /* ================= REMOVE EXISTING IMAGE ================= */
   const removeExistingImage = async (imageId) => {

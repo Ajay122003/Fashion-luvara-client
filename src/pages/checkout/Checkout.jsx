@@ -215,34 +215,66 @@ const handlePlaceOrder = async () => {
 
   return (
     <div className="container py-4">
-      <h3 className="fw-bold mb-4">Checkout</h3>
+      <h3 className="fw-bold mb-4" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+        Checkout</h3>
 
       <div className="row g-4">
         {/* LEFT */}
         <div className="col-md-7">
           {/* DELIVERY ADDRESS */}
-          <div className="card p-3 shadow-sm mb-3">
+         <div className="card p-3 shadow-sm mb-3">
   <h5>Delivery Address</h5>
 
-  <label className="d-block mt-3">
+  {/* ================= SAVED ADDRESSES ================= */}
+  {addresses.length > 0 && (
+    <>
+      <p className="fw-semibold mt-3 mb-2">Saved Addresses</p>
+
+      {addresses.map((addr) => (
+        <label
+          key={addr.id}
+          className="border rounded p-2 mb-2 d-block"
+          style={{ cursor: "pointer" }}
+        >
+          <input
+            type="radio"
+            name="delivery_address"
+            className="me-2"
+            checked={!useNewAddress && addressId === addr.id}
+            onChange={() => {
+              setAddressId(addr.id);
+              setUseNewAddress(false);
+            }}
+          />
+          <strong>{addr.name}</strong> <br />
+          {addr.full_address}, {addr.city}, {addr.state} -{" "}
+          {addr.pincode} <br />
+          <small>📞 {addr.phone}</small>
+        </label>
+      ))}
+    </>
+  )}
+
+  {/* ================= NEW ADDRESS OPTION ================= */}
+  <label className="d-block mt-3 fw-semibold">
     <input
       type="radio"
+      name="delivery_address"
+      className="me-2"
       checked={useNewAddress}
       onChange={() => setUseNewAddress(true)}
-      className="me-2"
     />
-    Enter Delivery Address(click)
+    Enter New Delivery Address
   </label>
 
+  {/* ================= NEW ADDRESS FORM ================= */}
   {useNewAddress && (
     <div className="mt-3">
 
-      {/* COUNTRY */}
       <select className="form-select mb-2" disabled>
         <option>India</option>
       </select>
 
-      {/* FIRST + LAST NAME */}
       <div className="row g-2">
         <div className="col-md-6">
           <input
@@ -250,7 +282,10 @@ const handlePlaceOrder = async () => {
             placeholder="First name"
             value={newAddress.first_name}
             onChange={(e) =>
-              setNewAddress({ ...newAddress, first_name: e.target.value })
+              setNewAddress({
+                ...newAddress,
+                first_name: e.target.value,
+              })
             }
           />
         </div>
@@ -260,33 +295,39 @@ const handlePlaceOrder = async () => {
             placeholder="Last name"
             value={newAddress.last_name}
             onChange={(e) =>
-              setNewAddress({ ...newAddress, last_name: e.target.value })
+              setNewAddress({
+                ...newAddress,
+                last_name: e.target.value,
+              })
             }
           />
         </div>
       </div>
 
-      {/* ADDRESS */}
       <input
         className="form-control mt-2"
         placeholder="Address"
         value={newAddress.address}
         onChange={(e) =>
-          setNewAddress({ ...newAddress, address: e.target.value })
+          setNewAddress({
+            ...newAddress,
+            address: e.target.value,
+          })
         }
       />
 
-      {/* APARTMENT */}
       <input
         className="form-control mt-2"
-        placeholder="Apartment, suite, etc. (optional)"
+        placeholder="Apartment (optional)"
         value={newAddress.apartment}
         onChange={(e) =>
-          setNewAddress({ ...newAddress, apartment: e.target.value })
+          setNewAddress({
+            ...newAddress,
+            apartment: e.target.value,
+          })
         }
       />
 
-      {/* CITY / STATE / PIN */}
       <div className="row g-2 mt-1">
         <div className="col-md-4">
           <input
@@ -294,50 +335,58 @@ const handlePlaceOrder = async () => {
             placeholder="City"
             value={newAddress.city}
             onChange={(e) =>
-              setNewAddress({ ...newAddress, city: e.target.value })
+              setNewAddress({
+                ...newAddress,
+                city: e.target.value,
+              })
             }
           />
-        </div>
-
-        <div className="col-md-4">
-          <select
-            className="form-select"
-            value={newAddress.state}
-            onChange={(e) =>
-              setNewAddress({ ...newAddress, state: e.target.value })
-            }
-          >
-            <option value="">State</option>
-            <option value="Tamil Nadu">Tamil Nadu</option>
-            <option value="Kerala">Kerala</option>
-            <option value="Karnataka">Karnataka</option>
-          </select>
         </div>
 
         <div className="col-md-4">
           <input
             className="form-control"
-            placeholder="PIN code"
+            placeholder="State"
+            value={newAddress.state}
+            onChange={(e) =>
+              setNewAddress({
+                ...newAddress,
+                state: e.target.value,
+              })
+            }
+          />
+        </div>
+
+        <div className="col-md-4">
+          <input
+            className="form-control"
+            placeholder="Pincode"
             value={newAddress.pincode}
             onChange={(e) =>
-              setNewAddress({ ...newAddress, pincode: e.target.value })
+              setNewAddress({
+                ...newAddress,
+                pincode: e.target.value,
+              })
             }
           />
         </div>
       </div>
 
-      {/* PHONE */}
       <input
         className="form-control mt-2"
         placeholder="Phone"
         value={newAddress.phone}
         onChange={(e) =>
-          setNewAddress({ ...newAddress, phone: e.target.value })
+          setNewAddress({
+            ...newAddress,
+            phone: e.target.value,
+          })
         }
       />
     </div>
   )}
 </div>
+
 
 
           {/* PAYMENT */}

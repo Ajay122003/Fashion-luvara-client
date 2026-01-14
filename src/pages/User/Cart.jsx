@@ -44,25 +44,49 @@ const Cart = () => {
 
   /* ================= EMPTY CART ================= */
   if (!items || items.length === 0) {
-    return (
-      <div className="container py-5 text-center">
-        <h4 className="fw-bold">Your cart is empty</h4>
+  return (
+    
+      <div
+        className="mx-auto text-center p-4 p-md-5 rounded-4 "
+        
+      >
+        {/* ICON */}
+        <div
+          className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+          style={{
+            width: 72,
+            height: 72,
+            background: "#f1f3f5",
+          }}
+        >
+          <i className="bi bi-cart-x fs-2 text-dark"></i>
+        </div>
+
+        {/* TEXT */}
+        <h4 className="fw-bold mb-1">Your cart is empty</h4>
+        <p className="text-muted mb-4">
+          Looks like you haven’t added anything yet.
+        </p>
+
+        {/* CTA */}
         <button
-          className="btn btn-outline-dark mt-3"
+          className="btn btn-dark rounded-pill px-4 py-2"
           onClick={() => navigate("/")}
         >
           Continue Shopping
         </button>
       </div>
-    );
-  }
+  
+  );
+}
+
 
   return (
     <div className="container py-4">
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <button
-          className="continue-shopping"
+          className="continue-shopping "
           onClick={() => navigate("/")}
         >
           ← Continue Shopping

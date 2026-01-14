@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import publicClient from "../../api/publicClient";
+import { getCategoryDetail } from "../../api/category";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -12,9 +12,7 @@ const CategoryProducts = () => {
 
   const loadCategory = async () => {
     try {
-      const res = await publicClient.get(
-        `/api/categories/slug/${slug}/`
-      );
+      const res = await getCategoryDetail(slug);
       setCategory(res.data);
     } catch (err) {
       console.error("Category not found", err);
