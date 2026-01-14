@@ -249,7 +249,7 @@ const handlePlaceOrder = async () => {
           <strong>{addr.name}</strong> <br />
           {addr.full_address}, {addr.city}, {addr.state} -{" "}
           {addr.pincode} <br />
-          <small>📞 {addr.phone}</small>
+          <small> {addr.phone}</small>
         </label>
       ))}
     </>

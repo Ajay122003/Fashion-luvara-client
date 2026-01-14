@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchAdminOrders } from "../../api/admin";
+import { fetchAdminOrders, deleteAdminOrder } from "../../api/admin";
 import { Link } from "react-router-dom";
 
 const STATUS_LIST = [
@@ -13,7 +13,7 @@ const STATUS_LIST = [
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("");
-  const [search, setSearch] = useState(""); // 🔍 search
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   const loadOrders = async () => {
@@ -32,11 +32,19 @@ const Orders = () => {
     loadOrders();
   }, [filter]);
 
-  /* ================= FILTER + SEARCH ================= */
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this order?")) return;
+    try {
+      await deleteAdminOrder(id);
+      alert("Order deleted");
+      loadOrders();
+    } catch {
+      alert("Delete failed");
+    }
+  };
+
   const filteredOrders = orders.filter((o) =>
-    o.order_number
-      .toLowerCase()
-      .includes(search.toLowerCase())
+    o.order_number.toLowerCase().includes(search.toLowerCase())
   );
 
   const getCount = (status) => {
@@ -46,7 +54,7 @@ const Orders = () => {
 
   return (
     <div className="container-fluid py-3">
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div className="mb-3">
         <h3 className="fw-bold mb-1">Orders</h3>
         <small className="text-muted">
@@ -54,18 +62,17 @@ const Orders = () => {
         </small>
       </div>
 
-      {/* ================= SEARCH ================= */}
+      {/* SEARCH */}
       <div className="mb-3">
         <input
-          type="text"
           className="form-control"
-          placeholder=" Search by order number"
+          placeholder="Search by order number"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      {/* ================= STATUS FILTER ================= */}
+      {/* STATUS FILTER */}
       <div className="status-scroll mb-3">
         {STATUS_LIST.map((s) => (
           <button
@@ -85,12 +92,11 @@ const Orders = () => {
         ))}
       </div>
 
-      {/* ================= CONTENT ================= */}
       {loading ? (
         <p className="text-center">Loading orders…</p>
       ) : (
         <>
-          {/* ================= DESKTOP ================= */}
+          {/* ================= DESKTOP TABLE ================= */}
           <div className="table-scroll d-none d-md-block">
             <table className="table table-hover align-middle mb-0">
               <thead>
@@ -105,7 +111,6 @@ const Orders = () => {
                   <th></th>
                 </tr>
               </thead>
-
               <tbody>
                 {filteredOrders.length === 0 && (
                   <tr>
@@ -118,13 +123,9 @@ const Orders = () => {
                 {filteredOrders.map((o, i) => (
                   <tr key={o.id}>
                     <td>{i + 1}</td>
-                    <td className="fw-semibold">
-                      {o.order_number}
-                    </td>
+                    <td className="fw-semibold">{o.order_number}</td>
                     <td>{o.user_email}</td>
-                    <td className="fw-bold">
-                      ₹{o.total_amount}
-                    </td>
+                    <td className="fw-bold">₹{o.total_amount}</td>
 
                     <td>
                       <span
@@ -157,18 +158,25 @@ const Orders = () => {
                     </td>
 
                     <td>
-                      {new Date(
-                        o.created_at
-                      ).toLocaleDateString()}
+                      {new Date(o.created_at).toLocaleDateString()}
                     </td>
 
                     <td className="text-end">
                       <Link
                         to={`/admin/orders/${o.id}`}
-                        className="btn btn-sm btn-outline-dark"
+                        className="btn btn-sm btn-outline-dark me-2"
                       >
                         View
                       </Link>
+
+                      {o.can_delete && (
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => handleDelete(o.id)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -176,14 +184,12 @@ const Orders = () => {
             </table>
           </div>
 
-          {/* ================= MOBILE ================= */}
+          {/* ================= MOBILE CARD VIEW ================= */}
           <div className="d-md-none">
             {filteredOrders.map((o) => (
               <div key={o.id} className="order-card mb-3">
-                <div className="d-flex justify-content-between">
-                  <h6 className="fw-bold">
-                    {o.order_number}
-                  </h6>
+                <div className="d-flex justify-content-between align-items-center">
+                  <h6 className="fw-bold mb-0">{o.order_number}</h6>
                   <span
                     className={`badge ${
                       o.status === "DELIVERED"
@@ -199,41 +205,52 @@ const Orders = () => {
                   </span>
                 </div>
 
-                <p className="small mb-1">
-                  <b>User:</b> {o.user_email}
-                </p>
-                <p className="small mb-1">
-                  <b>Total:</b> ₹{o.total_amount}
-                </p>
-                <p className="small mb-1">
-                  <b>Payment:</b>{" "}
-                  {o.payment_status}
-                </p>
+                <div className="small text-muted mt-1">
+                  {o.user_email}
+                </div>
 
-                <p className="small text-muted">
-                  {new Date(
-                    o.created_at
-                  ).toLocaleDateString()}
-                </p>
+                <div className="d-flex justify-content-between mt-2">
+                  <span>Total</span>
+                  <strong>₹{o.total_amount}</strong>
+                </div>
 
-                <Link
-                  to={`/admin/orders/${o.id}`}
-                  className="btn btn-sm btn-dark w-100"
-                >
-                  View Order
-                </Link>
+                <div className="d-flex justify-content-between">
+                  <span>Payment</span>
+                  <span>{o.payment_status}</span>
+                </div>
+
+                <div className="text-muted small mt-1">
+                  {new Date(o.created_at).toLocaleDateString()}
+                </div>
+
+                <div className="d-flex gap-2 mt-3">
+                  <Link
+                    to={`/admin/orders/${o.id}`}
+                    className="btn btn-sm btn-dark flex-fill"
+                  >
+                    View
+                  </Link>
+
+                  {o.can_delete && (
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => handleDelete(o.id)}
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         </>
       )}
 
-      {/* ================= STYLES ================= */}
+      {/* STYLES */}
       <style>{`
         .status-scroll {
           display: flex;
           overflow-x: auto;
-          padding-bottom: 6px;
         }
 
         .table-scroll {
@@ -252,10 +269,10 @@ const Orders = () => {
 
         .order-card {
           border: 1px solid #eee;
-          border-radius: 12px;
-          padding: 12px;
+          border-radius: 14px;
+          padding: 14px;
           background: #fff;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+          box-shadow: 0 6px 14px rgba(0,0,0,0.05);
         }
       `}</style>
     </div>
@@ -263,6 +280,3 @@ const Orders = () => {
 };
 
 export default Orders;
-
-
-

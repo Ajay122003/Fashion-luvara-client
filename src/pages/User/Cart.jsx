@@ -162,7 +162,7 @@ const Cart = () => {
                     <p className="small mb-2">
                       {variant.stock > 0 ? (
                         <span className="text-success">
-                          In stock ({variant.stock})
+                          In stock
                         </span>
                       ) : (
                         <span className="text-danger">

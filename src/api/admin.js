@@ -275,6 +275,15 @@ export const adminUpdateOrder = async (id, data) => {
 };
 
 
+/* ================= DELETE ORDER ================= */
+export const deleteAdminOrder = async (id) => {
+  const res = await adminClient.delete(
+    `/api/admin-panel/orders/${id}/delete/`
+  );
+  return res.data;
+};
+
+
 /* -----------------------------------------------
    COUPONS
 ------------------------------------------------ */
