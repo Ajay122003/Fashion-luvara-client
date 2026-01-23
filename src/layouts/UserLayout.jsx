@@ -36,11 +36,11 @@ const UserLayout = () => {
 
       <div className="min-h-screen flex flex-col">
         {/* 🔥 THEME TOGGLE – HOME PAGE ONLY */}
-        {isHomePage && (
+        {/* {isHomePage && (
           <div className="theme-toggle-wrapper">
             <ThemeToggle />
           </div>
-        )}
+        )} */}
 
         <UserNavbar />
 

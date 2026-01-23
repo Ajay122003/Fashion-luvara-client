@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { sendOtpLogin } from "../../api/auth";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/login.css";
-import Home from "../User/Home";
-
 
 const Login = () => {
   const navigate = useNavigate();
@@ -36,17 +34,24 @@ const Login = () => {
     try {
       setLoading(true);
       setMessage("");
+      setMessageType("");
 
-      await sendOtpLogin({ email });
+      // 🔥 API CALL
+      const res = await sendOtpLogin({ email });
 
-      setMessage("OTP has been sent to your email.");
-      
-      setMessageType("success");
-      setCooldown(60);
+      // 🔥 STRICT SUCCESS CHECK
+      if (res?.data?.email) {
+        setMessage("OTP has been sent to your email.");
+        setMessageType("success");
+        setCooldown(60);
 
-      setTimeout(() => {
-        navigate("/verify-otp", { state: { email } });
-      }, 1200);
+        // 🔥 IMMEDIATE REDIRECT (no delay needed)
+        navigate("/verify-otp", {
+          state: { email: res.data.email },
+        });
+      } else {
+        throw new Error("Invalid OTP response");
+      }
     } catch (err) {
       const data = err.response?.data;
       const status = err.response?.status;
@@ -95,7 +100,7 @@ const Login = () => {
           </div>
         )}
 
-        {/* FLOATING EMAIL INPUT */}
+        {/* EMAIL INPUT */}
         <div className="floating-input">
           <input
             type="email"
@@ -122,7 +127,6 @@ const Login = () => {
         <p className="login-footer">
           Don’t have an account? <Link to="/register">Sign up</Link>
         </p>
-
       </div>
     </div>
   );
