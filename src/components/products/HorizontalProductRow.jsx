@@ -89,7 +89,7 @@ const HorizontalProductRow = ({
       className="badge bg-dark rounded-pill position-absolute"
       style={{
         top: "8px",
-        right: "8px",   // 👈 offer badge opposite side
+        right: "8px",   //  offer badge opposite side
         fontSize: "0.75rem",
         padding: "6px 8px",
         zIndex: 2,
