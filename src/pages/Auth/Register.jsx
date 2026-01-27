@@ -37,8 +37,8 @@ const Register = () => {
       return;
     }
 
-    if (form.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (form.password.length < 1) {
+      toast.error("Password must be at least  characters");
       return;
     }
 
