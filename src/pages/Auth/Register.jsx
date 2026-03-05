@@ -73,7 +73,7 @@ const Register = () => {
       <div className="register-card bg-transparent p-4 p-md-5">
 
         {/* BRAND */}
-        <h2 className="text-center fw-bold mb-1">
+        <h2 className="text-center fw-bold mb-1" >
           Welcome to <span>LUVARA</span>
         </h2>
         <p className="text-center text-muted mb-4">

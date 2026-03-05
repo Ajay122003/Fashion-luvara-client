@@ -53,7 +53,9 @@ const Products = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="fw-bold mb-4">All Products</h3>
+      <h3 className="fw-bold mb-4"
+        style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+          All Products</h3>
 
       {/* FILTER BAR */}
       <div className="row g-3 mb-4">
@@ -143,7 +145,7 @@ const Products = () => {
       className="badge bg-dark rounded-pill position-absolute"
       style={{
         top: "8px",
-        right: "8px",   // 👈 offer badge opposite side
+        right: "8px",   //  offer badge opposite side
         fontSize: "0.75rem",
         padding: "6px 8px",
         zIndex: 2,

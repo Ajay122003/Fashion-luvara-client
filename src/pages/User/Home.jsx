@@ -4,12 +4,12 @@ import { fetchCollections } from "../../api/collections";
 import { getCategories } from "../../api/category";
 import { Link } from "react-router-dom";
 import Products from "./Products";
-import banner from "../../assets/videos/banner.mp4";
+import banner from "../../assets/videos/banner1.MOV";
 import Offers from "./Offers";
 import HorizontalProductRow from "../../components/products/HorizontalProductRow";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import ProductImageShowcase from "../../components/ProductImageShowcase";
+
 
 const Home = () => {
   const [collections, setCollections] = useState([]);
@@ -60,10 +60,10 @@ const Home = () => {
 
 
       <Offers />
-      {/* <ProductImageShowcase/> */}
+      
 
       {/* ================= CONTENT ================= */}
-      <div className="container mt-5">
+      <div className="container mt-1">
 
         {/* COLLECTIONS TITLE */}
         <h3
@@ -189,7 +189,7 @@ const Home = () => {
 
 .hero-banner-video {
   width: 100%;
-  height: 620px;
+  height: 640px;
   object-fit: cover;
   display: block;
 }
@@ -204,7 +204,7 @@ const Home = () => {
 /* Mobile */
 @media (max-width: 576px) {
   .hero-banner-video {
-    height: 220px;
+    height: 420px;
   }
 }
 

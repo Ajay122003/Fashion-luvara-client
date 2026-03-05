@@ -117,7 +117,7 @@ const ManageProducts = () => {
 
       {/* ================= DESKTOP TABLE ================= */}
       <div className="card shadow-sm border-0 d-none d-md-block">
-        <div className="table-responsive">
+        <div className="table-scroll table-responsive">
           <table className="table align-middle mb-0">
             <thead className="table-light">
               <tr>
@@ -292,6 +292,34 @@ const ManageProducts = () => {
           </div>
         </div>
       )}
+
+
+            <style>{`
+        .table-scroll {
+          max-height: 70vh;
+          overflow-y: auto;
+          overflow-x: auto;
+          border-radius: 12px;
+        }
+
+        .table-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+          background: #bbb;
+          border-radius: 10px;
+        }
+
+        table thead th {
+          position: sticky;
+          top: 0;
+          background: #f8f9fa;
+          z-index: 1;
+        }
+      `}</style>
+
+
 
     </div>
   );

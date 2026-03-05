@@ -8,7 +8,7 @@ const adminClient = axios.create({
 
 adminClient.interceptors.request.use(
   (config) => {
-    const token = storage.getAdminToken(); // ✅ ADMIN TOKEN ONLY
+    const token = storage.getAdminToken(); //  ADMIN TOKEN ONLY
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

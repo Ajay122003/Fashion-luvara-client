@@ -36,16 +36,16 @@ const Login = () => {
       setMessage("");
       setMessageType("");
 
-      // 🔥 API CALL
+      //  API CALL
       const res = await sendOtpLogin({ email });
 
-      // 🔥 STRICT SUCCESS CHECK
+      //  STRICT SUCCESS CHECK
       if (res?.data?.email) {
         setMessage("OTP has been sent to your email.");
         setMessageType("success");
         setCooldown(60);
 
-        // 🔥 IMMEDIATE REDIRECT (no delay needed)
+        //  IMMEDIATE REDIRECT (no delay needed)
         navigate("/verify-otp", {
           state: { email: res.data.email },
         });

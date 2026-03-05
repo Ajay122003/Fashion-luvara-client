@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AdminNavbar from "../components/Navbar/AdminNavbar";
 import { adminLogout } from "../features/admin/adminSlice";
+import { fetchUnreadOrderCount } from "../api/admin"; 
+
 
 const AdminLayout = () => {
   const [showSidebar, setShowSidebar] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -18,6 +21,23 @@ const AdminLayout = () => {
     `d-flex align-items-center gap-2 px-3 py-2 rounded sidebar-link ${
       isActive ? "active" : ""
     }`;
+
+  useEffect(() => {
+  const loadUnread = async () => {
+    try {
+      const data = await fetchUnreadOrderCount();
+      setUnreadCount(data.unread_count);
+    } catch (err) {
+      console.error("Unread count failed");
+    }
+  };
+
+  loadUnread();
+
+  // optional auto refresh every 20 sec
+  const interval = setInterval(loadUnread, 20000);
+  return () => clearInterval(interval);
+}, []);
 
   return (
     <div className="admin-layout d-flex flex-column min-vh-100">
@@ -52,7 +72,7 @@ const AdminLayout = () => {
               Collections
             </NavLink>
 
-            {/* ✅ OFFERS */}
+            {/*  OFFERS */}
             <NavLink to="/admin/offers" className={menuItemClass}>
               <i className="bi bi-percent" />
               Offers
@@ -64,9 +84,14 @@ const AdminLayout = () => {
             </NavLink>
 
             <NavLink to="/admin/orders" className={menuItemClass}>
-              <i className="bi bi-receipt" />
-              Orders
-            </NavLink>
+  <i className="bi bi-receipt" />
+  Orders
+  {unreadCount > 0 && (
+    <span className="badge bg-danger ms-auto">
+      {unreadCount}
+    </span>
+  )}
+</NavLink>
 
             <NavLink to="/admin/users" className={menuItemClass}>
               <i className="bi bi-people" />
@@ -163,13 +188,18 @@ const AdminLayout = () => {
             </NavLink>
 
             <NavLink
-              to="/admin/orders"
-              className={menuItemClass}
-              onClick={() => setShowSidebar(false)}
-            >
-              <i className="bi bi-receipt" />
-              Orders
-            </NavLink>
+  to="/admin/orders"
+  className={menuItemClass}
+  onClick={() => setShowSidebar(false)}
+>
+  <i className="bi bi-receipt" />
+  Orders
+  {unreadCount > 0 && (
+    <span className="badge bg-danger ms-auto">
+      {unreadCount}
+    </span>
+  )}
+</NavLink>
 
             <NavLink
               to="/admin/users"

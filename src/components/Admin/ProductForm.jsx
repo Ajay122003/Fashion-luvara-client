@@ -130,7 +130,7 @@ const ProductForm = ({
                 onChange={(e) =>
                   setProduct({
                     ...product,
-                    price: e.target.value, // ✅ STRING
+                    price: e.target.value, // STRING
                   })
                 }
               />
@@ -141,17 +141,19 @@ const ProductForm = ({
                 Sale Price
               </label>
               <input
-                type="number"
-                className="form-control"
-                value={product.sale_price || ""}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    sale_price: e.target.value || "",
-                    offer: e.target.value ? null : product.offer,
-                  })
-                }
-              />
+  type="text"
+  inputMode="numeric"
+  className="form-control"
+  value={product.sale_price || ""}
+  onChange={(e) =>
+    setProduct({
+      ...product,
+      sale_price: e.target.value,
+      offer: e.target.value ? null : product.offer,
+    })
+  }
+/>
+
             </div>
           </div>
         </div>

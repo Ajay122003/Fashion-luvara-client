@@ -5,7 +5,7 @@ import { getWishlist } from "../../api/wishlist";
 export const fetchWishlist = createAsyncThunk(
   "wishlist/fetchWishlist",
   async () => {
-    return await getWishlist(); // ✅ FIXED
+    return await getWishlist(); // FIXED
   }
 );
 

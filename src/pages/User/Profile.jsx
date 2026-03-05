@@ -120,7 +120,7 @@ const Profile = () => {
 
     toast.success("Address added");
 
-    // ✅ reset properly
+    //  reset properly
     setAddrForm({
       first_name: "",
       last_name: "",

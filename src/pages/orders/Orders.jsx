@@ -89,7 +89,7 @@ const Orders = () => {
                 {/* LEFT */}
                 <div className="col-md-6">
                   <h6 className="fw-bold mb-1">
-                    Order #{order.order_number || order.id}
+                    Order id : {order.order_number || order.id}
                   </h6>
 
                   <small className="text-muted">

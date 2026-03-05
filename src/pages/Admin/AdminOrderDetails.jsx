@@ -44,7 +44,7 @@ const OrderDetails = () => {
   try {
     await adminUpdateOrder(id, { [key]: value });
 
-    // 🔥 ADD TOAST HERE
+    //  ADD TOAST HERE
     toast.success("Order updated successfully");
 
     loadOrder();
@@ -62,7 +62,7 @@ const OrderDetails = () => {
       status: "SHIPPED",
     });
 
-    // 🔥 ADD
+    //  ADD
     toast.success("Shipping details updated");
 
     loadOrder();

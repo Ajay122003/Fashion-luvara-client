@@ -219,21 +219,65 @@ const OrderDetail = () => {
       </div>
 
       {/* ================= PAYMENT SUMMARY ================= */}
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <div className="d-flex justify-content-between mb-2">
-            <span>Payment Status</span>
-            <strong>{order.payment_status}</strong>
-          </div>
+      {/* ================= PAYMENT SUMMARY ================= */}
+<div className="card shadow-sm">
+  <div className="card-body">
 
-          <hr />
+    {/* Payment Status */}
+    <div className="d-flex justify-content-between mb-2">
+      <span>Payment Status</span>
+      <strong>{order.payment_status}</strong>
+    </div>
 
-          <div className="d-flex justify-content-between fs-5 fw-bold">
-            <span>Total Paid</span>
-            <span>₹{Number(order.total_amount).toFixed(2)}</span>
-          </div>
-        </div>
+    <hr />
+
+    {/* Subtotal */}
+    <div className="d-flex justify-content-between mb-2">
+      <span>Subtotal</span>
+      ₹{Number(order.subtotal_amount || order.subtotal || 0).toFixed(2)}
+
+    </div>
+
+    {/* GST */}
+    {order.gst_amount && (
+      <div className="d-flex justify-content-between mb-2">
+        <span>GST</span>
+        <span>₹{Number(order.gst_amount).toFixed(2)}</span>
       </div>
+    )}
+
+    {/* Coupon Discount */}
+    {order.discount_amount && (
+      <div className="d-flex justify-content-between text-success mb-2">
+        <span>Coupon Discount</span>
+        <span>- ₹{Number(order.discount_amount).toFixed(2)}</span>
+      </div>
+    )}
+
+    {/* Shipping */}
+{order.shipping_amount !== undefined && (
+  <div className="d-flex justify-content-between mb-2">
+    <span>Shipping</span>
+    <span>
+      {Number(order.shipping_amount) > 0
+        ? `₹${Number(order.shipping_amount).toFixed(2)}`
+        : "Free"}
+    </span>
+  </div>
+)}
+
+
+    <hr />
+
+    {/* Final Total */}
+    <div className="d-flex justify-content-between fs-5 fw-bold">
+      <span>Total Paid</span>
+      <span>₹{Number(order.total_amount).toFixed(2)}</span>
+    </div>
+
+  </div>
+</div>
+
 
       <button
         className="btn btn-outline-dark mt-4"

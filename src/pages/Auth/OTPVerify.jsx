@@ -17,7 +17,7 @@ const OTPVerify = () => {
   const [otp, setOTP] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔥 COUNTDOWN STATE (5 MIN)
+  //  COUNTDOWN STATE (5 MIN)
   const [timeLeft, setTimeLeft] = useState(300); // 300 seconds
 
   /* ================= SAFETY CHECK ================= */
@@ -86,7 +86,7 @@ const OTPVerify = () => {
       <div className="otp-card">
         <h2 className="otp-title">Verify OTP</h2>
 
-        {/* 🔥 SHOW 5 MIN COUNTDOWN */}
+        {/*  SHOW 5 MIN COUNTDOWN */}
         <p className="otp-subtitle text-center">
           OTP expires in  
           <span className=" text-black ms-2">

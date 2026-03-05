@@ -66,6 +66,9 @@ import EditOffer from "../pages/Admin/EditOffer";
 import OfferDetail from "../pages/User/OfferDetail";
 import Payment from "../pages/payment/Payment";
 import About from "../components/About/About";
+import PrivacyPolicy from "../components/Policy/PrivacyPolicy";
+import RefundPolicy from "../components/Policy/RefundPolicy";
+import TermsConditions from "../components/Policy/TermsConditions";
 
 const AppRoutes = () => {
   return (
@@ -86,6 +89,10 @@ const AppRoutes = () => {
         <Route path="collections/:slug" element={<CollectionProducts />} />
         <Route path="/offers/:slug" element={<OfferDetail />} />
         <Route path="/about" element={<About/>} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/refund" element={<RefundPolicy />} />
+        <Route path="/terms" element={<TermsConditions />} />
+
         {/* PROTECTED USER ROUTES */}
         <Route
           path="cart"
@@ -207,8 +214,8 @@ const AppRoutes = () => {
         <Route path="coupons/:id/edit" element={<EditCoupon />} />
          
          <Route path="/admin/offers" element={<ManageOffers />} />
-<Route path="/admin/offers/add" element={<AddOffer />} />
-<Route path="/admin/offers/edit/:id" element={<EditOffer />} />
+       <Route path="/admin/offers/add" element={<AddOffer />} />
+       <Route path="/admin/offers/edit/:id" element={<EditOffer />} />
 
         {/* Settings */}
         <Route path="settings" element={<Settings />} />

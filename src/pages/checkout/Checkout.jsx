@@ -7,6 +7,9 @@ import { fetchPublicSettings } from "../../api/admin";
 import apiClient from "../../api/client";
 import { useNavigate } from "react-router-dom";
 import "../../styles/checkout.css";
+import toast from "react-hot-toast";
+
+
 const Checkout = () => {
   const navigate = useNavigate();
   const cartItems = useSelector((s) => s.cart.items);
@@ -145,16 +148,41 @@ const Checkout = () => {
   /* ================= PLACE ORDER ================= */
 const handlePlaceOrder = async () => {
   setPlacing(true);
+
+  //  DELIVERY ADDRESS VALIDATION
+  if (!useNewAddress && !addressId) {
+    toast.error("Enter your delivery address");
+    setPlacing(false);
+    return;
+  }
+
+  if (useNewAddress) {
+    if (
+      !newAddress.first_name ||
+      !newAddress.phone ||
+      !newAddress.address ||
+      !newAddress.city ||
+      !newAddress.state ||
+      !newAddress.pincode
+    ) {
+      toast.error("Please fill delivery address");
+      setPlacing(false);
+      return;
+    }
+  }
+
   try {
     let payload = {
       payment_method: payment,
       billing_address: sameAsDelivery ? null : billingAddress,
     };
 
+    // COUPON
     if (couponCode.trim()) {
       payload.coupon_code = couponCode.trim();
     }
 
+    // DELIVERY ADDRESS
     if (useNewAddress) {
       payload.delivery_address = {
         name: `${newAddress.first_name} ${newAddress.last_name}`,
@@ -168,25 +196,21 @@ const handlePlaceOrder = async () => {
       payload.address_id = addressId;
     }
 
-    // 🔥 IMPORTANT LOGIC
+    //  PAYMENT FLOW
     if (payment === "ONLINE") {
-      // ❌ DO NOT CREATE ORDER HERE
+      // DO NOT CREATE ORDER YET
       navigate("/payment", {
         state: {
           checkout_payload: payload,
           total_amount: grandTotal,
+          subtotal: subtotal,
+          shipping: shipping,
+          coupon_discount: couponDiscount,
+          gst_amount: gstAmount,
         },
       });
-
-//       navigate("/payment", {
-//   state: {
-//     order_id: res.data.order_id,
-//     total_amount: res.data.total_amount
-//   }
-// });
-
     } else {
-      // ✅ COD → create order immediately
+      // COD ORDER CREATE
       const res = await createOrder(payload);
 
       navigate("/order-success", {

@@ -104,7 +104,7 @@ const Cart = () => {
             const original = Number(item.original_price);
             const final = Number(item.unit_price);
 
-            // 🔥 PERCENT DISCOUNT (OFFER OR SALE)
+            //  PERCENT DISCOUNT (OFFER OR SALE)
             const discountPercent =
               original > final
                 ? Math.round(
@@ -128,7 +128,7 @@ const Cart = () => {
                     <h6 className="fw-bold mb-1">
                       {product.name}
 
-                      {/* 🔥 OFFER NAME */}
+                      {/*  OFFER NAME */}
                       {item.offer_title && (
                         <span className="badge bg-warning text-dark ms-2">
                           {item.offer_title}

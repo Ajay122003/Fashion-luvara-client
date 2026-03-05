@@ -59,18 +59,29 @@ const AddCoupon = () => {
 
     try {
       setLoading(true);
+
+      // FIX: Add seconds to datetime
+      const expiryWithSeconds = form.expiry_date
+        ? `${form.expiry_date}:00`
+        : null;
+
       await createAdminCoupon({
         ...form,
         code: form.code.toUpperCase(),
+        discount_value: Number(form.discount_value),
+        min_purchase: Number(form.min_purchase || 0),
+        expiry_date: expiryWithSeconds,
       });
 
       alert("Coupon created successfully!");
       navigate("/admin/coupons");
+
     } catch (err) {
       setError(
         err.response?.data?.code ||
-          err.response?.data?.discount_value ||
-          "Failed to create coupon"
+        err.response?.data?.discount_value ||
+        err.response?.data?.expiry_date ||
+        "Failed to create coupon"
       );
     } finally {
       setLoading(false);
@@ -202,9 +213,7 @@ const AddCoupon = () => {
               className="form-control"
               required
               value={form.expiry_date}
-              min={new Date()
-                .toISOString()
-                .slice(0, 16)}
+              min={new Date().toISOString().slice(0, 16)}
               onChange={(e) =>
                 setForm({
                   ...form,

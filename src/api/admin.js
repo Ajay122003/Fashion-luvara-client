@@ -119,6 +119,7 @@ export const deleteProductImage = async (imageId) => {
 };
 
 
+
 /* -----------------------------------------------
    CATEGORIES CRUD
 ------------------------------------------------ */
@@ -271,6 +272,11 @@ export const adminUpdateOrder = async (id, data) => {
     `/api/admin-panel/orders/${id}/`,
     data
   );
+  return res.data;
+};
+
+export const fetchUnreadOrderCount = async () => {
+  const res = await adminClient.get("/api/admin-panel/orders/unread-count/");
   return res.data;
 };
 

@@ -40,7 +40,7 @@ const CategoryProducts = () => {
       <div className="container py-5 text-center">
         <div className="spinner-border text-dark"></div>
         <p className="mt-3 fw-semibold">
-          Loading products...
+          Loading...
         </p>
       </div>
     );

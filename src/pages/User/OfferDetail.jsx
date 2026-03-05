@@ -139,7 +139,7 @@ const OfferDetail = () => {
                       : `₹${offer.discount_value} OFF`}
                   </span>
 
-                  {/* 🔴 OUT OF STOCK BADGE */}
+                  {/*  OUT OF STOCK BADGE */}
                   {isOutOfStock && (
                     <span
                       className="badge bg-dark rounded-pill position-absolute"

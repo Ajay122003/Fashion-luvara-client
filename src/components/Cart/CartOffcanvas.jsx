@@ -65,7 +65,7 @@ const CartOffcanvas = () => {
                 const original = Number(item.original_price);
                 const final = Number(item.unit_price);
 
-                // 🔥 PERCENT DISCOUNT (OFFER OR SALE)
+                // PERCENT DISCOUNT (OFFER OR SALE)
                 const discountPercent =
                   original > final
                     ? Math.round(
@@ -97,7 +97,7 @@ const CartOffcanvas = () => {
                       <p className="fw-semibold mb-1">
                         {product.name}
 
-                        {/* 🔥 OFFER NAME */}
+                        {/*  OFFER NAME */}
                         {item.offer_title && (
                           <span className="badge bg-warning text-dark ms-2">
                             {item.offer_title}
@@ -113,7 +113,7 @@ const CartOffcanvas = () => {
                       <p className="fw-bold small mb-1">
                         ₹{item.unit_price}
 
-                        {/* 🔥 % DISCOUNT */}
+                        {/*  % DISCOUNT */}
                         {discountPercent > 0 && (
                           <span className="badge bg-success ms-2">
                             {discountPercent}% OFF

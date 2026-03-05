@@ -9,7 +9,7 @@ const Payment = () => {
   const { state } = useLocation();
   const [loading, setLoading] = useState(false);
 
-  // 🔒 Safety
+  //  Safety
   useEffect(() => {
     if (!state?.checkout_payload) {
       navigate("/cart", { replace: true });
@@ -27,7 +27,7 @@ const handleOnlinePayment = async () => {
       description: "Order Payment",
 
       handler: async function (response) {
-        console.log("✅ PAYMENT SUCCESS", response);
+        console.log(" PAYMENT SUCCESS", response);
 
         //  NOW create order (FIRST TIME)
         const res = await createOrder({
@@ -66,29 +66,66 @@ const handleOnlinePayment = async () => {
 
 
   return (
-    <div className="container py-4" style={{ maxWidth: 520 }}>
-      <h4 className="fw-bold mb-3">Online Payment</h4>
+  
+  <div className="container py-4" style={{ maxWidth: 520 }}>
+    <h4 className="fw-bold mb-3">Online Payment</h4>
 
-      <div className="card shadow-sm p-3">
-        <div className="d-flex justify-content-between fw-bold mb-3">
-          <span>Total Amount</span>
-          <span>₹{state?.total_amount}</span>
-        </div>
+    <div className="card shadow-sm p-3">
 
-        <button
-          className="btn btn-dark w-100"
-          disabled={loading}
-          onClick={handleOnlinePayment}
-        >
-          {loading ? "Processing..." : "Pay Now"}
-        </button>
-
-        <p className="small text-muted text-center mt-2">
-          100% secure payments powered by Razorpay
-        </p>
+      {/* SUBTOTAL */}
+      <div className="d-flex justify-content-between mb-2">
+        <span>Subtotal</span>
+        <span>₹{state?.subtotal?.toFixed?.(2)}</span>
       </div>
+
+      {/* SHIPPING */}
+      <div className="d-flex justify-content-between mb-2">
+        <span>Shipping</span>
+        <span>
+          {state?.shipping > 0
+            ? `₹${state.shipping.toFixed(2)}`
+            : "Free"}
+        </span>
+      </div>
+
+      {/* COUPON DISCOUNT */}
+      {state?.coupon_discount > 0 && (
+        <div className="d-flex justify-content-between text-success mb-2">
+          <span>Coupon Discount</span>
+          <span>- ₹{state.coupon_discount.toFixed(2)}</span>
+        </div>
+      )}
+
+      {/* GST */}
+      <div className="d-flex justify-content-between mb-2">
+        <span>GST</span>
+        <span>₹{state?.gst_amount?.toFixed?.(2)}</span>
+      </div>
+
+      <hr />
+
+      {/* FINAL TOTAL */}
+      <div className="d-flex justify-content-between fw-bold mb-3">
+        <span>Total Amount</span>
+        <span>₹{state?.total_amount?.toFixed?.(2)}</span>
+      </div>
+
+      {/* PAYMENT BUTTON */}
+      <button
+        className="btn btn-dark w-100"
+        disabled={loading}
+        onClick={handleOnlinePayment}
+      >
+        {loading ? "Processing..." : "Pay Now"}
+      </button>
+
+      <p className="small text-muted text-center mt-2">
+        100% secure payments powered by Razorpay
+      </p>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Payment;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchAdminOrders, deleteAdminOrder } from "../../api/admin";
-import { Link } from "react-router-dom";
+import {useLocation, Link } from "react-router-dom";
 
 const STATUS_LIST = [
   { key: "", label: "All", color: "dark" },
@@ -15,6 +15,7 @@ const Orders = () => {
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+     const location = useLocation();
 
   const loadOrders = async () => {
     try {
@@ -28,9 +29,12 @@ const Orders = () => {
     }
   };
 
+
+
   useEffect(() => {
     loadOrders();
-  }, [filter]);
+  }, [filter, location.pathname]);
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this order?")) return;
@@ -108,7 +112,7 @@ const Orders = () => {
                   <th>Payment</th>
                   <th>Status</th>
                   <th>Date</th>
-                  <th></th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,9 +125,16 @@ const Orders = () => {
                 )}
 
                 {filteredOrders.map((o, i) => (
-                  <tr key={o.id}>
+                  <tr key={o.id}
+                  className={!o.is_admin_viewed ? "table-warning" : ""}
+                >
                     <td>{i + 1}</td>
-                    <td className="fw-semibold">{o.order_number}</td>
+                    <td className="fw-semibold">
+                     {o.order_number}
+                    {!o.is_admin_viewed && (
+                    <span className="badge bg-danger ms-2">NEW</span>
+                     )}
+                 </td>
                     <td>{o.user_email}</td>
                     <td className="fw-bold">₹{o.total_amount}</td>
 
@@ -164,9 +175,9 @@ const Orders = () => {
                     <td className="text-end">
                       <Link
                         to={`/admin/orders/${o.id}`}
-                        className="btn btn-sm btn-outline-dark me-2"
+                        className="btn btn-sm btn-outline-success me-2"
                       >
-                        View
+                       <i class="bi bi-eye"></i>
                       </Link>
 
                       {o.can_delete && (
@@ -189,7 +200,12 @@ const Orders = () => {
             {filteredOrders.map((o) => (
               <div key={o.id} className="order-card mb-3">
                 <div className="d-flex justify-content-between align-items-center">
-                  <h6 className="fw-bold mb-0">{o.order_number}</h6>
+                  <h6 className="fw-bold mb-0">
+                  {o.order_number}
+                 {!o.is_admin_viewed && (
+                 < span className="badge bg-danger ms-2">NEW</span>
+                 )}
+               </h6>
                   <span
                     className={`badge ${
                       o.status === "DELIVERED"
@@ -226,9 +242,9 @@ const Orders = () => {
                 <div className="d-flex gap-2 mt-3">
                   <Link
                     to={`/admin/orders/${o.id}`}
-                    className="btn btn-sm btn-dark flex-fill"
+                    className="btn btn-sm btn-outline-success"
                   >
-                    View
+                    <i class="bi bi-eye"></i>
                   </Link>
 
                   {o.can_delete && (
@@ -254,7 +270,7 @@ const Orders = () => {
         }
 
         .table-scroll {
-          max-height: 65vh;
+          max-height: 70vh;
           overflow-y: auto;
           border: 1px solid #eee;
           border-radius: 12px;

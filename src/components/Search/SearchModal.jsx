@@ -107,7 +107,7 @@ const SearchModal = ({ show, onClose }) => {
                 role="status"
               />
               <p className="mt-3 text-muted">
-                Searching…
+                Searching...
               </p>
             </div>
           )}

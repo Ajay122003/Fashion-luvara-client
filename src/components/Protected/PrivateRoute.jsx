@@ -6,7 +6,7 @@ const PrivateRoute = ({ children }) => {
   const reduxToken = useSelector((state) => state.auth.token);
   const localToken = storage.getUserToken();
 
-  // 🔥 Allow access if token exists ANYWHERE
+  //  Allow access if token exists ANYWHERE
   if (reduxToken || localToken) {
     return children;
   }

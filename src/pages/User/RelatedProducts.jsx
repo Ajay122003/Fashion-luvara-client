@@ -40,7 +40,7 @@ const RelatedProducts = ({ productId }) => {
       </h5>
 
       <div className="row g-3 g-md-4">
-        {products.map((p, index) => {
+        {products.slice(0, 4).map((p, index) => {
           const hasOffer =
             p.effective_price !== undefined &&
             p.effective_price < p.price;
@@ -51,7 +51,7 @@ const RelatedProducts = ({ productId }) => {
               )
             : null;
 
-          /* 🔴 OUT OF STOCK LOGIC */
+          /*  OUT OF STOCK LOGIC */
           const isOutOfStock =
             p.variants &&
             p.variants.length > 0 &&
@@ -88,7 +88,7 @@ const RelatedProducts = ({ productId }) => {
                     </span>
                   )}
 
-                  {/* 🔴 OUT OF STOCK BADGE */}
+                  {/*  OUT OF STOCK BADGE */}
                   {isOutOfStock && (
                     <span
                       className="badge bg-dark position-absolute"

@@ -41,7 +41,7 @@ export const adminVerifyOTP = createAsyncThunk(
 ======================= */
 
 const initialState = {
-  isAuthenticated: false,   // 🔥 redux-only
+  isAuthenticated: false,   //  redux-only
   loading: false,
   error: null,
   step: 1,                 // 1 = login, 2 = otp
@@ -60,7 +60,7 @@ const adminSlice = createSlice({
       state.isAuthenticated = false;
       state.step = 1;
       state.pendingEmail = "";
-      storage.clearAdminToken(); // ✅ allowed here
+      storage.clearAdminToken(); //  allowed here
     },
   },
   extraReducers: (builder) => {
@@ -91,7 +91,7 @@ const adminSlice = createSlice({
         state.step = 1;
 
         const { access, refresh } = action.payload.tokens;
-        storage.saveAdminToken(access, refresh); // ✅ OK in thunk flow
+        storage.saveAdminToken(access, refresh); //  OK in thunk flow
       })
       .addCase(adminVerifyOTP.rejected, (state, action) => {
         state.loading = false;

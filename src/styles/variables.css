@@ -17,22 +17,22 @@
 }
 
 /* ===== DARK ===== */
-[data-theme="dark"] {
+/* [data-theme="dark"] {
   --bg-color: #0A0A0A;
   --text-color: #e5e7eb;
 
   --card-bg: #1e293b;
   --border-color: #334155;
 
-  /* --primary: #e5e7eb;
-  --secondary: #9ca3af; */
+  --primary: #e5e7eb;
+  --secondary: #9ca3af;
 
   --nav-bg: #020617;
   --sidebar-bg: #020617;
 
   --button-bg:  #D4AF37;
   --button-text: #0A0A0A;
-}
+} */
 
 
 

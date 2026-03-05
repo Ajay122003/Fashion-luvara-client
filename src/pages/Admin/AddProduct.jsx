@@ -23,7 +23,7 @@ const AddProduct = () => {
     collections: [],
     offer: null,
     is_active: true,
-    variants: [], // 🔥 important
+    variants: [], //  important
   });
 
   /* ================= MASTER DATA ================= */
@@ -75,12 +75,12 @@ const AddProduct = () => {
     form.append("name", product.name);
     form.append("sku", product.sku);
     form.append("description", product.description);
-    form.append("price", product.price);
+    form.append("price",String( product.price));
     form.append("category", product.category);
     form.append("is_active", product.is_active);
 
     if (product.sale_price) {
-      form.append("sale_price", product.sale_price);
+      form.append("sale_price",String( product.sale_price));
     }
 
     /* ===== OFFER ===== */
