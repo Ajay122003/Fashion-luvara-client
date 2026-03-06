@@ -52,11 +52,28 @@ const About = () => {
           subtlety, confidence, and enduring style.
         </p>
 
-       < div className="contact-box" data-aos="fade-up">
-          <h3>Contact Us</h3>
-          <p>Email: <a href="mailto:yourmail@gmail.com">dharikka8@gmail.com</a></p>
-          <p>Phone: <a href="tel:+911234567890">+91 8110811071</a></p>
-        </div>
+       <div className="contact-box" data-aos="fade-up">
+  <h3>Contact Us</h3>
+
+  <p>
+    <strong>Email:</strong>{" "}
+    <a href="mailto:dharikka8@gmail.com">dharikka8@gmail.com</a>
+  </p>
+
+  <p>
+    <strong>Phone:</strong>{" "}
+    <a href="tel:+918110811071">+91 8110811071</a>
+  </p>
+
+  <p>
+    <strong>Physical Address:</strong><br />
+    NO-122/132, JK Building,<br />
+    Muthaiyan Kovil,<br />
+    Thennampalayam,<br />
+    Tiruppur - 641604,<br />
+    Tamil Nadu, India
+  </p>
+</div>
 
       </div>
 

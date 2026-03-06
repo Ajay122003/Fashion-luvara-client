@@ -245,7 +245,7 @@ const UserNavbar = () => {
                 </ul>
               </li>
 
-              <li><Link to="/about" className="nav-link">About us</Link></li>
+              <li><Link to="/contact" className="nav-link">About us</Link></li>
             </ul>
 
             {/* DESKTOP RIGHT */}
@@ -436,7 +436,7 @@ const UserNavbar = () => {
             </div>
           </div>
 
-          <Link to="/about" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>
+          <Link to="/contact" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>
             About us
           </Link>
           <div className="position-fixed bottom-5 start-0 p-3 mb-5" style={{ zIndex: 1050 }}>

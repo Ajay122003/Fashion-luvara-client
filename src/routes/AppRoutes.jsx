@@ -69,6 +69,7 @@ import About from "../components/About/About";
 import PrivacyPolicy from "../components/Policy/PrivacyPolicy";
 import RefundPolicy from "../components/Policy/RefundPolicy";
 import TermsConditions from "../components/Policy/TermsConditions";
+import ContactInformation from "../components/Policy/Contact";
 
 const AppRoutes = () => {
   return (
@@ -88,10 +89,11 @@ const AppRoutes = () => {
         <Route path="collections" element={<Collections />} />
         <Route path="collections/:slug" element={<CollectionProducts />} />
         <Route path="/offers/:slug" element={<OfferDetail />} />
-        <Route path="/about" element={<About/>} />
+        <Route path="/contact" element={<About/>} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/refund" element={<RefundPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/contact-information" element={<ContactInformation />} />
 
         {/* PROTECTED USER ROUTES */}
         <Route

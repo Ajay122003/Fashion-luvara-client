@@ -15,7 +15,8 @@ const Footer = () => {
         <div style={{ marginTop: "10px", }}>
           <Link to="/privacy"  style={{ color: "black"}}>Privacy Policy</Link> |{" "}
           <Link to="/refund" style={{ color: "black"}}>Refund Policy</Link> |{" "}
-          <Link to="/terms" style={{ color: "black"}}>Terms & Conditions</Link>
+          <Link to="/terms" style={{ color: "black"}}>Terms & Conditions</Link> |{" "}
+          <Link to="/contact-information" style={{ color: "black"}}>Contact information</Link>
         </div>
       </footer>
     </>
