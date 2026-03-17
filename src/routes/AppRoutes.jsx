@@ -70,6 +70,7 @@ import PrivacyPolicy from "../components/Policy/PrivacyPolicy";
 import RefundPolicy from "../components/Policy/RefundPolicy";
 import TermsConditions from "../components/Policy/TermsConditions";
 import ContactInformation from "../components/Policy/Contact";
+import PaymentSuccess from "../pages/payment/PaymentSuccess";
 
 const AppRoutes = () => {
   return (
@@ -146,9 +147,9 @@ const AppRoutes = () => {
           }
         />
         <Route
-    path="payment"
-    element={
-      <PrivateRoute>
+          path="payment"
+         element={
+        <PrivateRoute>
         <Payment />
       </PrivateRoute>
     }
@@ -162,6 +163,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
+        <Route path="/payment-success" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
       </Route>
 
       

@@ -1,231 +1,148 @@
-// src/pages/payment/Payment.jsx
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { createRazorpayOrder, verifyRazorpayPayment } from "../../api/payment";
+
+import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { createOrder } from "../../api/order";
+import { createPaymentOrder } from "../../api/payment";
 
 const Payment = () => {
-  const navigate = useNavigate();
+
   const { state } = useLocation();
   const [loading, setLoading] = useState(false);
 
-  //  Safety
   useEffect(() => {
-    if (!state?.checkout_payload) {
-      navigate("/cart", { replace: true });
+    if (!window.Cashfree) {
+      console.warn("Cashfree SDK not loaded");
     }
-  }, [state, navigate]);
-const handleOnlinePayment = async () => {
-  setLoading(true);
+  }, []);
 
-  try {
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: state.total_amount * 100, // paise
-      currency: "INR",
-      name: "Luvara Store",
-      description: "Order Payment",
+  const handleOnlinePayment = async () => {
 
-      handler: async function (response) {
-        console.log(" PAYMENT SUCCESS", response);
+    if (!window.Cashfree) {
+      alert("Payment gateway loading...");
+      return;
+    }
 
-        //  NOW create order (FIRST TIME)
-        const res = await createOrder({
-          ...state.checkout_payload,
-          payment_method: "ONLINE",
-          razorpay_payment_id: response.razorpay_payment_id,
-        });
+    setLoading(true);
 
-        navigate("/order-success", {
-          state: {
-            order_id: res.data.order_id,
-          order_number: res.data.order_number,
-          total_amount: res.data.total_amount,  
-          },
-        });
-      },
+    try {
 
-      modal: {
-        ondismiss: () => {
-          alert("Payment cancelled");
-        },
-      },
+      // 1️⃣ Create Order
+      const orderRes = await createOrder({
+        ...state.checkout_payload,
+        payment_method: "ONLINE",
+      });
 
-      theme: { color: "#111" },
-    };
+      const orderId = orderRes.data.order_id;
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+      // 2️⃣ Create Payment Session
+      const payRes = await createPaymentOrder(orderId);
 
-  } catch (err) {
-    alert("Payment failed");
-  } finally {
-    setLoading(false);
+      const sessionId =
+        payRes.payment_session_id ||
+        payRes.data?.payment_session_id;
+
+      if (!sessionId) {
+        throw new Error("Payment session not received");
+      }
+
+      // 3️⃣ Initialize Cashfree
+      const cashfree = window.Cashfree({
+        mode: "sandbox"
+      });
+
+      // 4️⃣ Open Checkout
+      const checkoutOptions = {
+        paymentSessionId: sessionId,
+        redirectTarget: "_self"
+      };
+
+      cashfree.checkout(checkoutOptions);
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert(
+        err.response?.data?.error ||
+        "Payment initialization failed"
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  if (!state) {
+    return (
+      <div className="container py-5 text-center">
+        No order data found
+      </div>
+    );
   }
-};
-
 
   return (
-  
-  <div className="container py-4" style={{ maxWidth: 520 }}>
-    <h4 className="fw-bold mb-3">Online Payment</h4>
+    <div className="container py-4" style={{ maxWidth: 520 }}>
 
-    <div className="card shadow-sm p-3">
+      <h4 className="fw-bold mb-3">Online Payment</h4>
 
-      {/* SUBTOTAL */}
-      <div className="d-flex justify-content-between mb-2">
-        <span>Subtotal</span>
-        <span>₹{state?.subtotal?.toFixed?.(2)}</span>
-      </div>
+      <div className="card shadow-sm p-4">
 
-      {/* SHIPPING */}
-      <div className="d-flex justify-content-between mb-2">
-        <span>Shipping</span>
-        <span>
-          {state?.shipping > 0
-            ? `₹${state.shipping.toFixed(2)}`
-            : "Free"}
-        </span>
-      </div>
-
-      {/* COUPON DISCOUNT */}
-      {state?.coupon_discount > 0 && (
-        <div className="d-flex justify-content-between text-success mb-2">
-          <span>Coupon Discount</span>
-          <span>- ₹{state.coupon_discount.toFixed(2)}</span>
+        <div className="d-flex justify-content-between mb-2">
+          <span>Subtotal</span>
+          <span>₹{state?.subtotal?.toFixed(2)}</span>
         </div>
-      )}
 
-      {/* GST */}
-      <div className="d-flex justify-content-between mb-2">
-        <span>GST</span>
-        <span>₹{state?.gst_amount?.toFixed?.(2)}</span>
+        <div className="d-flex justify-content-between mb-2">
+          <span>Shipping</span>
+          <span>
+            {state?.shipping > 0
+              ? `₹${state.shipping.toFixed(2)}`
+              : "Free"}
+          </span>
+        </div>
+
+        {state?.coupon_discount > 0 && (
+          <div className="d-flex justify-content-between text-success mb-2">
+            <span>Coupon Discount</span>
+            <span>- ₹{state.coupon_discount.toFixed(2)}</span>
+          </div>
+        )}
+
+        <div className="d-flex justify-content-between mb-2">
+          <span>GST</span>
+          <span>₹{state?.gst_amount?.toFixed(2)}</span>
+        </div>
+
+        <hr />
+
+        <div className="d-flex justify-content-between fw-bold mb-4 fs-5">
+          <span>Total Amount</span>
+          <span>₹{state?.total_amount?.toFixed(2)}</span>
+        </div>
+
+        <button
+          className="btn btn-dark w-100 py-2 fw-bold"
+          disabled={loading}
+          onClick={handleOnlinePayment}
+        >
+
+          {loading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2"></span>
+              Processing...
+            </>
+          ) : (
+            "Pay Now"
+          )}
+
+        </button>
+
       </div>
-
-      <hr />
-
-      {/* FINAL TOTAL */}
-      <div className="d-flex justify-content-between fw-bold mb-3">
-        <span>Total Amount</span>
-        <span>₹{state?.total_amount?.toFixed?.(2)}</span>
-      </div>
-
-      {/* PAYMENT BUTTON */}
-      <button
-        className="btn btn-dark w-100"
-        disabled={loading}
-        onClick={handleOnlinePayment}
-      >
-        {loading ? "Processing..." : "Pay Now"}
-      </button>
-
-      <p className="small text-muted text-center mt-2">
-        100% secure payments powered by Razorpay
-      </p>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default Payment;
-
-
-
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { useEffect, useState } from "react";
-// import {
-//   createRazorpayOrder,
-//   verifyRazorpayPayment,
-// } from "../../api/payment";
-
-// const Payment = () => {
-//   const navigate = useNavigate();
-//   const { state } = useLocation();
-//   const [loading, setLoading] = useState(false);
-
-//   useEffect(() => {
-//     if (!state?.order_id) {
-//       navigate("/cart", { replace: true });
-//     }
-//   }, [state, navigate]);
-
-//   const handleOnlinePayment = async () => {
-//     setLoading(true);
-
-//     try {
-//       // 🔥 STEP 1: create razorpay order (backend)
-//       const data = await createRazorpayOrder(state.order_id);
-
-//       const options = {
-//         key: data.razorpay_key_id,
-//         amount: data.amount,
-//         currency: data.currency,
-//         name: "Luvara Store",
-//         description: "Secure Payment",
-//         order_id: data.razorpay_order_id,
-
-//         // 🔥 STEP 2: success handler
-//         handler: async function (response) {
-//           // 🔥 STEP 3: verify payment (backend)
-//           await verifyRazorpayPayment({
-//             order_id: data.order_id,
-//             razorpay_order_id: response.razorpay_order_id,
-//             razorpay_payment_id: response.razorpay_payment_id,
-//             razorpay_signature: response.razorpay_signature,
-//           });
-
-//           // 🔥 SUCCESS
-//           navigate("/order-success", {
-//             state: {
-//               order_id: data.order_id,
-//               order_number: data.order_number,
-//               total_amount: state.total_amount,
-//             },
-//           });
-//         },
-
-//         modal: {
-//           ondismiss: () => alert("Payment cancelled"),
-//         },
-
-//         theme: { color: "#111" },
-//       };
-
-//       const rzp = new window.Razorpay(options);
-//       rzp.open();
-
-//     } catch (err) {
-//       alert("Payment failed");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="container py-4" style={{ maxWidth: 520 }}>
-//       <h4 className="fw-bold mb-3">Online Payment</h4>
-
-//       <div className="card shadow-sm p-3">
-//         <div className="d-flex justify-content-between fw-bold mb-3">
-//           <span>Total Amount</span>
-//           <span>₹{state?.total_amount}</span>
-//         </div>
-
-//         <button
-//           className="btn btn-dark w-100"
-//           disabled={loading}
-//           onClick={handleOnlinePayment}
-//         >
-//           {loading ? "Processing..." : "Pay Now"}
-//         </button>
-
-//         <p className="small text-muted text-center mt-2">
-//           Secured by Razorpay
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Payment;

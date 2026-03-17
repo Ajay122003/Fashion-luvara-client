@@ -1,7 +1,7 @@
 import apiClient from "./client";
 
 // Create Razorpay Order
-export const createRazorpayOrder = async (orderId) => {
+export const createPaymentOrder = async (orderId) => {
   const res = await apiClient.post("/api/payments/create/", {
     order_id: orderId,
   });
@@ -9,7 +9,7 @@ export const createRazorpayOrder = async (orderId) => {
 };
 
 // Verify Razorpay Payment
-export const verifyRazorpayPayment = async (payload) => {
+export const verifyPayment = async (payload) => {
   const res = await apiClient.post("/api/payments/verify/", payload);
   return res.data;
 };
