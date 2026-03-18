@@ -47,7 +47,8 @@ const Payment = () => {
 
       // 3️⃣ Initialize Cashfree
       const cashfree = window.Cashfree({
-        mode: "sandbox"
+        // mode: "sandbox"
+        mode: "production"
       });
 
       // 4️⃣ Open Checkout
