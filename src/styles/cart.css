@@ -1,11 +1,25 @@
 .cart-btn {
   width: 100%;
   padding: 12px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   border: none;
   background: var(--button-bg);
   color: var(--button-text);
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s ease;
+}
+
+.cart-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  color: #222;
+}
+
+.stylish-font {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  letter-spacing: 1px;
 }

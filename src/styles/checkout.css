@@ -1,7 +1,7 @@
 .checkout-btn {
   width: 100%;
   padding: 12px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   border: none;
   background: var(--button-bg);
   color: var(--button-text);

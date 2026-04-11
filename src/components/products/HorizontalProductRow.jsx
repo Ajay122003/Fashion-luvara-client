@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+
+
+
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchProducts } from "../../api/products";
 
@@ -10,14 +13,26 @@ const HorizontalProductRow = ({
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const scrollRef = useRef(null);
+  const animationRef = useRef(null);
+  const isPaused = useRef(false);
+
   useEffect(() => {
     loadProducts();
   }, []);
 
+  useEffect(() => {
+    if (products.length) {
+      startAutoScroll();
+    }
+
+    return () => cancelAnimationFrame(animationRef.current);
+  }, [products]);
+
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const data = await fetchProducts({limit:6});
+      const data = await fetchProducts({ limit: 6 });
       setProducts(data?.results || data || []);
     } catch (err) {
       console.error("Failed to load products", err);
@@ -26,35 +41,74 @@ const HorizontalProductRow = ({
     }
   };
 
+  // duplicate for seamless loop
+  const loopProducts = [...products, ...products, ...products, ...products, ...products];
+
+  //  SMOOTH AUTO SCROLL (NO STUCK)
+  const startAutoScroll = () => {
+    const scroll = () => {
+      if (!scrollRef.current) return;
+
+      const el = scrollRef.current;
+
+      if (!isPaused.current) {
+        el.scrollLeft += 0.8; // speed
+
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft = 0;
+        }
+      }
+
+      animationRef.current = requestAnimationFrame(scroll);
+    };
+
+    animationRef.current = requestAnimationFrame(scroll);
+  };
+
+  const handleMouseEnter = () => {
+    isPaused.current = true;
+  };
+
+  const handleMouseLeave = () => {
+    isPaused.current = false;
+  };
+
   if (loading) {
-    return (
-      <p className="text-center py-4 fw-semibold">
-        Loading products…
-      </p>
-    );
+    return <p className="text-center py-4 fw-semibold">Loading products…</p>;
   }
 
   if (!products.length) return null;
 
   return (
     <div className="container py-4">
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="fw-bold mb-0" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>{title}</h5>
+        <h5 className="fw-bold mb-0"
+        style={{
+    fontFamily: "'Lobster Two', cursive",
+    fontWeight: 700,
+    fontSize:"23px",
+    letterSpacing: "1px"
+  }}
+>{title}</h5>
 
-        <button
-          className="btn btn-sm btn-outline-dark rounded-pill d-flex align-items-center gap-2 px-3"
-          onClick={() => navigate(viewAllLink)}
-        >
-          View All <i className="bi bi-arrow-right"></i>
-        </button>
+       <button
+  className="btn btn-sm btn-outline-dark rounded-pill px-3 three-d-btn"
+  onClick={() => navigate(viewAllLink)}
+>
+  View All →
+</button>
       </div>
 
-      {/* ================= HORIZONTAL LIST ================= */}
-      <div className="horizontal-scroll d-flex gap-3 pb-2">
-        {products.map((product) => {
-          const hasOffer =
-            product.effective_price < product.price;
+      {/*  SCROLL AREA */}
+      <div
+        ref={scrollRef}
+        className="horizontal-scroll d-flex gap-3 pb-2"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {loopProducts.map((product, index) => {
+          const hasOffer = product.effective_price < product.price;
 
           const discountPercent = hasOffer
             ? Math.round(
@@ -65,18 +119,17 @@ const HorizontalProductRow = ({
             : 0;
 
           const isOutOfStock =
-  product.variants &&
-  product.variants.length > 0 &&
-  product.variants.every((v) => v.stock === 0);
+            product.variants &&
+            product.variants.length > 0 &&
+            product.variants.every((v) => v.stock === 0);
 
           return (
             <Link
-              key={product.id}
+              key={product.id + "-" + index}
               to={`/product/${product.id}`}
               className="text-decoration-none text-dark"
             >
               <div className="product-card-sm shadow-sm">
-                {/* IMAGE */}
                 <div className="img-wrapper position-relative">
                   {hasOffer && (
                     <span className="badge bg-success position-absolute top-0 start-0 m-2">
@@ -84,20 +137,11 @@ const HorizontalProductRow = ({
                     </span>
                   )}
 
-                {isOutOfStock && (
-    <span
-      className="badge bg-dark rounded-pill position-absolute"
-      style={{
-        top: "8px",
-        right: "8px",   //  offer badge opposite side
-        fontSize: "0.75rem",
-        padding: "6px 8px",
-        zIndex: 2,
-      }}
-    >
-      0 Stock
-    </span>
-  )}
+                  {isOutOfStock && (
+                    <span className="badge bg-dark position-absolute top-0 end-0 m-2">
+                      0 Stock
+                    </span>
+                  )}
 
                   <img
                     src={
@@ -105,20 +149,15 @@ const HorizontalProductRow = ({
                       "/placeholder.png"
                     }
                     alt={product.name}
-                    
                   />
                 </div>
 
-                {/* INFO */}
                 <div className="p-2">
-                  <p
-                    className="fw-semibold small mb-1 text-truncate"
-                    title={product.name}
-                  >
+                  <p className="fw-semibold small mb-1 text-truncate">
                     {product.name}
                   </p>
 
-                  <div className="d-flex align-items-center gap-2">
+                  <div className="d-flex gap-2">
                     <span className="fw-bold">
                       ₹{Math.round(product.effective_price)}
                     </span>
@@ -136,74 +175,58 @@ const HorizontalProductRow = ({
         })}
       </div>
 
-      {/* ================= STYLES ================= */}
+      {/* STYLES */}
       <style>{`
-        /* Horizontal scroll */
         .horizontal-scroll {
           overflow-x: auto;
           scrollbar-width: none;
-          -ms-overflow-style: none;
         }
 
         .horizontal-scroll::-webkit-scrollbar {
           display: none;
         }
 
-        /* Product card */
         .product-card-sm {
           min-width: 180px;
-          max-width: 180px;
           background: #fff;
           border-radius: 12px;
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .product-card-sm:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-        }
-
-        /* Image */
         .img-wrapper {
           height: 180px;
           background: #f6f6f6;
           overflow: hidden;
-          border-radius: 12px 12px 0 0;
         }
 
         .img-wrapper img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.4s ease;
         }
 
-        .product-card-sm:hover img {
-          transform: scale(1.07);
-        }
 
-        /* Mobile */
-        @media (max-width: 576px) {
-          .product-card-sm {
-            min-width: 145px;
-            max-width: 145px;
-          }
+        .three-d-btn {
+  position: relative;
+  background: #fff;
+  border: 2px solid #000;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  
+  /* 🔥 3D shadow */
+  box-shadow: 0 6px 0 #000;
+}
 
-          .img-wrapper {
-            height: 145px;
-          }
-        }
+/* HOVER */
+.three-d-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #000 ;
+}
 
-        @media (max-width: 768px) {
-          .product-card-sm {
-            min-width: 160px;
-            max-width: 160px;
-          }
-
-          .img-wrapper {
-            height: 160px;
-          }
-        }
+/* CLICK EFFECT */
+.three-d-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #000;
+}
       `}</style>
     </div>
   );

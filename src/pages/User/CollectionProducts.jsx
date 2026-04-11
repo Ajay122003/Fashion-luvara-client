@@ -57,7 +57,12 @@ const CollectionProducts = () => {
 
       {/* ================= HEADER ================= */}
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h3 className="fw-bold mb-0"  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+        <h3 className="fw-bold mb-0"   style={{
+    fontFamily: "'Lobster Two', cursive",
+    fontWeight: 700,
+    fontSize:"33px",
+    letterSpacing: "1px"
+  }}>
           {collection.name}
         </h3>
 

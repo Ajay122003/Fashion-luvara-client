@@ -225,7 +225,7 @@ const Products = () => {
       {/* STYLE */}
       <style>{`
         .product-image-wrapper {
-          height: 180px;
+          height: 190px;
           overflow: hidden;
         }
 

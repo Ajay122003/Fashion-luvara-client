@@ -86,12 +86,13 @@ const Cart = () => {
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <button
-          className="continue-shopping "
-          onClick={() => navigate("/")}
-        >
-          ← Continue Shopping
-        </button>
-        <h3 className="fw-bold mb-0">Shopping Cart</h3>
+  className="continue-shopping stylish-font"
+  onClick={() => navigate("/")}
+>
+  ← Continue Shopping
+</button>
+        {/* <h3 className="fw-bold mb-0">Shopping Cart</h3> */}
+        <h3 className="cart-title">Shopping Cart</h3>
       </div>
 
       <div className="row g-4">
@@ -269,7 +270,7 @@ const Cart = () => {
         .continue-shopping {
           background: none;
           border: none;
-          font-weight: 600;
+          
         }
        
       `}</style>

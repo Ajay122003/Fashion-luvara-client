@@ -57,7 +57,13 @@ const CategoryProducts = () => {
     <div className="container py-4">
       {/* CATEGORY TITLE */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="fw-bold  mb-0" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>{category.name}</h3>
+        <h3 className="fw-bold  mb-0" 
+         style={{
+    fontFamily: "'Lobster Two', cursive",
+    fontWeight: 700,
+    fontSize:"33px",
+    letterSpacing: "1px"
+  }}>{category.name}</h3>
 
         <span className="text-muted fw-semibold">
           {category.products?.length || 0} Products

@@ -168,7 +168,7 @@ const AdminLayout = () => {
               Collections
             </NavLink>
 
-            {/* ✅ OFFERS (MOBILE FIX) */}
+            {/* ✅OFFERS (MOBILE FIX) */}
             <NavLink
               to="/admin/offers"
               className={menuItemClass}

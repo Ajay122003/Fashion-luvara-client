@@ -2,6 +2,7 @@ import SubscribeBox from "./SubscribeBox";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const year = new Date().getFullYear(); 
   return (
     <>
       <SubscribeBox />
@@ -14,7 +15,7 @@ const Footer = () => {
         </div>
 
         <div>
-          © 2026 LUVARA. All Rights Reserved.
+          © {year} LUVARA. All Rights Reserved.
         </div>
 
         {/* Policy Links */}

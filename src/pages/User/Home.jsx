@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
-import publicClient from "../../api/publicClient";
 import { fetchCollections } from "../../api/collections";
 import { getCategories } from "../../api/category";
 import { Link } from "react-router-dom";
-import Products from "./Products";
 import banner from "../../assets/videos/banner1.MOV";
 import Offers from "./Offers";
 import HorizontalProductRow from "../../components/products/HorizontalProductRow";
 import AOS from "aos";
 import "aos/dist/aos.css";
-
+import { useRef } from "react";
 
 const Home = () => {
   const [collections, setCollections] = useState([]);
   const [categories, setCategories] = useState([]);
-
+  const videoRef = useRef(null);
   const loadData = async () => {
     try {
       const colRes = await fetchCollections();
@@ -42,6 +40,23 @@ const Home = () => {
       once: true,
     });
   }, []);
+  
+
+  useEffect(() => {
+  const handleScroll = () => {
+    if (videoRef.current) {
+      const scrollY = window.scrollY;
+
+      // 🔥 main effect (intha line dhan magic)
+      videoRef.current.style.transform = `translateY(${scrollY * 0.3}px)`;
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
 
   return (
     <div className="bg-white py-4">
@@ -49,6 +64,7 @@ const Home = () => {
       {/* ================= HERO BANNER ================= */}
       <div className="hero-banner">
   <video
+  ref={videoRef}
     className="hero-banner-video mb-4"
     src={banner}
     autoPlay
@@ -63,15 +79,20 @@ const Home = () => {
       
 
       {/* ================= CONTENT ================= */}
-      <div className="container mt-1">
+      <div className="container mt-5">
 
         {/* COLLECTIONS TITLE */}
         <h3
-  className="mb-4"
+  className="mb-4 text-center"
   data-aos="fade-up"
-  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}
+  style={{
+    fontFamily: "'Lobster Two', cursive",
+    fontWeight: 700,
+    fontSize: "42px",
+    letterSpacing: "1px"
+  }}
 >
-  Collections
+  Explore Collection
 </h3>
 
         {/* COLLECTIONS GRID */}
@@ -92,7 +113,7 @@ const Home = () => {
                     src={col.image_url || "/placeholder.png"}
                     alt={col.name}
                     className="w-100 image-zoom"
-                    style={{ height: "250px", objectFit: "cover" }}
+                    style={{ height: "250px", objectFit: "cover" ,borderRadius:"18px" }}
                   />
                 </div>
 
@@ -122,7 +143,7 @@ const Home = () => {
                     src={cat.image_url || "/placeholder.png"}
                     alt={cat.name}
                     className="w-100 image-zoom"
-                    style={{ height: "250px", objectFit: "cover" }}
+                    style={{ height: "250px", objectFit: "cover",borderRadius:"18px" }}
                   />
                 </div>
 
@@ -147,6 +168,7 @@ const Home = () => {
           width: 100%;
           overflow: hidden;
         }
+       
 
         .hero-banner-img {
           width: 100%;
@@ -189,10 +211,13 @@ const Home = () => {
 
 .hero-banner-video {
   width: 100%;
-  height: 640px;
+  height: 1350px;
   object-fit: cover;
   display: block;
+  transition: transform 0.2s ease-out;
 }
+
+
 
 /* Tablet */
 @media (max-width: 992px) {

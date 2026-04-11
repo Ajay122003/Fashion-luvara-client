@@ -1,8 +1,8 @@
 
+
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { createOrder } from "../../api/order";
-import { createPaymentOrder } from "../../api/payment";
+import { createPaymentOrder } from "../../api/payment"; // ONLY THIS
 
 const Payment = () => {
 
@@ -26,32 +26,30 @@ const Payment = () => {
 
     try {
 
-      // 1️⃣ Create Order
-      const orderRes = await createOrder({
-        ...state.checkout_payload,
-        payment_method: "ONLINE",
-      });
-
-      const orderId = orderRes.data.order_id;
-
-      // 2️⃣ Create Payment Session
-      const payRes = await createPaymentOrder(orderId);
+      //  ONLY CALL CASHFREE ORDER API
+      const res = await createPaymentOrder(); // ❗ no orderId
 
       const sessionId =
-        payRes.payment_session_id ||
-        payRes.data?.payment_session_id;
+        res.payment_session_id ||
+        res.data?.payment_session_id;
+
+      const orderNumber =
+        res.order_number ||
+        res.data?.order_number;
 
       if (!sessionId) {
         throw new Error("Payment session not received");
       }
 
-      // 3️⃣ Initialize Cashfree
+      //  STORE order_number (IMPORTANT for verify page)
+      localStorage.setItem("order_number", orderNumber);
+
+      //  INIT CASHFREE
       const cashfree = window.Cashfree({
-        // mode: "sandbox"
         mode: "production"
+        // mode:"sandbox"
       });
 
-      // 4️⃣ Open Checkout
       const checkoutOptions = {
         paymentSessionId: sessionId,
         redirectTarget: "_self"
@@ -69,11 +67,8 @@ const Payment = () => {
       );
 
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   if (!state) {

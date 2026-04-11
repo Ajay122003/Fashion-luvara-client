@@ -68,7 +68,7 @@ const PaymentSuccess = () => {
   }, []);
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100 text-center">
+    <div className="d-flex flex-column justify-content-center align-items-center vh-60 text-center">
 
       {status === "loading" && (
         <>
@@ -80,7 +80,7 @@ const PaymentSuccess = () => {
 
       {status === "success" && (
         <>
-          <h3 className="text-success mb-3">Payment Verified Successfully ✅</h3>
+          <h3 className="text-success mb-3">Payment Verified Successfully </h3>
         
         </>
       )}

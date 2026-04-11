@@ -65,9 +65,9 @@ const Checkout = () => {
   }, []);
 
   const loadAddresses = async () => {
-  const data = await getAddresses(); // 👈 data = res.data
+  const data = await getAddresses(); //  data = res.data
 
-  setAddresses(data); // ✅ correct
+  setAddresses(data); //  correct
 
   const defaultAddr =
     data.find((a) => a.is_default) || data[0];
@@ -457,6 +457,12 @@ const handlePlaceOrder = async () => {
                   key={item.id}
                   className="d-flex justify-content-between mb-2"
                 >
+                  <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="rounded"
+                    style={{ width: 70, height: 70, objectFit: "cover" }}
+                  />
                   <span>
                     {product.name} ({item.variant.size}) ×{" "}
                     {item.quantity}

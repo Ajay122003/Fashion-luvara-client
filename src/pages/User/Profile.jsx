@@ -8,6 +8,7 @@ import {
   getAddresses,
   addAddress,
   deleteAddress,
+   updateAddress
 } from "../../api/address";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -23,6 +24,7 @@ const Profile = () => {
 
   const [profile, setProfile] = useState(null);
   const [username, setUsername] = useState("");
+  const [editingId, setEditingId] = useState(null);
 
   const [addresses, setAddresses] = useState([]);
   const [showAddrForm, setShowAddrForm] = useState(false);
@@ -85,7 +87,7 @@ const Profile = () => {
   };
 
   /* ================= ADDRESS ADD ================= */
-  const saveAddress = async () => {
+const saveAddress = async () => {
   const {
     first_name,
     last_name,
@@ -109,18 +111,33 @@ const Profile = () => {
   }
 
   try {
-    await addAddress({
-      name: `${first_name} ${last_name}`,
-      phone,
-      pincode,
-      city,
-      state,
-      full_address: `${address}, ${addrForm.apartment}`,
-    });
+    if (editingId) {
+      // 🔥 UPDATE
+      await updateAddress(editingId, {
+        name: `${first_name} ${last_name}`,
+        phone,
+        pincode,
+        city,
+        state,
+        full_address: `${address}, ${addrForm.apartment}`,
+      });
 
-    toast.success("Address added");
+      toast.success("Address updated");
+      setEditingId(null);
+    } else {
+      // 🔥 ADD
+      await addAddress({
+        name: `${first_name} ${last_name}`,
+        phone,
+        pincode,
+        city,
+        state,
+        full_address: `${address}, ${addrForm.apartment}`,
+      });
 
-    //  reset properly
+      toast.success("Address added");
+    }
+
     setAddrForm({
       first_name: "",
       last_name: "",
@@ -135,9 +152,11 @@ const Profile = () => {
     setShowAddrForm(false);
     loadAll();
   } catch {
-    toast.error("Failed to add address");
+    toast.error("Failed to save address");
   }
 };
+
+
 
   /* ================= ADDRESS DELETE ================= */
   const removeAddress = async (id) => {
@@ -350,46 +369,83 @@ const Profile = () => {
                 onClick={saveAddress}
               >
                 <i className="bi bi-check-circle me-1"></i>
-                Save Address
+                {editingId ? "Update Address" : "Save Address"}
               </button>
             </div>
           )}
 
-          {addresses.length === 0 && (
-            <p className="text-muted">No addresses added</p>
-          )}
+         {addresses.length === 0 && (
+  <p className="text-muted text-center">No addresses added</p>
+)}
 
-          {addresses.map((addr) => (
-            <div
-              key={addr.id}
-              className="card shadow-sm p-3 mb-3 rounded-4"
-              data-aos="fade-up"
-            >
-              <div className="d-flex justify-content-between">
-                <div>
-                  <strong>
-                    <i className="bi bi-person-fill me-1"></i>
-                    {addr.name}
-                  </strong>
-                  <p className="small text-muted mb-1">
-                    <i className="bi bi-telephone-fill me-1"></i>
-                    {addr.phone}
-                  </p>
-                  <p className="small text-muted mb-0">
-                    <i className="bi bi-house-door-fill me-1"></i>
-                    {addr.full_address}, {addr.city}, {addr.state} – {addr.pincode}
-                  </p>
-                </div>
+{addresses.map((addr) => (
+  <div
+    key={addr.id}
+    className="card shadow-sm p-3 mb-3 rounded-4 address-card"
+    data-aos="fade-up"
+  >
+    <div className="row align-items-center">
 
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => removeAddress(addr.id)}
-                >
-                  <i className="bi bi-trash"></i>
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* LEFT CONTENT */}
+      <div className="col-12 col-md-9 mb-2 mb-md-0">
+        <strong className="d-block">
+          <i className="bi bi-person-fill me-1"></i>
+          {addr.name}
+        </strong>
+
+        <p className="small text-muted mb-1">
+          <i className="bi bi-telephone-fill me-1"></i>
+          {addr.phone}
+        </p>
+
+        <p className="small text-muted mb-0">
+          <i className="bi bi-house-door-fill me-1"></i>
+          {addr.full_address}, {addr.city}, {addr.state} – {addr.pincode}
+        </p>
+      </div>
+
+      {/* RIGHT BUTTONS */}
+      <div className="col-12 col-md-3 text-md-end d-flex d-md-block gap-2 mt-2 mt-md-0">
+
+        {/* EDIT */}
+        <button
+          className="btn btn-sm btn-outline-primary w-md-auto"
+          onClick={() => {
+            setEditingId(addr.id);
+
+            const [address, apartment] = addr.full_address.split(",");
+
+            setAddrForm({
+              first_name: addr.name.split(" ")[0] || "",
+              last_name: addr.name.split(" ")[1] || "",
+              phone: addr.phone,
+              address: address || "",
+              apartment: apartment || "",
+              city: addr.city,
+              state: addr.state,
+              pincode: addr.pincode,
+            });
+
+            setShowAddrForm(true);
+          }}
+        >
+          <i className="bi bi-pencil "></i>
+          
+        </button>
+
+        {/* DELETE */}
+        <button
+          className="btn btn-sm btn-outline-danger ms-lg-2  w-md-auto"
+          onClick={() => removeAddress(addr.id)}
+        >
+          <i className="bi bi-trash "></i>
+          
+        </button>
+
+      </div>
+    </div>
+  </div>
+))}
         </div>
       </div>
 
