@@ -101,7 +101,7 @@ const Login = () => {
         )}
 
         {/* EMAIL INPUT */}
-        <div className="floating-input">
+        <div className="floating-input input-box">
           <input
             type="email"
             required
@@ -128,7 +128,16 @@ const Login = () => {
           Don’t have an account? <Link to="/register">Sign up</Link>
         </p>
       </div>
+
+      <style>
+        {`
+        .input-box input:focus {
+          border-color: #c9a14a;
+        }
+        `}
+      </style>
     </div>
+    
   );
 };
 

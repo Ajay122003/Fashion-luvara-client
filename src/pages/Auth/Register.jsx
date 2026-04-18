@@ -83,7 +83,7 @@ const Register = () => {
         {/* FORM */}
         <form onSubmit={handleSubmit}>
           {/* EMAIL */}
-          <div className="floating-group mb-3">
+          <div className="floating-group mb-3 input-box">
             <input
               type="email"
               name="email"
@@ -96,7 +96,7 @@ const Register = () => {
           </div>
 
           {/* USERNAME */}
-          <div className="floating-group mb-3">
+          <div className="floating-group mb-3 input-box">
             <input
               type="text"
               name="username"
@@ -109,7 +109,7 @@ const Register = () => {
           </div>
 
           {/* PASSWORD */}
-          <div className="floating-group mb-4">
+          <div className="floating-group mb-4 input-box">
             <input
               type="password"
               name="password"
@@ -161,6 +161,10 @@ const Register = () => {
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .input-box input:focus {
+          border-color: #c9a14a;
         }
       `}</style>
     </div>

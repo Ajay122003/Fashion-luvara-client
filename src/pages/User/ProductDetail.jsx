@@ -221,10 +221,10 @@ const ProductDetail = () => {
       <div className="row g-4">
         {/* IMAGE SECTION */}
         <div className="col-12 col-md-6">
-          <div className="position-relative border rounded p-2">
+          <div className="position-relative border rounded  p-2 ">
             <button
               onClick={handleWishlistToggle}
-              className="btn position-absolute top-0 end-0 m-2"
+              className="btn position-absolute top-0 end-0 m-2 wishlist-btn"
             >
               <i
                 className={`bi ${
@@ -239,6 +239,7 @@ const ProductDetail = () => {
               src={mainImage}
               alt={product.name}
               className="w-100"
+              
               style={{ height: "380px", objectFit: "contain" }}
             />
           </div>
@@ -272,7 +273,8 @@ const ProductDetail = () => {
 
         {/* DETAILS */}
         <div className="col-12 col-md-6">
-          <h4 className="fw-bold">{product.name}</h4>
+          <h4 className="fw-bold" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
+            {product.name}</h4>
           {isProductOutOfStock && (
   <p className="text-danger fw-semibold my-2">
     Out of Stock
@@ -469,6 +471,14 @@ const ProductDetail = () => {
   75%  { transform: rotate(-6deg) scale(1.05); }
   100% { transform: rotate(0deg) scale(1); }
 }
+
+ .wishlist-btn {
+          border: none;
+          border-radius: 50px;
+          font-size: 0.85rem;
+          transition: 0.3s;
+          box-shadow: 5px 5px 20px #262626;
+        }
 `}
       </style>
     </div>

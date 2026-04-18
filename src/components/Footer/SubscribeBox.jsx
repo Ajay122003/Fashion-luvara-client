@@ -34,7 +34,7 @@ const SubscribeBox = () => {
   };
 
   return (
-    <section className="subscribe-section">
+    <section className="subscribe-section bg-sub">
       <div className="container text-center">
 
         {/* ICON */}
@@ -97,17 +97,16 @@ const SubscribeBox = () => {
           100% { transform: translateY(0); }
         }
 
-        .subscribe-title {
-          font-weight: 700;
-          margin-bottom: 5px;
-        }
+        
 
         .subscribe-subtitle {
   color: var(--secondary);
   margin-bottom: 24px;
   font-size: 1.1rem;
 }
-
+ .bg-sub{
+ background: #f4efe6;
+ }
 
         /* BOX */
         .subscribe-box {

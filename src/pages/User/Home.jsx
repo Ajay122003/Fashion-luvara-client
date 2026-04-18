@@ -73,7 +73,7 @@ const Home = () => {
         {/* TITLE */}
         <h3
           className="mb-4 text-center"
-          data-aos="fade-up"
+          data-aos="fade-right"
           style={{
             fontFamily: "'Lobster Two', cursive",
             fontWeight: 700,
@@ -105,7 +105,7 @@ const Home = () => {
 
                   <div className="image-overlay"></div>
 
-                  <div className="overlay-text">
+                  <div className="overlay-text " data-aos="fade-right" data-aos-delay={index * 100}>
                     {col.name} <i className="bi bi-arrow-right"></i>
                   </div>
                 </div>
@@ -134,7 +134,7 @@ const Home = () => {
 
                   <div className="image-overlay"></div>
 
-                  <div className="overlay-text">
+                  <div className="overlay-text" data-aos="fade-right" data-aos-delay={index * 100}>
                     {cat.name} <i className="bi bi-arrow-right"></i>
                   </div>
                 </div>
@@ -159,7 +159,7 @@ const Home = () => {
 
         .hero-banner-video {
           width: 100%;
-          height: 500px;
+          height: 780px;
           object-fit: cover;
         }
 
@@ -214,7 +214,7 @@ const Home = () => {
         /* RESPONSIVE */
         @media (max-width: 576px) {
           .hero-banner-video {
-            height: 450px;
+            height: 480px;
           }
 
           .overlay-text {
@@ -231,7 +231,7 @@ const Home = () => {
 
         @media (min-width: 992px) {
           .hero-banner-video {
-            height: 500px;
+            height: 600px;
           }
 
           .overlay-text {

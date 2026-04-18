@@ -153,7 +153,7 @@ const CategoryProducts = () => {
 
                     {/* BODY */}
                     <div className="card-body px-2">
-                      <h6 className="fw-semibold mb-1 text-truncate">
+                      <h6 className=" mb-1 text-truncate" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
                         {product.name}
                       </h6>
 

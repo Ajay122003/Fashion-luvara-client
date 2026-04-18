@@ -120,7 +120,7 @@ const UserNavbar = () => {
      
 
       {/* ================= NAVBAR ================= */}
-      <nav className="navbar navbar-expand-lg bg-white py-3 shadow-sm sticky-top">
+      <nav className="navbar navbar-expand-lg bg-white  py-3 shadow-lg sticky-top " >
         <div className="container-fluid">
           {/* MOBILE MENU */}
           <button
@@ -166,11 +166,11 @@ const UserNavbar = () => {
           {/* DESKTOP NAV */}
         
           <div className="collapse navbar-collapse">
-            <div className=" d-none d-lg-block me-4">
+            <div className=" d-none d-lg-block ms-4 me-4 ">
               <img src={brandLogo} height="120" width="110" alt="logo" />
             </div>
 
-            <ul className="navbar-nav gap-4 small">
+            <ul className="navbar-nav ms-5 gap-4 ">
               <li><Link to="/" className="nav-link">Home</Link></li>
               <li className="nav-item dropdown">
   <span
@@ -249,7 +249,7 @@ const UserNavbar = () => {
             </ul>
 
             {/* DESKTOP RIGHT */}
-            <div className="ms-auto  d-none d-lg-flex gap-4 fs-5">
+            <div className="ms-auto  d-none d-lg-flex gap-4 me-4 fs-5" >
               <i
                 className="bi bi-search"
                 role="button"
@@ -475,6 +475,7 @@ const UserNavbar = () => {
           </div>
         </div>
       </div>
+      
     </>
   );
 };

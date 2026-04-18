@@ -61,7 +61,7 @@ const Products = () => {
       <div className="row g-3 mb-4">
         <div className="col-4 col-md-4">
           <select
-            className="form-select"
+            className="form-select input-box"
             onChange={(e) =>
               updateFilter("sort", e.target.value)
             }
@@ -77,12 +77,14 @@ const Products = () => {
         <div className="col-8 col-md-8">
           <input
             type="text"
-            className="form-control"
+            className="form-control input-box"
             placeholder="Search for products..."
             onChange={(e) =>
               updateFilter("search", e.target.value)
             }
+            
           />
+          
         </div>
       </div>
 
@@ -168,7 +170,7 @@ const Products = () => {
 
                   {/* BODY */}
                   <div className="card-body">
-                    <h6 className="fw-semibold text-truncate">
+                    <h6 className=" text-truncate"  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
                       {product.name}
 
                       
@@ -244,6 +246,11 @@ const Products = () => {
         .product-card:hover img {
           transform: scale(1.06);
         }
+        
+        .input-box{
+        border-color: #c9a14a;
+        }
+
       `}</style>
     </div>
   );

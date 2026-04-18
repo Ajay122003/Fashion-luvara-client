@@ -157,7 +157,7 @@ const HorizontalProductRow = ({
                     {product.name}
                   </p>
 
-                  <div className="d-flex gap-2">
+                  <div className="d-flex  gap-2">
                     <span className="fw-bold">
                       ₹{Math.round(product.effective_price)}
                     </span>

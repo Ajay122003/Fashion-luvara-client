@@ -77,7 +77,7 @@ const OfferDetail = () => {
 
       {/* ================= HEADER ================= */}
       <div className="row mb-4 align-items-center">
-        <div className="col-md-5 mb-3 mb-md-0" data-aos="fade-right">
+        <div className=" col-6 col-md-5 mb-3 mb-md-0" data-aos="fade-right">
           <img
             src={offer.image_url}
             alt={offer.title}
@@ -85,7 +85,7 @@ const OfferDetail = () => {
           />
         </div>
 
-        <div className="col-md-7" data-aos="fade-left">
+        <div className="col-6 col-md-7" data-aos="fade-left">
           <h2 className="fw-bold">
             {typedTitle}
             <span className="typing-cursor">|</span>
