@@ -69,19 +69,36 @@ const Home = () => {
 
       <Offers />
 
-      <div className="container mt-4">
+      <div className="container mt-5">
         {/* TITLE */}
-        <h3
-          className="mb-4 text-center"
-          data-aos="fade-right"
-          style={{
-            fontFamily: "'Lobster Two', cursive",
-            fontWeight: 700,
-            fontSize: "42px",
-          }}
-        >
-          Explore Collection
-        </h3>
+        
+
+        <div className="title-wrapper">
+
+  {/* 🌿 REAL SVG LEAVES */}
+  <div className="leaves">
+    {[...Array(6)].map((_, i) => (
+      <span key={i}>
+        <svg viewBox="0 0 24 24" className="leaf">
+          <path d="M12 2C8 6 4 10 4 14a8 8 0 0016 0c0-4-4-8-8-12z" />
+        </svg>
+      </span>
+    ))}
+  </div>
+
+  <h3
+    className="mb-4 text-center animated-title"
+    data-aos="fade-right"
+    style={{
+      fontFamily: "'Lobster Two', cursive",
+      fontWeight: 700,
+      fontSize: "40px",
+    }}
+  >
+    Explore Collection
+  </h3>
+
+</div>
 
         {/* COLLECTIONS */}
         <div className="row g-4 mb-4">
@@ -238,6 +255,88 @@ const Home = () => {
             font-size: 15px;
           }
         }
+
+
+
+.title-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* LEAVES CONTAINER */
+.leaves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* EACH LEAF */
+.leaves span {
+  position: absolute;
+  display: block;
+  width: 25px;
+  height: 25px;
+  animation: flyLeaf linear infinite;
+}
+
+/* SVG STYLE */
+.leaf {
+  width: 100%;
+  height: 100%;
+  fill: #c9a14a;
+  filter: drop-shadow(0 0 6px rgba(201,161,74,0.6));
+}
+
+/* RANDOM POSITIONS + SPEED */
+.leaves span:nth-child(1) {
+  left: 5%;
+  animation-duration: 10s;
+}
+.leaves span:nth-child(2) {
+  left: 20%;
+  animation-duration: 8s;
+}
+.leaves span:nth-child(3) {
+  left: 40%;
+  animation-duration: 12s;
+}
+.leaves span:nth-child(4) {
+  left: 60%;
+  animation-duration: 9s;
+}
+.leaves span:nth-child(5) {
+  left: 75%;
+  animation-duration: 11s;
+}
+.leaves span:nth-child(6) {
+  left: 90%;
+  animation-duration: 7s;
+}
+
+/*  REALISTIC LEAF MOTION */
+@keyframes flyLeaf {
+  0% {
+    transform: translateY(120px) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) translateX(20px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(-250px) translateX(-30px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* TEXT ABOVE */
+.animated-title {
+  position: relative;
+  z-index: 2;
+}
       `}</style>
     </div>
   );

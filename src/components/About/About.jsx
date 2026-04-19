@@ -138,6 +138,7 @@ const About = () => {
         .contact-box {
           margin-top: 50px;
           padding: 25px;
+          
           border-radius: 12px;
           background: #ffffffcc;
           backdrop-filter: blur(5px);

@@ -70,7 +70,7 @@ const Cart = () => {
 
         {/* CTA */}
         <button
-          className="btn btn-dark rounded-pill px-4 py-2"
+          className="cart-shopping-btn"
           onClick={() => navigate("/")}
         >
           Continue Shopping
@@ -272,6 +272,8 @@ const Cart = () => {
           border: none;
           
         }
+
+        
        
       `}</style>
     </div>

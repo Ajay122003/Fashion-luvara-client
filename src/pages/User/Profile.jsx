@@ -186,15 +186,18 @@ const saveAddress = async () => {
 
   return (
     <div className="container py-4">
-      <h3 className="mb-4 fw-bold" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>My Account</h3>
-
+      <h3 className="mb-2 fw-bold" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>My Account</h3>
+      <p className="text-muted mb-4">
+        Manage your profile, addresses & orders
+      </p>
       <div className="row g-4">
         {/* ================= LEFT : PROFILE ================= */}
         <div className="col-md-4" data-aos="fade-right">
           <div className="card shadow-sm p-4 rounded-4 text-center">
             <i className="bi bi-person-circle fs-1 mb-2"></i>
 
-            <h5 className="fw-bold mb-0">{profile.username}</h5>
+            <h5 className="fw-bold mb-0" 
+            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>{profile.username}</h5>
             <p className="text-muted small">{profile.email}</p>
 
             <span

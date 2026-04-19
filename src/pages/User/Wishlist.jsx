@@ -92,7 +92,7 @@ const Wishlist = () => {
             gap: 10px;
             padding: 10px 22px;
             border-radius: 30px;
-            border: 1px solid #111;
+            border: 1px solid #c9a14a;
             background: #fff;
             color: #111;
             font-weight: 600;
@@ -101,10 +101,7 @@ const Wishlist = () => {
             transition: all 0.3s ease;
           }
 
-          .continue-shopping-btn:hover {
-            background: #111;
-            color: #fff;
-          }
+          
         `}</style>
       </div>
     );

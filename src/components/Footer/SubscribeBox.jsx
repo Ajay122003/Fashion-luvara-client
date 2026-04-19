@@ -102,7 +102,7 @@ const SubscribeBox = () => {
         .subscribe-subtitle {
   color: var(--secondary);
   margin-bottom: 24px;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
 }
  .bg-sub{
  background: #f4efe6;
@@ -120,6 +120,7 @@ const SubscribeBox = () => {
           padding: 8px;
           border-radius: 50px;
           box-shadow: 0 10px 25px #262626;
+          
         }
 
         /* INPUT */
@@ -142,7 +143,7 @@ const SubscribeBox = () => {
           border-radius: 50px;
           font-size: 0.85rem;
           transition: 0.3s;
-          box-shadow: 5px 5px 20px #262626;
+          // box-shadow: 5px 5px 20px #262626;
         }
 
         .subscribe-btn:hover {

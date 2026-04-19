@@ -153,7 +153,8 @@ const HorizontalProductRow = ({
                 </div>
 
                 <div className="p-2">
-                  <p className="fw-semibold small mb-1 text-truncate">
+                  <p className="fw-semibold small mb-1 text-truncate" 
+                  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
                     {product.name}
                   </p>
 
