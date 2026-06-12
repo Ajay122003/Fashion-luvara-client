@@ -1,10 +1,9 @@
 
-
 import { useState } from "react";
 import { subscribeEmail } from "../../api/subscription";
 import { toast } from "react-hot-toast";
 import { HiOutlineMailOpen } from "react-icons/hi";
-
+import subBg from "../../assets/images/about.png"; // Change image path if needed
 
 const SubscribeBox = () => {
   const [email, setEmail] = useState("");
@@ -34,7 +33,10 @@ const SubscribeBox = () => {
   };
 
   return (
-    <section className="subscribe-section bg-sub">
+    <section
+      className="subscribe-section"
+      style={{ backgroundImage: `url(${subBg})` }}
+    >
       <div className="container text-center">
 
         {/* ICON */}
@@ -43,7 +45,6 @@ const SubscribeBox = () => {
         </div>
 
         {/* TITLE */}
-        
         <p className="subscribe-subtitle">
           Subscribe to our emails
         </p>
@@ -67,7 +68,7 @@ const SubscribeBox = () => {
           </button>
         </div>
 
-        {/* SUCCESS */}
+        {/* SUCCESS MESSAGE */}
         {successMsg && (
           <div className="subscribe-success">
             {successMsg}
@@ -76,78 +77,114 @@ const SubscribeBox = () => {
 
       </div>
 
-      {/* STYLES */}
       <style>{`
         .subscribe-section {
-  padding: 60px 0;
-  background: var(--bg-color);
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
-}
+          padding: 80px 20px;
+          position: relative;
+          overflow: hidden;
+
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+
+          border-top: 1px solid var(--border-color);
+          border-bottom: 1px solid var(--border-color);
+
+          animation: bgMove 20s linear infinite;
+        }
+
+        .subscribe-section::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: rgba(255, 255, 255, 0.85);
+        }
+
+        .subscribe-section .container {
+          position: relative;
+          z-index: 1;
+        }
+
+        @keyframes bgMove {
+          0% {
+            background-position: 0% 0%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 0%;
+          }
+        }
 
         .subscribe-icon {
           margin-bottom: 10px;
-          color: #1B0C0C;
+          color: #313E17;
           animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
-          100% { transform: translateY(0); }
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-6px);
+          }
+          100% {
+            transform: translateY(0);
+          }
         }
 
-        
-
         .subscribe-subtitle {
-  color: var(--secondary);
-  margin-bottom: 24px;
-  font-size: 1.5rem;
-}
- .bg-sub{
- background: #f4efe6;
- }
+          color: #313E17;
+          margin-bottom: 24px;
+          font-size: 1.5rem;
+          font-weight: 500;
+        }
 
-        /* BOX */
         .subscribe-box {
           display: flex;
           justify-content: center;
           align-items: center;
           gap: 10px;
-          max-width: 500px;
+
+          max-width: 550px;
           margin: auto;
-          background: #fff;
-          padding: 8px;
+
+          background: rgba(255, 255, 255, 0.95);
+          padding: 10px;
           border-radius: 50px;
-          box-shadow: 0 10px 25px #262626;
-          
+
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          backdrop-filter: blur(8px);
         }
 
-        /* INPUT */
         .subscribe-input {
           flex: 1;
           border: none;
           outline: none;
-          padding: 12px 16px;
+          padding: 12px 18px;
           border-radius: 50px;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
+          background: transparent;
         }
 
-
-        /* BUTTON */
         .subscribe-btn {
           background: var(--button-bg);
           color: var(--button-text);
+
           border: none;
-          padding: 10px 18px;
+          padding: 12px 20px;
           border-radius: 50px;
-          font-size: 0.85rem;
-          transition: 0.3s;
-          // box-shadow: 5px 5px 20px #262626;
+
+          font-size: 0.9rem;
+          font-weight: 500;
+
+          transition: all 0.3s ease;
         }
 
         .subscribe-btn:hover {
-          transform: scale(1.05);
+          transform: translateY(-2px) scale(1.05);
         }
 
         .subscribe-btn:disabled {
@@ -155,33 +192,48 @@ const SubscribeBox = () => {
           cursor: not-allowed;
         }
 
-        /* SUCCESS */
         .subscribe-success {
-          margin-top: 15px;
+          margin-top: 18px;
           color: green;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
+          font-weight: 500;
           animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(5px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        /* MOBILE */
         @media (max-width: 576px) {
-          .subscribe-box {
-            flex-direction: row;
-            border-radius: 50px;
-            padding: 10px;
+          .subscribe-section {
+            padding: 60px 15px;
           }
 
-          .subscribe-btn {
-            width: 100px;
+          .subscribe-subtitle {
+            font-size: 1.2rem;
+          }
+
+          .subscribe-box {
+            padding: 8px;
+            gap: 8px;
           }
 
           .subscribe-input {
-            width: 100%;
+            font-size: 0.85rem;
+            padding: 10px 14px;
+          }
+
+          .subscribe-btn {
+            width: 110px;
+            font-size: 0.8rem;
+            padding: 10px;
           }
         }
       `}</style>

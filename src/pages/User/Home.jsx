@@ -284,7 +284,7 @@ const Home = () => {
 .leaf {
   width: 100%;
   height: 100%;
-  fill: #c9a14a;
+  fill: #313E17;
   filter: drop-shadow(0 0 6px rgba(201,161,74,0.6));
 }
 

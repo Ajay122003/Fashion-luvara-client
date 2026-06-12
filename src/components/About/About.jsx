@@ -22,7 +22,7 @@ const About = () => {
           style={{
             fontFamily: "'Playfair Display', serif",
             fontWeight: 600,
-            color:"#1B0C0C"
+            color:"#313E17"
           }}
         >
           About Us

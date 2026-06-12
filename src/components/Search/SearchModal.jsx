@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { globalSearch } from "../../api/auth";
+import loadingLogo from "../../assets/images/logo3.png";
 
 const SearchModal = ({ show, onClose }) => {
   const navigate = useNavigate();
@@ -98,9 +99,11 @@ const SearchModal = ({ show, onClose }) => {
         </div>
 
         {/* ================= RESULTS ================= */}
+        {/* LOADING */}
+        
         <div className="search-results-body">
-          {/* LOADING */}
-          {loading && (
+          
+          {/* {loading && (
             <div className="text-center py-5">
               <div
                 className="spinner-border text-dark"
@@ -110,7 +113,21 @@ const SearchModal = ({ show, onClose }) => {
                 Searching...
               </p>
             </div>
-          )}
+          )} */}
+
+          {loading && (
+    <div className="text-center py-5">
+      <img
+        src={loadingLogo}
+        alt="Loading"
+        className="loading-image"
+      />
+
+      <p className="mt-3 text-muted">
+        Searching...
+      </p>
+    </div>
+  )}
 
           {/* EMPTY */}
           {!loading && searchText && results.length === 0 && (
@@ -181,6 +198,7 @@ const SearchModal = ({ show, onClose }) => {
             max-width: 720px;
             margin-top: 80px;
             border-radius: 16px;
+           
           }
 
           @media (max-width: 768px) {
@@ -205,6 +223,32 @@ const SearchModal = ({ show, onClose }) => {
           .search-result-item:hover {
             background: #f8f9fa;
           }
+
+          .loading-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+     border-radius: 50%;
+  padding: 8px;
+  background: #fff;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(0, 0, 0, 0.08);
+
+  animation: rotateLogo 1.5s linear infinite;
+}
+
+@keyframes rotateLogo {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
         `}
       </style>
     </div>
