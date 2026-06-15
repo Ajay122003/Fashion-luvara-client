@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import loadingLogo from "../../assets/images/logo3.png";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -182,7 +183,47 @@ const saveAddress = async () => {
   };
 
   if (loading)
-    return <p className="text-center py-5">Loading...</p>;
+  return (
+    <div
+      className="container d-flex flex-column justify-content-center align-items-center text-center"
+      style={{ minHeight: "70vh" }}
+    >
+      <img
+        src={loadingLogo}
+        alt="Loading"
+        className="loading-image"
+      />
+
+      <p className="mt-3 fw-semibold text-muted">
+        Loading Profile...
+      </p>
+
+      <style>{`
+        .loading-image {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: 50%;
+          padding: 8px;
+          background: #fff;
+          box-shadow:
+            0 8px 20px rgba(0,0,0,.15),
+            0 0 30px rgba(0,0,0,.08);
+
+          animation: rotateLogo 1.5s linear infinite;
+        }
+
+        @keyframes rotateLogo {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
+    </div>
+  );
 
   return (
     <div className="container py-4">

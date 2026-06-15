@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchProducts } from "../api/products";
 import { Link } from "react-router-dom";
+import loadingLogo from "../assets/images/logo3.png";
 
 const ProductImageShowcase = () => {
   const [products, setProducts] = useState([]);
@@ -40,8 +41,48 @@ const ProductImageShowcase = () => {
   }, [activeIndex]);
 
   if (!products.length) {
-    return <p className="text-center py-5">Loading products...</p>;
-  }
+  return (
+    <div
+      className="container d-flex flex-column justify-content-center align-items-center text-center"
+      style={{ minHeight: "50vh" }}
+    >
+      <img
+        src={loadingLogo}
+        alt="Loading"
+        className="loading-image"
+      />
+
+      <p className="mt-3 fw-semibold text-muted">
+        Loading Products...
+      </p>
+
+      <style>{`
+        .loading-image {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: 50%;
+          padding: 8px;
+          background: #fff;
+          box-shadow:
+            0 8px 20px rgba(0,0,0,.15),
+            0 0 30px rgba(0,0,0,.08);
+
+          animation: rotateLogo 1.5s linear infinite;
+        }
+
+        @keyframes rotateLogo {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
 
   const activeProduct = products[activeIndex];
   const hasOffer =
