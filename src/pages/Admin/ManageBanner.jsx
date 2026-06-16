@@ -3,10 +3,9 @@ import {
   useState,
 } from "react";
 
-import {
-  Link,
-} from "react-router-dom";
-
+import {Link,} from "react-router-dom";
+import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
 import { fetchAdminBanners, deleteAdminBanner,} from "../../api/admin";
 
 const ManageBanner = () => {
@@ -25,19 +24,34 @@ const ManageBanner = () => {
       setBanners(data);
     };
 
-  const handleDelete =
-    async (id) => {
-      if (
-        !window.confirm(
-          "Delete banner?"
-        )
-      )
-        return;
+  const handleDelete = async (id) => {
+  const result = await Swal.fire({
+    title: "Delete Banner?",
+    text: "This banner will be permanently deleted.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dc3545",
+    cancelButtonColor: "#6c757d",
+    confirmButtonText: "Yes, Delete",
+    cancelButtonText: "Cancel",
+  });
 
-      await deleteAdminBanner(id);
+  if (!result.isConfirmed) return;
 
-      loadBanners();
-    };
+  try {
+    await deleteAdminBanner(id);
+
+    toast.success(
+      "Banner deleted successfully"
+    );
+
+    loadBanners();
+  } catch (error) {
+    toast.error(
+      "Failed to delete banner"
+    );
+  }
+};
 
   return (
   <div className="container py-4">

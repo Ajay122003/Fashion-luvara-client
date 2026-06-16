@@ -6,6 +6,8 @@ import {
   updateAdminBanner,
 } from "../../api/admin";
 
+import { toast } from "react-hot-toast";
+
 const EditBanner = () => {
   const { id } = useParams();
 
@@ -28,21 +30,26 @@ const EditBanner = () => {
       setBanner(data);
     };
 
-  const handleUpdate =
-    async (formData) => {
-      await updateAdminBanner(
-        id,
-        formData
-      );
+  const handleUpdate = async (formData) => {
+  try {
+    await updateAdminBanner(
+      id,
+      formData
+    );
 
-      alert(
-        "Banner updated successfully"
-      );
+    toast.success(
+      "Banner updated successfully"
+    );
 
-      navigate(
-        "/admin/banners"
-      );
-    };
+    navigate(
+      "/admin/banners"
+    );
+  } catch (error) {
+    toast.error(
+      "Failed to update banner"
+    );
+  }
+};
 
   if (!banner) return null;
 
