@@ -29,3 +29,12 @@ export const logoutUser = (refresh) =>
 export const globalSearch = (query) => {
   return publicClient.get(`/api/auth/search/?q=${query}`);
 };
+
+
+export const fetchBanner = async () => {
+  const res = await publicClient.get(
+    "/api/auth/banner/"
+  );
+
+  return res.data;
+};

@@ -78,6 +78,11 @@ const AdminLayout = () => {
               Offers
             </NavLink>
 
+            <NavLink to="/admin/banners" className={menuItemClass}>
+  <i className="bi bi-camera-video" />
+  Banners
+</NavLink>
+
             <NavLink to="/admin/coupons" className={menuItemClass}>
               <i className="bi bi-ticket-perforated" />
               Coupons
@@ -177,6 +182,15 @@ const AdminLayout = () => {
               <i className="bi bi-percent" />
               Offers
             </NavLink>
+
+            <NavLink
+  to="/admin/banners"
+  className={menuItemClass}
+  onClick={() => setShowSidebar(false)}
+>
+  <i className="bi bi-camera-video" />
+  Banners
+</NavLink>
 
             <NavLink
               to="/admin/coupons"

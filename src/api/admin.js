@@ -376,3 +376,66 @@ export const deleteAdminOffer = async (id) => {
   );
   return res.data;
 };
+
+
+/* -----------------------------------------------
+   BANNERS (ADMIN)
+------------------------------------------------ */
+
+// Fetch all banners
+export const fetchAdminBanners = async () => {
+  const res = await adminClient.get(
+    "/api/admin-panel/banners/"
+  );
+  return res.data;
+};
+
+// Fetch single banner
+export const fetchSingleAdminBanner = async (id) => {
+  const res = await adminClient.get(
+    `/api/admin-panel/banners/${id}/`
+  );
+  return res.data;
+};
+
+// Create banner
+export const createAdminBanner = async (formData) => {
+  const res = await adminClient.post(
+    "/api/admin-panel/banners/",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data;
+};
+
+// Update banner
+export const updateAdminBanner = async (
+  id,
+  formData
+) => {
+  const res = await adminClient.put(
+    `/api/admin-panel/banners/${id}/`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data;
+};
+
+// Delete banner
+export const deleteAdminBanner = async (id) => {
+  const res = await adminClient.delete(
+    `/api/admin-panel/banners/${id}/`
+  );
+
+  return res.data;
+};

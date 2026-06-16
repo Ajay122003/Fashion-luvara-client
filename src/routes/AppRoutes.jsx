@@ -50,6 +50,10 @@ import ManageCollection from "../pages/Admin/ManageCollection";
 import AddCollection from "../pages/Admin/AddCollection";
 import EditCollection from "../pages/Admin/EditCollection";
 
+import ManageBanner from "../pages/Admin/ManageBanner";
+import AddBanner from "../pages/Admin/AddBanner";
+import EditBanner from "../pages/Admin/EditBanner";
+
 import AdminOrders from "../pages/Admin/AdminOrders";
 import AdminOrderDetails from "../pages/Admin/AdminOrderDetails";
 
@@ -220,6 +224,11 @@ const AppRoutes = () => {
          <Route path="/admin/offers" element={<ManageOffers />} />
        <Route path="/admin/offers/add" element={<AddOffer />} />
        <Route path="/admin/offers/edit/:id" element={<EditOffer />} />
+
+       {/* Banners */}
+      <Route path="banners" element={<ManageBanner />} />
+      <Route path="banners/add" element={<AddBanner />} />
+      <Route path="banners/:id/edit" element={<EditBanner />} />
 
         {/* Settings */}
         <Route path="settings" element={<Settings />} />

@@ -1,9 +1,9 @@
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { fetchCollections } from "../../api/collections";
 import { getCategories } from "../../api/category";
 import { Link } from "react-router-dom";
-import banner from "../../assets/videos/banner1.MOV";
+import Banner from "../../components/Banner/Banner";
 import Offers from "./Offers";
 import HorizontalProductRow from "../../components/products/HorizontalProductRow";
 import AOS from "aos";
@@ -12,7 +12,7 @@ import "aos/dist/aos.css";
 const Home = () => {
   const [collections, setCollections] = useState([]);
   const [categories, setCategories] = useState([]);
-  const videoRef = useRef(null);
+  
 
   const loadData = async () => {
     try {
@@ -40,22 +40,22 @@ const Home = () => {
     });
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (videoRef.current) {
-        const scrollY = window.scrollY;
-        videoRef.current.style.transform = `translateY(${scrollY * 0.3}px)`;
-      }
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (videoRef.current) {
+  //       const scrollY = window.scrollY;
+  //       videoRef.current.style.transform = `translateY(${scrollY * 0.3}px)`;
+  //     }
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   return (
     <div className="bg-white py-4">
       {/* HERO VIDEO */}
-      <div className="hero-banner">
+      {/* <div className="hero-banner">
         <video
           ref={videoRef}
           className="hero-banner-video mb-4"
@@ -65,7 +65,9 @@ const Home = () => {
           muted
           playsInline
         />
-      </div>
+      </div> */}
+
+      <Banner />
 
       <Offers />
 
@@ -169,16 +171,7 @@ const Home = () => {
       {/* STYLES */}
       <style>{`
         /* HERO */
-        .hero-banner {
-          width: 100%;
-          overflow: hidden;
-        }
-
-        .hero-banner-video {
-          width: 100%;
-          height: 780px;
-          object-fit: cover;
-        }
+        
 
         /* CARD */
         .card-container {
@@ -230,31 +223,19 @@ const Home = () => {
 
         /* RESPONSIVE */
         @media (max-width: 576px) {
-          .hero-banner-video {
-            height: 480px;
-          }
+  .overlay-text {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
 
-          .overlay-text {
-            font-size: 12px;
-            padding: 5px 10px;
-          }
-        }
-
-        @media (min-width: 768px) {
-          .hero-banner-video {
-            height: 400px;
-          }
-        }
+        
 
         @media (min-width: 992px) {
-          .hero-banner-video {
-            height: 600px;
-          }
-
-          .overlay-text {
-            font-size: 15px;
-          }
-        }
+  .overlay-text {
+    font-size: 15px;
+  }
+}
 
 
 
