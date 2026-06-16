@@ -18,7 +18,7 @@ const AddBanner = () => {
       );
 
       navigate(
-        "/admin/manage-banners"
+        "/admin/banners"
       );
     } catch (err) {
       console.log(err);

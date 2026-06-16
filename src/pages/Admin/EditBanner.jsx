@@ -40,7 +40,7 @@ const EditBanner = () => {
       );
 
       navigate(
-        "/admin/manage-banners"
+        "/admin/banners"
       );
     };
 
