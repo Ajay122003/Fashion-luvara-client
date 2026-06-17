@@ -124,14 +124,28 @@ const HorizontalProductRow = ({
     <div className="container py-4">
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="fw-bold mb-0"
+        {/* <h5 className="fw-bold mb-0"
         style={{
     fontFamily: "'Lobster Two', cursive",
     fontWeight: 700,
     fontSize:"23px",
     letterSpacing: "1px"
   }}
->{title}</h5>
+>{title}</h5> */}
+
+<h5
+  className="section-title mb-0"
+  style={{
+    fontFamily: "'Cormorant Garamond', serif",
+    fontWeight: 700,
+    fontSize: "23px",
+    letterSpacing: "0px",
+    textTransform: "uppercase",
+    color: "#313E17",
+  }}
+>
+  {title}
+</h5>
 
        <button
   className="btn btn-sm btn-outline-dark rounded-pill px-3 three-d-btn"

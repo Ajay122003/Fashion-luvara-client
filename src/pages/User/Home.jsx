@@ -40,32 +40,10 @@ const Home = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     if (videoRef.current) {
-  //       const scrollY = window.scrollY;
-  //       videoRef.current.style.transform = `translateY(${scrollY * 0.3}px)`;
-  //     }
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
+ 
 
   return (
     <div className="bg-white py-4">
-      {/* HERO VIDEO */}
-      {/* <div className="hero-banner">
-        <video
-          ref={videoRef}
-          className="hero-banner-video mb-4"
-          src={banner}
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-      </div> */}
 
       <Banner />
 
@@ -91,11 +69,19 @@ const Home = () => {
   <h3
     className="mb-4 text-center animated-title"
     data-aos="fade-right"
+    // style={{
+    //   fontFamily: "'Lobster Two', cursive",
+    //   fontWeight: 700,
+    //   fontSize: "40px",
+    // }}
     style={{
-      fontFamily: "'Lobster Two', cursive",
-      fontWeight: 700,
-      fontSize: "40px",
-    }}
+  fontFamily: "'Cormorant Garamond', serif",
+  fontWeight: 700,
+  fontSize: "30px",
+  letterSpacing: "2px",
+  textTransform: "uppercase",
+  color: "#313E17",
+}}
   >
     Explore Collection
   </h3>
@@ -314,9 +300,31 @@ const Home = () => {
 }
 
 /* TEXT ABOVE */
-.animated-title {
-  position: relative;
-  z-index: 2;
+// .animated-title {
+//   position: relative;
+//   z-index: 2;
+// }
+
+
+.animated-title{
+    position:relative;
+    z-index:2;
+    color:#313E17;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    text-shadow:
+      0 2px 8px rgba(0,0,0,.12),
+      0 0 25px rgba(49,62,23,.12);
+}
+
+.animated-title::after{
+    content:"";
+    display:block;
+    width:140px;
+    height:3px;
+    margin:12px auto 0;
+    border-radius:20px;
+    background:linear-gradient(90deg,#313E17,#C9A14A,#313E17);
 }
       `}</style>
     </div>
