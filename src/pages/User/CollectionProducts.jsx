@@ -95,14 +95,9 @@ const CollectionProducts = () => {
 
       {/* ================= HEADER ================= */}
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h3 className="fw-bold mb-0"   style={{
-    fontFamily: "'Lobster Two', cursive",
-    fontWeight: 700,
-    fontSize:"33px",
-    letterSpacing: "1px"
-  }}>
-          {collection.name}
-        </h3>
+        <h3 className="category-title mb-0">
+  {collection.name}
+</h3>
 
         <span className="badge text-secondary fs-6">
           {productCount} Product{productCount !== 1 && "s"}
@@ -240,6 +235,19 @@ const CollectionProducts = () => {
         .product-card:hover img {
           transform: scale(1.06);
         }
+
+        .category-title {
+  position: relative;
+  display: inline-block;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #313E17;
+  text-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
       `}</style>
     </div>
   );

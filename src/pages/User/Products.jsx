@@ -53,9 +53,9 @@ const Products = () => {
 
   return (
     <div className="container py-4">
-      <h3 className="fw-bold mb-4"
-        style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}>
-          All Products</h3>
+      <h3 className="page-title mb-4">
+  All Products
+</h3>
 
       {/* FILTER BAR */}
       <div className="row g-3 mb-4">
@@ -250,6 +250,18 @@ const Products = () => {
         .input-box{
         border-color: #c9a14a;
         }
+
+        .page-title {
+  position: relative;
+  display: inline-block;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #313E17;
+  text-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
 
       `}</style>
     </div>

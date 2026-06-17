@@ -308,6 +308,48 @@ const Cart = () => {
           position: sticky;
           top: 90px;
         }
+
+
+        .cart-title {
+  position: relative;
+  display: inline-block;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #313E17;
+  text-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+// .cart-title::after {
+//   content: "";
+//   position: absolute;
+//   left: 50%;
+//   transform: translateX(-50%);
+//   bottom: -10px;
+//   width: 100px;
+//   height: 3px;
+//   border-radius: 20px;
+//   background: linear-gradient(
+//     90deg,
+//     #313E17,
+//     #C9A14A,
+//     #313E17
+//   );
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .cart-title {
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
+
+  .cart-title::after {
+    width: 70px;
+  }
+}
         
         
        

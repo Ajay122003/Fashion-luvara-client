@@ -17,16 +17,11 @@ const About = () => {
 
         {/* TITLE */}
         <h2
-          className="about-title"
-          data-aos="fade-right"
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            fontWeight: 600,
-            color:"#313E17"
-          }}
-        >
-          About Us
-        </h2>
+  className="about-title"
+  data-aos="fade-right"
+>
+  About Us
+</h2>
 
         {/* CONTENT */}
         <p className="about-text">
@@ -157,6 +152,21 @@ const About = () => {
         .contact-box a:hover {
           text-decoration: underline;
         }
+
+
+        .about-title {
+  position: relative;
+  display: inline-block;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 35px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #313E17;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
         `}
       </style>
     </section>
