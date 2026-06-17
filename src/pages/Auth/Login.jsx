@@ -78,12 +78,12 @@ const Login = () => {
     <div className="login-wrapper">
       <div className="login-card">
         <h2 className="login-title">
-          Welcome back to <span>LUVARA</span>
-        </h2>
+  Welcome to <span>LUVARA</span>
+</h2>
 
         <p className="login-subtitle">
-          Login using your email to receive OTP
-        </p>
+  Sign in with your email to receive a secure OTP
+</p>
 
         {/* ALERT MESSAGE */}
         {message && (
@@ -134,6 +134,33 @@ const Login = () => {
         .input-box input:focus {
           border-color: #c9a14a;
         }
+
+        .login-title{
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #313E17;
+  text-shadow: 0 2px 10px rgba(0,0,0,.08);
+  margin-bottom: 12px;
+}
+
+.login-title span{
+  color:#C9A14A;
+}
+
+.login-subtitle{
+  text-align:center;
+  color:#666;
+  font-size:15px;
+  letter-spacing:.5px;
+  margin:12px 0 30px;
+}
         `}
       </style>
     </div>

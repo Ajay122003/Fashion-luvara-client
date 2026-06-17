@@ -73,9 +73,9 @@ const Register = () => {
       <div className="register-card bg-transparent p-4 p-md-5">
 
         {/* BRAND */}
-        <h2 className="text-center fw-bold mb-1" >
-          Welcome to <span>LUVARA</span>
-        </h2>
+       <h2 className="register-title text-center mb-2">
+  Welcome to <span>LUVARA</span>
+</h2>
         <p className="text-center text-muted mb-4">
           Create your Luvara account
         </p>
@@ -166,6 +166,23 @@ const Register = () => {
         .input-box input:focus {
           border-color: #c9a14a;
         }
+
+        .register-title{
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #313E17;
+  text-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.register-title span{
+  color:#C9A14A;
+}
       `}</style>
     </div>
   );
