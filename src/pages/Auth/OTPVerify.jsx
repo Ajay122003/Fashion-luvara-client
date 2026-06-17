@@ -87,12 +87,15 @@ const OTPVerify = () => {
         <h2 className="otp-title">Verify OTP</h2>
 
         {/*  SHOW 5 MIN COUNTDOWN */}
-        <p className="otp-subtitle text-center">
-          OTP expires in  
-          <span className=" text-black ms-2">
-            {formatTime()}
-          </span>
-        </p>
+        <p className="otp-subtitle">
+  Enter the 6-digit verification code sent to your email
+
+  <br />
+
+  <span className="otp-timer">
+    Expires in {formatTime()}
+  </span>
+</p>
 
         <div className="otp-input-wrapper">
           <input
@@ -115,6 +118,42 @@ const OTPVerify = () => {
           {loading ? "Verifying..." : "Verify & Login"}
         </button>
       </div>
+
+      <style>{`
+      .otp-title{
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #313E17;
+  text-shadow: 0 2px 10px rgba(0,0,0,.08);
+  margin-bottom: 12px;
+}
+
+.otp-subtitle{
+  text-align:center;
+  color:#666;
+  font-size:15px;
+  line-height:1.8;
+  margin:25px 0;
+}
+
+.otp-timer{
+  display:inline-block;
+  margin-top:10px;
+  padding:6px 18px;
+  border-radius:30px;
+  background:#f5f5f5;
+  color:#313E17;
+  font-weight:600;
+  border:1px solid rgba(201,161,74,.35);
+}`
+}</style>
     </div>
   );
 };
