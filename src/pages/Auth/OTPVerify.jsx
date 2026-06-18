@@ -135,13 +135,7 @@ const OTPVerify = () => {
   margin-bottom: 12px;
 }
 
-.otp-subtitle{
-  text-align:center;
-  color:#666;
-  font-size:15px;
-  line-height:1.8;
-  margin:25px 0;
-}
+
 
 .otp-timer{
   display:inline-block;
@@ -152,6 +146,14 @@ const OTPVerify = () => {
   color:#313E17;
   font-weight:600;
   border:1px solid rgba(201,161,74,.35);
+}
+
+.otp-subtitle{
+  text-align:center;
+  color:#666;
+  font-size:15px;
+  line-height:1.8;
+  margin:25px 0;
 }`
 }</style>
     </div>
