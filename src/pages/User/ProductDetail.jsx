@@ -373,7 +373,17 @@ const ProductDetail = () => {
             </p>
           )}
 
-          <p className="text-muted small">{product.description}</p>
+          {/* <p className="text-muted small">{product.description}</p> */}
+
+          <p
+  className="text-muted small"
+  style={{
+    whiteSpace: "pre-wrap",
+    lineHeight: "1.8",
+  }}
+>
+  {product.description}
+</p>
 
           {/* SIZE */}
           <div className="my-3">

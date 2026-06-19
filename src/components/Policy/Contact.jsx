@@ -9,7 +9,7 @@ function ContactInformation() {
 
       <p><strong>Trade name:</strong> Luvara</p>
 
-      <p><strong>Phone number:</strong> 8110811071 </p>
+      <p><strong>Phone number:</strong>+91 7448888152 </p>
 
       <p><strong>Email:</strong> dharikka8@gmail.com</p>
 

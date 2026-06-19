@@ -58,7 +58,7 @@ const About = () => {
 
   <p>
     <strong>Phone:</strong>{" "}
-    <a href="tel:+918110811071">+91 8110811071</a>
+    <a href="tel:+918110811071">+91 7448888152</a>
   </p>
 
   <p>
