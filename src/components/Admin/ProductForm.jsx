@@ -271,7 +271,7 @@ const ProductForm = ({
                   required
                   value={v.size}
                   onChange={(e) =>
-                    updateVariant(i, "size", e.target.value)
+                    updateVariant(i, "size", e.target.value.toUpperCase())
                   }
                 />
               </div>
