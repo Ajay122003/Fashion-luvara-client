@@ -138,7 +138,7 @@ const HorizontalProductRow = ({
   style={{
     fontFamily: "'Cormorant Garamond', serif",
     fontWeight: 700,
-    fontSize: "23px",
+    fontSize: "21px",
     letterSpacing: "0px",
     textTransform: "uppercase",
     color: "#313E17",
