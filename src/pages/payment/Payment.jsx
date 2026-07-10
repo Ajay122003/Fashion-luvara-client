@@ -216,7 +216,7 @@ return (
             )}
 
             <div className="d-flex justify-content-between mb-2">
-              <span>GST</span>
+              <span>GST(5%)</span>
               <span>
                 ₹{state?.gst_amount?.toFixed(2)}
               </span>
