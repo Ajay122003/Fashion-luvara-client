@@ -373,19 +373,8 @@ const ProductDetail = () => {
             </p>
           )}
 
-          {/* <p className="text-muted small">{product.description}</p> */}
-
-          <p
-  className="text-muted small"
-  style={{
-    whiteSpace: "pre-wrap",
-    lineHeight: "1.8",
-  }}
->
-  {product.description}
-</p>
-
-          {/* SIZE */}
+          
+           {/* SIZE */}
           <div className="my-3">
             <div className="d-flex justify-content-between align-items-center">
               <small className="fw-semibold">Size</small>
@@ -466,6 +455,21 @@ const ProductDetail = () => {
               )}
             </p>
           )}
+
+
+
+
+          <p
+  className="text-muted small"
+  style={{
+    whiteSpace: "pre-wrap",
+    lineHeight: "1.8",
+  }}
+>
+  {product.description}
+</p>
+
+         
 
           <div className="d-none d-md-flex gap-3 mt-4">
             <button
