@@ -30,7 +30,7 @@ const About = () => {
         </p>
 
         <p className="about-text">
-          Founded by <strong>Dharikka</strong>, the brand was created with a clear vision — to design pieces that reflect balance, structure, and refined craftsmanship. Every creation is approached with care, 
+          Founded by <strong>Dharikka jothikumar</strong>, the brand was created with a clear vision — to design pieces that reflect balance, structure, and refined craftsmanship. Every creation is approached with care, 
           focusing on fabric quality, silhouette, and finishing.
         </p>
 

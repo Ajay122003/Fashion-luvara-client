@@ -5,8 +5,8 @@ import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { fetchCart } from "../../features/cart/cartSlice";
 import { fetchWishlist } from "../../features/wishlist/wishlistSlice";
 import storage from "../../utils/storage";
-import brandLogo from "../../assets/images/logo3.png";
-import brandLogo2 from "../../assets/images/logo4.jpeg";
+import brandLogo from "../../assets/images/logo5.png";
+import brandLogo2 from "../../assets/images/logo5.png";
 import SearchModal from "../Search/SearchModal";
 
 
@@ -120,7 +120,7 @@ const UserNavbar = () => {
      
 
       {/* ================= NAVBAR ================= */}
-      <nav className="navbar navbar-expand-lg bg-white  py-3 shadow-lg sticky-top " >
+      <nav className="navbar navbar-expand-lg bg-white  py-1 shadow-lg sticky-top " >
         <div className="container-fluid">
           {/* MOBILE MENU */}
           <button
@@ -133,7 +133,7 @@ const UserNavbar = () => {
 
           {/* MOBILE LOGO */}
           <div className="mx-auto d-lg-none">
-            <img src={brandLogo2} height="40" width="145" alt="logo" />
+            <img src={brandLogo2} height="130" width="145" alt="logo" />
           </div>
 
           {/* MOBILE ICONS */}
@@ -167,7 +167,7 @@ const UserNavbar = () => {
         
           <div className="collapse navbar-collapse">
             <div className=" d-none d-lg-block ms-4 me-4 ">
-              <img src={brandLogo} height="120" width="110" alt="logo" />
+              <img src={brandLogo} height="120" width="120" alt="logo" />
             </div>
 
             <ul className="navbar-nav ms-5 gap-4 ">
@@ -325,7 +325,7 @@ const UserNavbar = () => {
           <button className="btn" onClick={closeMenu}>
             <i className="bi bi-x-lg fs-3" />
           </button>
-          <img src={brandLogo2} height="45" alt="logo" />
+          <img src={brandLogo2} height="125" width="145" alt="logo" />
         </div>
 
         <div className="offcanvas-body">
@@ -438,6 +438,9 @@ const UserNavbar = () => {
 
           <Link to="/contact" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>
             About us
+          </Link>
+          <Link to="/orders" className="d-block text-dark py-2 text-decoration-none" onClick={closeMenu}>
+            My Orders
           </Link>
           <div className="position-fixed bottom-5 start-0 p-3 mb-5" style={{ zIndex: 1050 }}>
   <a

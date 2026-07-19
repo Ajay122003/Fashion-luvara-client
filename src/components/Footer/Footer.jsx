@@ -30,12 +30,12 @@ const Footer = () => {
           ></div>
 
           {/* Business Name */}
-          <p>
+          {/* <p>
             LUVARA is owned and operated by{" "}
             <span style={{ color: "#c9a646", fontWeight: "600" }}>
               Dharikka J
             </span>
-          </p>
+          </p> */}
 
           <p className="mb-3">
             © {year} LUVARA. All Rights Reserved.
