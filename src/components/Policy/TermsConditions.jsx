@@ -52,7 +52,7 @@ function TermsConditions() {
       </p>
 
       <p>
-        Email: <strong>dharikka8@gmail.com</strong>
+        Email: <strong>contactluvara@gmail.com</strong>
       </p>
 
     </div>
