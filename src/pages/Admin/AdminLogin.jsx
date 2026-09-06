@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { adminLogin, adminVerifyOTP } from "../../features/admin/adminSlice";
 import { useNavigate, Link } from "react-router-dom";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 /* ================= ERROR MESSAGE HELPER ================= */
 const getErrorMessage = (error) => {
@@ -58,22 +59,41 @@ const AdminLogin = () => {
       className="d-flex justify-content-center align-items-center"
       style={{
         minHeight: "100vh",
-        background: "#f4f4f4",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         animation: "slideUp 0.7s ease-out",
       }}
     >
       <div
         className="p-4 shadow-lg bg-white rounded-4"
-        style={{ width: "100%", maxWidth: "420px" }}
+        style={{ 
+          width: "100%", 
+          maxWidth: "420px",
+          borderTop: "4px solid transparent",
+          background: "linear-gradient(white, white) padding-box, linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box"
+        }}
       >
         {/* LOGO & TITLE */}
+        <div className="text-center mb-3">
+          <div 
+            className="d-inline-flex align-items-center justify-content-center rounded-circle"
+            style={{ 
+              width: "80px", 
+              height: "80px", 
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              marginBottom: "8px",
+              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)"
+            }}
+          >
+            <MdAdminPanelSettings size={44} color="#fff" />
+          </div>
+        </div>
         <h2
           className="text-center fw-bold"
-          style={{ letterSpacing: "1px", color: "#111" }}
+          style={{ letterSpacing: "1px", color: "#111", fontSize: "1.6rem" }}
         >
           LUVARA Admin
         </h2>
-        <p className="text-center text-muted mb-4">
+        <p className="text-center text-muted mb-4" style={{ fontSize: "0.9rem" }}>
           Secure access for administrators
         </p>
 
@@ -132,7 +152,12 @@ const AdminLogin = () => {
             <button
               type="submit"
               className="btn btn-dark w-100 py-2 fw-semibold"
-              style={{ borderRadius: "10px" }}
+              style={{ 
+                borderRadius: "10px",
+                transition: "all 0.3s ease",
+                background: "linear-gradient(135deg, #333 0%, #1a1a1a 100%)",
+                border: "none"
+              }}
               disabled={loading}
             >
               {loading ? "Sending OTP..." : "Login & Send OTP"}
@@ -169,7 +194,12 @@ const AdminLogin = () => {
             <button
               type="submit"
               className="btn btn-success w-100 py-2 fw-semibold"
-              style={{ borderRadius: "10px" }}
+              style={{ 
+                borderRadius: "10px",
+                transition: "all 0.3s ease",
+                background: "linear-gradient(135deg, #11998e 0%, #0e8a75 100%)",
+                border: "none"
+              }}
               disabled={loading}
             >
               {loading ? "Verifying..." : "Verify & Login"}
@@ -178,7 +208,7 @@ const AdminLogin = () => {
         )}
       </div>
 
-      {/* ================= SLIDE UP ANIMATION ================= */}
+      {/* ================= STYLES ================= */}
       <style>{`
         @keyframes slideUp {
           from {
@@ -189,6 +219,20 @@ const AdminLogin = () => {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+        .form-control:focus {
+          border-color: #667eea !important;
+          box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+        }
+        .btn-dark:hover:not(:disabled) {
+          background: linear-gradient(135deg, #444 0%, #222 100%) !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .btn-success:hover:not(:disabled) {
+          background: linear-gradient(135deg, #12a88a 0%, #0d9a82 100%) !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
         }
       `}</style>
     </div>
