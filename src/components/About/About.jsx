@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import about from "../../assets/images/about.png";
@@ -30,7 +31,7 @@ const About = () => {
         </p>
 
         <p className="about-text">
-          Founded by <strong>Dharikka jothikumar</strong>, the brand was created with a clear vision — to design pieces that reflect balance, structure, and refined craftsmanship. Every creation is approached with care, 
+          Founded by <Link to="/admin/login"><strong>Dharikka jothikumar</strong></Link>, the brand was created with a clear vision — to design pieces that reflect balance, structure, and refined craftsmanship. Every creation is approached with care, 
           focusing on fabric quality, silhouette, and finishing.
         </p>
 
@@ -116,6 +117,18 @@ const About = () => {
           line-height: 1.8;
           color: #444;
           margin-bottom: 20px;
+        }
+
+        .about-text a {
+          color: #313E17;
+          text-decoration: none;
+          font-weight: 600;
+          transition: opacity 0.3s ease;
+        }
+
+        .about-text a:hover {
+          opacity: 0.7;
+          text-decoration: underline;
         }
 
         .about-highlight {
