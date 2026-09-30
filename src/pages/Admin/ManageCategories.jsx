@@ -12,6 +12,7 @@ const ManageCategories = () => {
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     loadCategories();
@@ -36,14 +37,22 @@ const ManageCategories = () => {
   const closeModal = () => {
     setSelectedCategory(null);
     setShowModal(false);
+    setDeleteError("");
   };
 
   const confirmDelete = async () => {
     if (!selectedCategory) return;
 
-    await deleteAdminCategory(selectedCategory.id);
-    closeModal();
-    loadCategories();
+    try {
+      await deleteAdminCategory(selectedCategory.id);
+      closeModal();
+      loadCategories();
+    } catch (error) {
+      const message =
+        error?.response?.data?.error ||
+        "Cannot delete this category because it has associated products. Please remove or move the products first.";
+      setDeleteError(message);
+    }
   };
 
   return (
@@ -247,6 +256,12 @@ const ManageCategories = () => {
               </div>
 
               <div className="modal-body">
+                {deleteError && (
+                  <div className="alert alert-danger mb-3" role="alert">
+                    {deleteError}
+                  </div>
+                )}
+
                 <p className="mb-0">
                   Are you sure you want to delete{" "}
                   <strong>{selectedCategory?.name}</strong>?

@@ -77,6 +77,7 @@ const OrderDetails = () => {
   if (!order) return <p>Order not found</p>;
 
   const currentIndex = STATUS_FLOW.indexOf(order.status);
+  const shippingAddress = order.shipping_address || order.address_details;
 
   return (
     <div className="container-fluid py-3">
@@ -200,14 +201,20 @@ const OrderDetails = () => {
             <div className="card-body">
               <h5 className="fw-bold mb-3">Order Items</h5>
 
-              {order.items.map((item, i) => (
+              {order.items.map((item, i) => {
+                const productName =
+                  item.product_name || item.product?.name || "Product details unavailable";
+                const productImage =
+                  item.product_image || item.product?.images?.[0]?.image_url;
+
+                return (
                 <div
                   key={i}
                   className="d-flex align-items-start border-bottom pb-3 mb-3"
                 >
-                  {item.product?.images?.length > 0 && (
+                  {productImage && (
                     <img
-                      src={item.product.images[0].image_url}
+                      src={productImage}
                       alt=""
                       width="64"
                       height="64"
@@ -218,7 +225,7 @@ const OrderDetails = () => {
 
                   <div className="flex-grow-1">
                     <p className="fw-bold mb-1">
-                      {item.product?.name}
+                      {productName}
                     </p>
                     <small className="text-muted">
                       Size: {item.size || "-"} | Color:{" "}
@@ -235,7 +242,8 @@ const OrderDetails = () => {
 
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -309,25 +317,25 @@ const OrderDetails = () => {
           </div>
 
           {/* ADDRESS */}
-          {order.address_details && (
+          {shippingAddress && (
             <div className="card shadow-sm">
               <div className="card-body">
                 <h5 className="fw-bold mb-2">
                   Customer Address
                 </h5>
                 <p className="mb-1 fw-semibold">
-                  {order.address_details.name}
+                  {shippingAddress.name}
                 </p>
                 <small className="text-muted">
-                  {order.address_details.phone}
+                  {shippingAddress.phone}
                 </small>
                 <p className="mt-2 mb-0">
-                  {order.address_details.full_address},{" "}
-                  {order.address_details.city}
+                  {shippingAddress.full_address},{" "}
+                  {shippingAddress.city}
                 </p>
                 <p className="mb-0">
-                  {order.address_details.state} –{" "}
-                  {order.address_details.pincode}
+                  {shippingAddress.state} –{" "}
+                  {shippingAddress.pincode}
                 </p>
               </div>
             </div>

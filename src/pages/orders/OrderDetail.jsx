@@ -73,6 +73,7 @@ const OrderDetail = () => {
   const currentIndex = STATUS_FLOW.findIndex(
     (s) => s.key === order.status
   );
+  const shippingAddress = order.shipping_address || order.address;
 
   return (
     <div className="container py-4" style={{ maxWidth: 900 }}>
@@ -125,7 +126,7 @@ const OrderDetail = () => {
       )}
 
       {/* ================= DELIVERY ADDRESS ================= */}
-      {order.address && (
+      {shippingAddress && (
         <div className="card shadow-sm mb-3">
           <div className="card-body">
             <h6 className="fw-semibold mb-2">
@@ -134,12 +135,12 @@ const OrderDetail = () => {
             </h6>
 
             <p className="mb-1 fw-semibold">
-              {order.address.name} – {order.address.phone}
+              {shippingAddress.name} – {shippingAddress.phone}
             </p>
 
             <small className="text-muted">
-              {order.address.full_address}, {order.address.city} –{" "}
-              {order.address.pincode}
+              {shippingAddress.full_address}, {shippingAddress.city} –{" "}
+              {shippingAddress.pincode}
             </small>
           </div>
         </div>
@@ -181,16 +182,20 @@ const OrderDetail = () => {
             const unit = Number(item.unit_price || 0);
             const qty = Number(item.quantity || 1);
             const total = Number(item.total_price || unit * qty);
+            const productName =
+              item.product_name || item.product?.name || "Product details unavailable";
+            const productImage =
+              item.product_image || item.product?.images?.[0]?.image_url;
 
             return (
               <div
                 key={item.id || index}
                 className="d-flex gap-3 border-bottom py-3"
               >
-                {item.product?.images?.length > 0 && (
+                {productImage && (
                   <img
-                    src={item.product.images[0].image_url}
-                    alt={item.product.name}
+                    src={productImage}
+                    alt={productName}
                     className="rounded"
                     style={{ width: 70, height: 70, objectFit: "cover" }}
                   />
@@ -198,7 +203,7 @@ const OrderDetail = () => {
 
                 <div className="flex-grow-1">
                   <p className="fw-bold mb-1">
-                    {item.product?.name}
+                    {productName}
                   </p>
 
                   <small className="text-muted">
