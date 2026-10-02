@@ -4,6 +4,13 @@ import {
   fetchLowStockProducts,
 } from "../../api/admin";
 
+const PRODUCT_IMAGE_FALLBACK = "/Logo.png";
+
+const handleProductImageError = (event) => {
+  event.currentTarget.onerror = null;
+  event.currentTarget.src = PRODUCT_IMAGE_FALLBACK;
+};
+
 /* ================= DASHBOARD ================= */
 
 const Dashboard = () => {
@@ -75,10 +82,11 @@ const Dashboard = () => {
             <table className="table table-hover align-middle mb-0">
               <tbody>
                 {stats.best_selling_products.map((item) => (
-                  <tr key={item.variant__product_id}>
+                  <tr key={item.product_key || item.variant__product_id}>
                     <td className="d-flex align-items-center gap-3">
                       <img
-                        src={item.image || "/placeholder.png"}
+                        src={item.image || PRODUCT_IMAGE_FALLBACK}
+                        onError={handleProductImageError}
                         alt=""
                         width="48"
                         height="48"
@@ -122,8 +130,9 @@ const Dashboard = () => {
                         src={
                           p.images?.length
                             ? p.images[0].image_url
-                            : "/placeholder.png"
+                            : PRODUCT_IMAGE_FALLBACK
                         }
+                        onError={handleProductImageError}
                         width="46"
                         height="46"
                         className="rounded"
