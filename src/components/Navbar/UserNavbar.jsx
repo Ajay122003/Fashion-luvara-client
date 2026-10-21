@@ -444,7 +444,7 @@ const UserNavbar = () => {
           </Link>
           <div className="position-fixed bottom-5 start-0 p-3 mb-5" style={{ zIndex: 1050 }}>
   <a
-    href="https://www.instagram.com/shop_luvara?igsh=MXF3MjZqeDZ3NmFtNg%3D%3D&utm_source=qr"
+    href="https://www.instagram.com/luvara.___?exln=ZGI3M29pdDQwMGs0"
     target="_blank"
     rel="noopener noreferrer"
     className="text-dark fs-3"

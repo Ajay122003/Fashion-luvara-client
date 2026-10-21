@@ -3,33 +3,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { adminLogin, adminVerifyOTP } from "../../features/admin/adminSlice";
 import { useNavigate, Link } from "react-router-dom";
 import { MdAdminPanelSettings } from "react-icons/md";
+import { toast } from "react-hot-toast";
 
 /* ================= ERROR MESSAGE HELPER ================= */
 const getErrorMessage = (error) => {
   if (!error) return null;
 
-  const msg = String(error).toLowerCase();
+  const message =
+    typeof error === "string"
+      ? error
+      : Object.values(error).flat().find((value) => typeof value === "string");
+  if (!message) return "Login failed. Please try again.";
 
-  if (msg.includes("password")) {
-    return "Your password is wrong";
+  if (message.toLowerCase().includes("invalid credentials")) {
+    return "Invalid email or password";
   }
 
-  if (msg.includes("email")) {
-    return "Admin email not found";
-  }
-
-  if (msg.includes("otp")) {
-    return "Invalid OTP";
-  }
-
-  return "Login failed. Please try again.";
+  return message;
 };
 
 const AdminLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, step, pendingEmail } = useSelector(
+  const { loading, step, pendingEmail } = useSelector(
     (state) => state.admin
   );
 
@@ -40,7 +37,9 @@ const AdminLogin = () => {
   /* ================= STEP 1 → LOGIN + SEND OTP ================= */
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    dispatch(adminLogin({ email, password }));
+    dispatch(adminLogin({ email, password }))
+      .unwrap()
+      .catch((message) => toast.error(getErrorMessage(message)));
   };
 
   /* ================= STEP 2 → VERIFY OTP ================= */
@@ -51,7 +50,7 @@ const AdminLogin = () => {
     dispatch(adminVerifyOTP({ email: finalEmail, otp }))
       .unwrap()
       .then(() => navigate("/admin/dashboard"))
-      .catch(() => {});
+      .catch((message) => toast.error(getErrorMessage(message)));
   };
 
   return (
@@ -96,13 +95,6 @@ const AdminLogin = () => {
         <p className="text-center text-muted mb-4" style={{ fontSize: "0.9rem" }}>
           Secure access for administrators
         </p>
-
-        {/* ERROR MESSAGE */}
-        {error && (
-          <div className="alert alert-danger py-2 text-center">
-            {getErrorMessage(error)}
-          </div>
-        )}
 
         {/* ================= STEP 1 → LOGIN ================= */}
         {step === 1 && (
@@ -240,5 +232,3 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
-
-

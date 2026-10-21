@@ -2,6 +2,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { adminLoginStep1, adminLoginVerifyOTP } from "../../api/admin";
 import storage from "../../utils/storage";
 
+const getErrorMessage = (data, fallback) => {
+  if (typeof data === "string") return data;
+  if (typeof data?.detail === "string") return data.detail;
+  if (typeof data?.error === "string") return data.error;
+
+  const validationError = Object.values(data || {}).flat().find(
+    (message) => typeof message === "string"
+  );
+  return validationError || fallback;
+};
+
 /* =======================
    THUNKS
 ======================= */
@@ -12,11 +23,7 @@ export const adminLogin = createAsyncThunk(
     try {
       return await adminLoginStep1(email, password);
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.detail ||
-        err.response?.data ||
-        "Login failed"
-      );
+      return rejectWithValue(getErrorMessage(err.response?.data, "Login failed"));
     }
   }
 );
@@ -28,9 +35,7 @@ export const adminVerifyOTP = createAsyncThunk(
       return await adminLoginVerifyOTP(email, otp);
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.detail ||
-        err.response?.data ||
-        "OTP verification failed"
+        getErrorMessage(err.response?.data, "OTP verification failed")
       );
     }
   }
@@ -102,4 +107,3 @@ const adminSlice = createSlice({
 
 export const { adminLogout } = adminSlice.actions;
 export default adminSlice.reducer;
-

@@ -106,10 +106,25 @@ useEffect(() => {
   const updateEmail = async () => {
     if (!newEmail) return alert("Enter email");
     setEmailLoading(true);
-    await adminUpdateEmail({ new_email: newEmail });
-    setEmailLoading(false);
-    setNewEmail("");
-    alert("Email updated");
+    try {
+      await adminUpdateEmail({ new_email: newEmail });
+      setNewEmail("");
+      toast.success("Email updated");
+    } catch (err) {
+      const responseData = err.response?.data;
+      const emailError = responseData?.new_email;
+      const validationMessage = Array.isArray(emailError)
+        ? emailError[0]
+        : emailError;
+
+      toast.error(
+        typeof validationMessage === "string"
+          ? validationMessage
+          : responseData?.detail || "Failed to update email"
+      );
+    } finally {
+      setEmailLoading(false);
+    }
   };
 
   const [passwordData, setPasswordData] = useState({
